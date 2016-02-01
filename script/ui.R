@@ -1,5 +1,5 @@
 #rm(list=ls(all=TRUE))
-.libPaths("/data/TFL-generator/script/lib")
+.libPaths("/data/tflgenerator/script/lib")
 library(GUI)
 library(TFL) # the Amgen Internal TFL package
 library(shiny)

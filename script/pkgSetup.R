@@ -14,7 +14,8 @@ library(tools)
 if(file.exists(file.path(pkgDir,"PACKAGES"))){
   available <- available.packages(contriburl=mycran)[,"Package"]
 }else{
-  available <- NULL
+  write_PACKAGES(pkgDir)
+  available <- available.packages(contriburl=mycran)[,"Package"]
 }
 
 
