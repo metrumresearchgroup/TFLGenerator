@@ -1,6 +1,5 @@
 author <- c("danp")
-pkgs <- c('TFL','GUI','metrumrg','gridExtra','reshape',"ggplot2", "plyr", "stringr", "scales", "Hmisc", "reshape2",
-          "Hmisc", "shinydashboard", "shinyFiles", "DT")
+pkgs <- c('TFL','GUI','metrumrg','gridExtra')
 
 user <- Sys.info()["user"]
 parentScriptDir <- getwd()  ## You may need to mod this to be in the top level of scriptDir
@@ -78,5 +77,4 @@ if(!fromCRAN){
                      INSTALL_opts="--no-multiarch")
   }
 }
-
 
