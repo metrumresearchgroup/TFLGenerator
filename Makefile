@@ -12,11 +12,14 @@ TFL_R_FILES := $(wildcard TFL/R/*.R)
 TFL_FILES := TFL/DESCRIPTION TFL/NAMESPACE $(R_FILES) $(SRC_FILES)
 TFL_DATA_FILES := $(wildcard TFL/data/*.rda)
 
-.PHONY: install check clean build
+#.PHONY: install check clean build data update_server
 
 check: script/pkg/$(GUI_NAME)_$(GUI_VERSION).tar.gz script/pkg/$(TFL_NAME)_$(TFL_VERSION).tar.gz
 	R CMD check script/pkg/$(GUI_NAME)_$(GUI_VERSION).tar.gz
 	R CMD check script/pkg/$(TFL_NAME)_$(TFL_VERSION).tar.gz
+
+data: GUI/data/DefaultsFirst.rda
+	R CMD BATCH --no-save script/DefaultsFirst.R
 
 build: script/pkg/$(GUI_NAME)_$(GUI_VERSION).tar.gz script/pkg/$(TFL_NAME)_$(TFL_VERSION).tar.gz
 	R CMD build $(GUI_NAME) 
@@ -27,6 +30,9 @@ build: script/pkg/$(GUI_NAME)_$(GUI_VERSION).tar.gz script/pkg/$(TFL_NAME)_$(TFL
 install: script/pkg/$(GUI_NAME)_$(GUI_VERSION).tar.gz script/pkg/$(TFL_NAME)_$(TFL_VERSION).tar.gz
 	R CMD INSTALL script/pkg/$(GUI_NAME)_$(GUI_VERSION).tar.gz -l script/lib
 	R CMD INSTALL script/pkg/$(TFL_NAME)_$(TFL_VERSION).tar.gz -l script/lib
+	
+update_server: /data/shiny-server/TFL\ generator/server.R /data/shiny-server/TFL\ generator/ui.R
+	cp script/server.R script/ui.R /data/shiny-server/TFL\ generator/
 
 clean:
 	-rm -f script/pkg/$(GUI_NAME)_*.tar.gz
