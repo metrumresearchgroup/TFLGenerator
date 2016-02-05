@@ -12,7 +12,7 @@ TFL_R_FILES := $(wildcard TFL/R/*.R)
 TFL_FILES := TFL/DESCRIPTION TFL/NAMESPACE $(R_FILES) $(SRC_FILES)
 TFL_DATA_FILES := $(wildcard TFL/data/*.rda)
 
-#.PHONY: install check clean build data update_server
+.PHONY: install check clean
 
 check: script/pkg/$(GUI_NAME)_$(GUI_VERSION).tar.gz script/pkg/$(TFL_NAME)_$(TFL_VERSION).tar.gz
 	R CMD check script/pkg/$(GUI_NAME)_$(GUI_VERSION).tar.gz
