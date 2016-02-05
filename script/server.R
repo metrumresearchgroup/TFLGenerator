@@ -1,7 +1,19 @@
-
 #rm(list=ls(all=TRUE))
+
+wrap_gtable <- function(g){
+  class(g) <- c("arrange", class(g))
+  g
+}
+
+print.arrange <- function(x){
+  if(is.ggplot(x))  x <- ggplot2::ggplotGrob(x)
+  grid::grid.draw(x)
+}
+
+
 # Define server logic required to summarize and view the selected dataset
 shinyServer(function(input, output, session) {
+
   Defaults<<-DefaultsFirst
   unlockBinding("tabList", as.environment("package:GUI"))
   tabList<<-tabList()
@@ -9,14 +21,14 @@ shinyServer(function(input, output, session) {
   #Open Template
   
   
-  observeEvent(input$templateGo,{
-    inFile <- input$templatePath
+  observeEvent(input$templateGo,{  # Go button was pushed
+    inFile <- input$templatePath   # Take value from "Select Personal Template"
     if (is.null(inFile))
       return(NULL)
-    source(inFile$datapath)
+    source(inFile$datapath)        
   }) 
   
- observe(if(TRUE){  	
+ observe(if(TRUE){  	             # Not sure about this
   inFile <- input$templatePath
   if (is.null(inFile))
     return(NULL)
@@ -88,7 +100,7 @@ shinyServer(function(input, output, session) {
             dat=dat[rowSums(is.na(dat)) != ncol(dat),]
             dat$V1=NULL
             }	
-  }
+    }
     
     dat=data.frame(dat, stringsAsFactors=TRUE)
     names(dat)[which(names(dat)==input[["DVCol"]])]="DV"
@@ -130,6 +142,12 @@ shinyServer(function(input, output, session) {
     wholeTrans=transformations(input[["dataTrans"]])
     dat=manipDat(dat, dataLimits=wholeLim, dataTrans=wholeTrans)
     
+    # For debugging, save a copy of input
+    dati <- dat
+    tabList <- get("tabList",envir=.GlobalEnv)
+    save(dati,file=file.path("/data","tflgenerator","tmp","shinytmpdat.rda"))
+    # End debugging
+
     return(dat)
   })	
   
@@ -231,7 +249,8 @@ shinyServer(function(input, output, session) {
                         textInput(inputId="projectTitle", label="Project Title:", value=Defaults$projectTitle),
                         boxInputLarge(inputId="projectInfo", label="Project Information:", value=Defaults$projectInfo)
                         )
-                      ),
+                      )
+             ,
              tabPanel(title="Model Info",
                       wellPanel(
                         textInput(inputId="dataPath", label="Data Path:", value=Defaults$dataPath),	
@@ -258,7 +277,7 @@ shinyServer(function(input, output, session) {
                       boxInputLarge(inputId="dataLimits", "Limit Data by", value=Defaults$dataLimits),
                       boxInputLarge(inputId="dataTrans", "Transform Data:", value=Defaults$dataTrans) 
                       )
-    )
+             )
 
              
     )
@@ -313,6 +332,7 @@ shinyServer(function(input, output, session) {
       testList=list()
       for(i in c(1:length(tabList$label[which(tabList$tabType==item)]))){
         
+        # Take the tabList and create an input for each tab of tabList$tabType
         testList[[i]]=do.call(what=textInput, args=list(inputId=tabList$inputId[which(tabList$tabType==item)][[i]],
                                                       label=tabList$label[which(tabList$tabType==item)][[i]],
                                                       value=Defaults[[tabList$inputId[which(tabList$tabType==item)][[i]]]])
@@ -323,13 +343,14 @@ shinyServer(function(input, output, session) {
       j=j+1
     }
     stuff=do.call(what=tabsetPanel, panelList)
-
+    
     return(do.call(what=tabPanel, args=list("Figures", stuff)) )
   })
 
 #Figures, Tables and Listings Tabset
   output$figuresTabset<-renderUI({
-   
+   # plotList is defined upon loading the GUI package (data/plotList.rda)
+   # "Call" element of plotList specifies which plotting function to use for each
     plotList$sidebarType=c("Figures","Figures","Tables","Figures","Figures","Figures","Figures","Figures","Figures","Figures", "Figures", "Listing")
     type="Figures"
     types=grep(type, plotList$sidebarType)
@@ -597,27 +618,27 @@ shinyServer(function(input, output, session) {
          }
          recordInput(input=input,Defaults=Defaults)
      }
-       })
+  })
 
   
 #Output and Saving Tabset  
     
-output$SaveTabset<-renderUI({
+  output$SaveTabset<-renderUI({
   
-                   wellPanel(
-                            checkboxInput("PNG", "Record *.pngs", Defaults$PNG),
-                            checkboxInput("RTF", "Construct *.Doc", Defaults$RTF),
-                            checkboxInput("verbose", "Reveal Function Text?", Defaults$verbose),
-                             textInput("saveAs", "File Name", Defaults$saveAs),
-                             actionButton("outputGo", "Save"),
-                             h1(),
-                             textInput("saveTemplateAs", "Template Name", Defaults$saveTemplateAs),
-                             actionButton("newTemplateGo", "Save")
-                            
-                             )
-                   
-  
-  
-})
-#End Shiny Server
+    wellPanel(
+      checkboxInput("PNG", "Record *.pngs", Defaults$PNG),
+      checkboxInput("RTF", "Construct *.Doc", Defaults$RTF),
+      checkboxInput("verbose", "Reveal Function Text?", Defaults$verbose),
+      textInput("saveAs", "File Name", Defaults$saveAs),
+      actionButton("outputGo", "Save"),
+      h1(),
+      textInput("saveTemplateAs", "Template Name", Defaults$saveTemplateAs),
+      actionButton("newTemplateGo", "Save")
+      
+    )
+    
+    
+    
+  })
+  #End Shiny Server
 })

@@ -7,15 +7,15 @@ library(shinydashboard)
 library(shinyFiles)
 library(DT)
 
-#Defaults are used to keep the current entries in dynamic memory, defaults first are the pre-defined defaults
-
+# Defaults are used to keep the current entries in dynamic memory, 
+#   defaults first are the pre-defined defaults
 
 # Define UI fordataset viewer application
 
 	dashboardPage(
       	# Application title
-      	dashboardHeader(title="AMGEN TFL Generator"),
-      	dashboardSidebar(
+      	header=dashboardHeader(title="AMGEN TFL Generator"),
+      	sidebar=dashboardSidebar(
       	  sidebarMenu(
       	     
       	      selectInput(inputId="templateSelection", label="Open Template", choices=c("New Analysis"="Template_New","Template_V8"="Template_V8", "Template_Other"="Template_Other")),
