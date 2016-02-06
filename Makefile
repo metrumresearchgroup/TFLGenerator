@@ -18,8 +18,9 @@ check: script/pkg/$(GUI_NAME)_$(GUI_VERSION).tar.gz script/pkg/$(TFL_NAME)_$(TFL
 	R CMD check script/pkg/$(GUI_NAME)_$(GUI_VERSION).tar.gz
 	R CMD check script/pkg/$(TFL_NAME)_$(TFL_VERSION).tar.gz
 
-data: GUI/data/DefaultsFirst.rda
+data: GUI/data/DefaultsFirst.rda GUI/data/plotList.rda
 	R CMD BATCH --no-save script/DefaultsFirst.R
+	R CMD BATCH --no-save script/plotList.R
 
 build: script/pkg/$(GUI_NAME)_$(GUI_VERSION).tar.gz script/pkg/$(TFL_NAME)_$(TFL_VERSION).tar.gz
 	R CMD build $(GUI_NAME) 
@@ -32,7 +33,7 @@ install: script/pkg/$(GUI_NAME)_$(GUI_VERSION).tar.gz script/pkg/$(TFL_NAME)_$(T
 	R CMD INSTALL script/pkg/$(TFL_NAME)_$(TFL_VERSION).tar.gz -l script/lib
 	
 update_server: /data/shiny-server/TFL\ generator/server.R /data/shiny-server/TFL\ generator/ui.R
-	cp script/server.R script/ui.R /data/shiny-server/TFL\ generator/
+	cp script/server.R script/ui.R /data/shiny-server/TFL\ generator-ge0.9/
 
 clean:
 	-rm -f script/pkg/$(GUI_NAME)_*.tar.gz

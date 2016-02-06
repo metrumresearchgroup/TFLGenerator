@@ -1,5 +1,6 @@
 
 #rm(list=ls(all=TRUE))
+srcDir <- "/data/tflgenerator-ge0.9"
 # Define server logic required to summarize and view the selected dataset
 shinyServer(function(input, output, session) {
   Defaults<<-DefaultsFirst
@@ -130,6 +131,12 @@ shinyServer(function(input, output, session) {
     wholeTrans=transformations(input[["dataTrans"]])
     dat=manipDat(dat, dataLimits=wholeLim, dataTrans=wholeTrans)
     
+    # For debugging, save a copy of input
+    dati <- dat
+    tabList <- get("tabList",envir=.GlobalEnv)
+    save(dati,file=file.path(srcDir,"tmp","shinytmpdat.rda"))
+    # End debugging
+
     return(dat)
   })	
   
@@ -428,6 +435,7 @@ shinyServer(function(input, output, session) {
                                 do.call(callType,args=argList),
                                 heights=c(0.05,1))
                   }, error = function(e) {
+                    save(callType,argList,file=file.path(srcDir,"tmp","error.rda"))
                     arrangeGrob(textGrob(sprintf("You broke something\n%s", e)))
                   }
                   )
@@ -463,6 +471,7 @@ shinyServer(function(input, output, session) {
                                   do.call(callType,args=argList),
                                   heights=c(0.05,1))
                     }, error = function(e) {
+                      save(callType,argList,file=file.path(srcDir,"tmp","error.rda"))
                       arrangeGrob(textGrob(sprintf("You broke something\n%s", e)))
                     })
                     

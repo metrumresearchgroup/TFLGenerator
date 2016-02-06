@@ -1,4 +1,4 @@
-DefaultsFirst <- c(
+DefaultsFirst <- list(
             texts1 =                            "" ,
          DemogsNum =                             0 ,
       OBSvIPREDNum =                             0 ,
@@ -20,8 +20,8 @@ DefaultsFirst <- c(
             recall =                         FALSE ,
       projectTitle =                      "AMG NO" ,
        projectInfo =                            "" ,
-          dataPath =              "/opt/NMStorage",
-             runno =                            "" ,
+          dataPath =              "/data/tflgenerator/NMStorage",
+             runno =                            "#" ,
                ext =                        ".tab" ,
             header =                          TRUE ,
          skipLines =                             1 ,
