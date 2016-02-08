@@ -6,6 +6,7 @@ shinyServer(function(input, output, session) {
   Defaults<<-DefaultsFirst
   unlockBinding("tabList", as.environment("package:GUI"))
   tabList<<-tabList()
+  plotList$sidebarType <- c("Figures","Figures","Tables","Figures","Figures","Figures","Figures","Figures","Figures","Tables","Figures","Tables")
   
   #Open Template
   
@@ -337,7 +338,7 @@ shinyServer(function(input, output, session) {
 #Figures, Tables and Listings Tabset
   output$figuresTabset<-renderUI({
    
-    plotList$sidebarType=c("Figures","Figures","Tables","Figures","Figures","Figures","Figures","Figures","Figures","Figures", "Figures", "Listing")
+    # plotList$sidebarType=c("Figures","Figures","Tables","Figures","Figures","Figures","Figures","Figures","Figures","Figures", "Tables", "Tables")
     type="Figures"
     types=grep(type, plotList$sidebarType)
     PanelSet=list()
@@ -351,7 +352,7 @@ shinyServer(function(input, output, session) {
   })
   output$listingsTabset<-renderUI({
     
-    plotList$sidebarType=c("Figures","Figures","Tables","Figures","Figures","Figures","Figures","Figures","Figures","Figures", "Figures", "Listing")
+    # plotList$sidebarType=c("Figures","Figures","Tables","Figures","Figures","Figures","Figures","Figures","Figures","Figures", "Tables", "Tables")
     type="Listings"
     types=grep(type, plotList$sidebarType)
     PanelSet=list()
@@ -364,7 +365,7 @@ shinyServer(function(input, output, session) {
     
   })
   output$tablesTabset<-renderUI({
-    plotList$sidebarType=c("Figures","Figures","Tables","Figures","Figures","Figures","Figures","Figures","Figures","Figures", "Figures", "Listing")
+    # plotList$sidebarType=c("Figures","Figures","Tables","Figures","Figures","Figures","Figures","Figures","Figures","Figures", "Tables", "Tables")
     type="Tables"
     types=grep(type, plotList$sidebarType)
     PanelSet=list()
@@ -429,6 +430,7 @@ shinyServer(function(input, output, session) {
                
                   #insert an error block around the plotting
                   p1 = tryCatch({
+                    save(callType,argList,file=file.path(srcDir,"tmp","output.rda"))
                     do.call(callType,args=argList)
                   }, warning = function(w) {
                     arrangeGrob(textGrob(sprintf("You broke something\n%s", w)),
@@ -465,6 +467,7 @@ shinyServer(function(input, output, session) {
                     
                     #insert an error block around the plotting
                     p1 = tryCatch({
+                      save(callType,argList,file=file.path(srcDir,"tmp","output.rda"))
                       do.call(callType,args=argList)
                     }, warning = function(w) {
                       arrangeGrob(textGrob(sprintf("You broke something\n%s", w)),
