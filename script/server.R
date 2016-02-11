@@ -1,6 +1,8 @@
 
 #rm(list=ls(all=TRUE))
 srcDir <- "/data/tflgenerator-ge0.9"
+debug <- FALSE
+
 # Define server logic required to summarize and view the selected dataset
 shinyServer(function(input, output, session) {
   Defaults<<-DefaultsFirst
@@ -133,9 +135,11 @@ shinyServer(function(input, output, session) {
     dat=manipDat(dat, dataLimits=wholeLim, dataTrans=wholeTrans)
     
     # For debugging, save a copy of input
-    dati <- dat
-    tabList <- get("tabList",envir=.GlobalEnv)
-    save(dati,file=file.path(srcDir,"tmp","shinytmpdat.rda"))
+    if(debug){
+      dati <- dat
+      tabList <- get("tabList",envir=.GlobalEnv)
+      save(dati,file=file.path(srcDir,"tmp","shinytmpdat.rda"))
+    }
     # End debugging
 
     return(dat)
@@ -430,14 +434,14 @@ shinyServer(function(input, output, session) {
                
                   #insert an error block around the plotting
                   p1 = tryCatch({
-                    save(callType,argList,file=file.path(srcDir,"tmp","output.rda"))
+                    if(debug) save(callType,argList,file=file.path(srcDir,"tmp","output.rda"))
                     do.call(callType,args=argList)
                   }, warning = function(w) {
                     arrangeGrob(textGrob(sprintf("You broke something\n%s", w)),
                                 do.call(callType,args=argList),
                                 heights=c(0.05,1))
                   }, error = function(e) {
-                    save(callType,argList,file=file.path(srcDir,"tmp","error.rda"))
+                    if(debug) save(callType,argList,file=file.path(srcDir,"tmp","error.rda"))
                     arrangeGrob(textGrob(sprintf("You broke something\n%s", e)))
                   }
                   )
@@ -467,14 +471,14 @@ shinyServer(function(input, output, session) {
                     
                     #insert an error block around the plotting
                     p1 = tryCatch({
-                      save(callType,argList,file=file.path(srcDir,"tmp","output.rda"))
+                      if(debug) save(callType,argList,file=file.path(srcDir,"tmp","output.rda"))
                       do.call(callType,args=argList)
                     }, warning = function(w) {
                       arrangeGrob(textGrob(sprintf("You broke something\n%s", w)),
                                   do.call(callType,args=argList),
                                   heights=c(0.05,1))
                     }, error = function(e) {
-                      save(callType,argList,file=file.path(srcDir,"tmp","error.rda"))
+                      if(debug) save(callType,argList,file=file.path(srcDir,"tmp","error.rda"))
                       arrangeGrob(textGrob(sprintf("You broke something\n%s", e)))
                     })
                     
