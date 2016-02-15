@@ -32,7 +32,7 @@ install: script/pkg/$(GUI_NAME)_$(GUI_VERSION).tar.gz script/pkg/$(TFL_NAME)_$(T
 	R CMD INSTALL script/pkg/$(GUI_NAME)_$(GUI_VERSION).tar.gz -l script/lib
 	R CMD INSTALL script/pkg/$(TFL_NAME)_$(TFL_VERSION).tar.gz -l script/lib
 	
-update_server: /data/shiny-server/TFL\ generator/server.R /data/shiny-server/TFL\ generator/ui.R
+update_server: /data/shiny-server/TFL\ generator-ge0.9/server.R /data/shiny-server/TFL\ generator-ge0.9/ui.R
 	cp script/server.R script/ui.R /data/shiny-server/TFL\ generator-ge0.9/
 
 clean:
