@@ -1,7 +1,7 @@
 
 #rm(list=ls(all=TRUE))
 srcDir <- "/data/tflgenerator-ge0.9"
-debug <- FALSE
+debug <- TRUE
 
 # Define server logic required to summarize and view the selected dataset
 shinyServer(function(input, output, session) {
@@ -392,7 +392,7 @@ shinyServer(function(input, output, session) {
       item=this_item
       #Observe if any plots of that type have been assigned inputs
       observe(if(length(grep(paste("reset", item, sep=""), names(input)))>0){
-         
+        
         numbers=as.numeric(unlist(str_extract_all(input[[paste(item, "Num", sep="")]], "\\d+")))
         if(length(numbers)>1){numRange=numbers[which(numbers!=0)]}
         if(length(numbers)==1){numRange=c(0:numbers)}
@@ -403,58 +403,21 @@ shinyServer(function(input, output, session) {
             n=this_n
             if(n!=0){	
               observeEvent(input[[paste("button",item,n,sep="")]],{ 
-              #check if the defaults/inputs for a plot have been created
-              if(length(grep(paste(item, n,sep=""), names(input)))>0){
-                
-                ##Check to see if the input has changed since the last time it was rendered
-                idx=grep(paste(item,n,sep=""), names(Defaults), value=TRUE)
-                idn=grep(paste(item,n,sep=""), names(input), value=TRUE)
-                
-                #some values don't exist as inputs, for example the priors variable to check for priors
-                idtest=idx[idx %in% idn]
-                
-                #because of the reactive nature of 'input' comparisons have to be done one at a time
-                sameAsDefault=sum(sapply(idtest, function(X){input[[X]]==Defaults[X]}))/length(idtest)
-                
-                if(sameAsDefault!=1){
-              
-                  argList=createArgList(input, item, n, dataFile=dataFile())
-                  callType=argList$callType
-                  argList$callType=NULL
+                #check if the defaults/inputs for a plot have been created
+                if(length(grep(paste(item, n,sep=""), names(input)))>0){
                   
+                  ##Check to see if the input has changed since the last time it was rendered
+                  idx=grep(paste(item,n,sep=""), names(Defaults), value=TRUE)
+                  idn=grep(paste(item,n,sep=""), names(input), value=TRUE)
                   
-                  if(is.null(dataFile())){
-                    return()
-                  }
-                
-                  for(IDX in idx){
-                    Defaults[IDX]<<-input[[IDX]]
-                  }
-                  Defaults[paste("priorExists", item, n, sep="")]<<-TRUE
-               
-                  #insert an error block around the plotting
-                  p1 = tryCatch({
-                    if(debug) save(callType,argList,file=file.path(srcDir,"tmp","output.rda"))
-                    do.call(callType,args=argList)
-                  }, warning = function(w) {
-                    arrangeGrob(textGrob(sprintf("You broke something\n%s", w)),
-                                do.call(callType,args=argList),
-                                heights=c(0.05,1))
-                  }, error = function(e) {
-                    if(debug) save(callType,argList,file=file.path(srcDir,"tmp","error.rda"))
-                    arrangeGrob(textGrob(sprintf("You broke something\n%s", e)))
-                  }
-                  )
+                  #some values don't exist as inputs, for example the priors variable to check for priors
+                  idtest=idx[idx %in% idn]
                   
-                  #Perform the actual plotting
-                  output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
-                    print(p1)
-                  })					
-           
-              }
-                
-                observeEvent(input$outputGo,{
-                  if(input$saveAs!=""){
+                  #because of the reactive nature of 'input' comparisons have to be done one at a time
+                  sameAsDefault=sum(sapply(idtest, function(X){input[[X]]==Defaults[X]}))/length(idtest)
+                  
+                  if(sameAsDefault!=1){
+                    
                     argList=createArgList(input, item, n, dataFile=dataFile())
                     callType=argList$callType
                     argList$callType=NULL
@@ -480,96 +443,136 @@ shinyServer(function(input, output, session) {
                     }, error = function(e) {
                       if(debug) save(callType,argList,file=file.path(srcDir,"tmp","error.rda"))
                       arrangeGrob(textGrob(sprintf("You broke something\n%s", e)))
-                    })
+                    }
+                    )
                     
                     #Perform the actual plotting
                     output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
                       print(p1)
-                    }
-                    )					
+                    })					
                     
-                    
-                    #Create the save directory
-                    
-                    Dir=sprintf("%s/%s/%s_%s/", currentWD, input$runno, gsub("[[:space:]]|\\.", "_", input$projectTitle), Sys.Date())
-                    dir.create(Dir,showWarning=FALSE)
-                    fileHead=sprintf("%s%s_%s",Dir, input$saveAs, Sys.Date())
-                    cat(Dir)
-                    
-                    ###############
-                    #			Save plots and grobs, record the script
-                    ################			
-                    
-                    p1=do.call(callType, 
-                               args=argList
-                    )
-                    
-                    p1csv=data.frame(1)
-                    #correct for tables
-                    if(callType %in% c("listofCallTypesTables")){
-                      p1csv=p1
-                      p1=tableGrob()					
-                    }
-                    
-                    
-                    p1List=list(Facets=ifelse("facetBy" %in% names(argList), argList$facetBy, ""),
-                                Marks=ifelse("markBy" %in% names(argList), argList$markBy, ""),
-                                Groups=ifelse("groupBy" %in% names(argList), argList$groupBy, ""),
-                                Stratification="",
-                                LegendTitle=ifelse(paste("LegendTitle", item, n, sep="") %in% names(input), input[[paste("LegendTitle", item, n, sep="")]], ""),
-                                Legend=ifelse(paste("Legend", item, n, sep="") %in% names(input), input[[paste("Legend", item, n, sep="")]], ""),
-                                Plot=p1,
-                                CSV=p1csv
-                    )
-                    p1Name=paste(item,n, sep="")
-                    if(input$PNG){
-                      savePlots(plotName=p1,  directory=Dir, saveName=paste(item,n, sep=""))
-                    }
-                    saveGrob(plot=p1List, Name=p1Name, file=sprintf("%s_Grobs.R", fileHead))
-                    
-                    #Insert function recording into script	
-                    #Save only the non-default arguments unless the user asks for a verbose script
-                    
-                    useArgs=argList
-                    if(input$verbose){useArgs=argListComplete}
-                    
-                    #reduce argList to arguments used in the dataManip
-                    argListManip=argList[names(argList) %in% names(formals(manipDat))]
-                    
-                    #reduce argList to non-default arguments 
-                    for(this_name in names(argListManip)){
-                      if(this_name!="datFile"){
-                        if(is.null(argListManip[[this_name]]) & is.null(formals(manipDat)[[this_name]])){
-                          argListManip=argListManip[names(argListManip)[names(argListManip)!=this_name]]
-                        }
-                        if(!is.null(argListManip[[this_name]]) & !is.null(formals(manipDat)[[this_name]]) ){
-                          if(all(argListManip[[this_name]]==formals(manipDat)[[this_name]])){	
-                            argListManip=argListManip[names(argListManip)[names(argListManip)!=this_name]]		
-                          }
-                        }	
+                  }
+                  
+                  observeEvent(input$outputGo,{
+                    if(input$saveAs!=""){
+                      argList=createArgList(input, item, n, dataFile=dataFile())
+                      callType=argList$callType
+                      argList$callType=NULL
+                      
+                      
+                      if(is.null(dataFile())){
+                        return()
                       }
-                    }
-                    
-                    #Keep a recording of the complete list <-this is only used to write out the complete argument list in the verbose script
-                    argListComplete=formals(callType)
-                    argListComplete$"..."=NULL
-                    for(listName in names(argList)){
-                      argListComplete[[listName]]=argList[[listName]]
-                    }
-                    
-                    recordGUI(doWhat=callType, 
-                              toWhat=useArgs,
-                              input=input,
-                              number=n,
-                              manipArgs=argListManip
-                    )
-                    
-                    
-                  }	
-                })     
-             
-                
-              }
+                      
+                      for(IDX in idx){
+                        Defaults[IDX]<<-input[[IDX]]
+                      }
+                      Defaults[paste("priorExists", item, n, sep="")]<<-TRUE
+                      
+                      #insert an error block around the plotting
+                      p1 = tryCatch({
+                        if(debug) save(callType,argList,file=file.path(srcDir,"tmp","output.rda"))
+                        do.call(callType,args=argList)
+                      }, warning = function(w) {
+                        arrangeGrob(textGrob(sprintf("You broke something\n%s", w)),
+                                    do.call(callType,args=argList),
+                                    heights=c(0.05,1))
+                      }, error = function(e) {
+                        if(debug) save(callType,argList,file=file.path(srcDir,"tmp","error.rda"))
+                        arrangeGrob(textGrob(sprintf("You broke something\n%s", e)))
+                      })
+                      
+                      #Perform the actual plotting
+                      output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
+                        print(p1)
+                      }
+                      )					
+                      
+                      
+                      #Create the save directory
+                      
+                      Dir=sprintf("%s/%s/%s_%s/", currentWD, input$runno, gsub("[[:space:]]|\\.", "_", input$projectTitle), Sys.Date())
+                      
+                      
+                      dir.create(Dir,showWarning=FALSE)
+                      fileHead=sprintf("%s%s_%s",Dir, input$saveAs, Sys.Date())
+                      cat(Dir)
+                      
+                      if(debug) save(Dir,fileHead,file=file.path(srcDir,"tmp","savedir.rda"))
+                      ###############
+                      #			Save plots and grobs, record the script
+                      ################			
+                      
+                      p1=do.call(callType, 
+                                 args=argList
+                      )
+                      
+                      p1csv=data.frame(1)
+                      #correct for tables
+                      if(callType %in% c("listofCallTypesTables")){
+                        p1csv=p1
+                        p1=tableGrob()					
+                      }
+                      
+                      
+                      p1List=list(Facets=ifelse("facetBy" %in% names(argList), argList$facetBy, ""),
+                                  Marks=ifelse("markBy" %in% names(argList), argList$markBy, ""),
+                                  Groups=ifelse("groupBy" %in% names(argList), argList$groupBy, ""),
+                                  Stratification="",
+                                  LegendTitle=ifelse(paste("LegendTitle", item, n, sep="") %in% names(input), input[[paste("LegendTitle", item, n, sep="")]], ""),
+                                  Legend=ifelse(paste("Legend", item, n, sep="") %in% names(input), input[[paste("Legend", item, n, sep="")]], ""),
+                                  Plot=p1,
+                                  CSV=p1csv
+                      )
+                      p1Name=paste(item,n, sep="")
+                      if(input$PNG){
+                        savePlots(plotName=p1,  directory=Dir, saveName=paste(item,n, sep=""))
+                      }
+                      saveGrob(plot=p1List, Name=p1Name, file=sprintf("%s_Grobs.rda", fileHead))
+                      
+                      #Insert function recording into script	
+                      #Save only the non-default arguments unless the user asks for a verbose script
+                      
+                      useArgs=argList
+                      if(input$verbose){useArgs=argListComplete}
+                      
+                      #reduce argList to arguments used in the dataManip
+                      argListManip=argList[names(argList) %in% names(formals(manipDat))]
+                      
+                      #reduce argList to non-default arguments 
+                      for(this_name in names(argListManip)){
+                        if(this_name!="datFile"){
+                          if(is.null(argListManip[[this_name]]) & is.null(formals(manipDat)[[this_name]])){
+                            argListManip=argListManip[names(argListManip)[names(argListManip)!=this_name]]
+                          }
+                          if(!is.null(argListManip[[this_name]]) & !is.null(formals(manipDat)[[this_name]]) ){
+                            if(all(argListManip[[this_name]]==formals(manipDat)[[this_name]])){	
+                              argListManip=argListManip[names(argListManip)[names(argListManip)!=this_name]]		
+                            }
+                          }	
+                        }
+                      }
+                      
+                      #Keep a recording of the complete list <-this is only used to write out the complete argument list in the verbose script
+                      argListComplete=formals(callType)
+                      argListComplete$"..."=NULL
+                      for(listName in names(argList)){
+                        argListComplete[[listName]]=argList[[listName]]
+                      }
+                      
+                      recordGUI(doWhat=callType, 
+                                toWhat=useArgs,
+                                input=input,
+                                number=n,
+                                manipArgs=argListManip
+                      )
+                      
+                      
+                    }	
+                  })     
+                  
+                  
+                }
               }) #end observeEvent for button handling
             }#end if(n!=0)
             #end obsever generatePlot
@@ -577,12 +580,12 @@ shinyServer(function(input, output, session) {
           }) #end local for this_n
           
         } #end for this_n loop
-     
+        
       }) #end observe DV							
     }) #end local for this_item
     
   }	 #end for this_item loop
-
+  
   observeEvent(input$outputGo,{  
       observe(if(input$RTF & input$saveAs!="" ){
         
@@ -616,24 +619,24 @@ shinyServer(function(input, output, session) {
        })
 
   
-#Output and Saving Tabset  
+  #Output and Saving Tabset  
+  
+  output$SaveTabset<-renderUI({
     
-output$SaveTabset<-renderUI({
-  
-                   wellPanel(
-                            checkboxInput("PNG", "Record *.pngs", Defaults$PNG),
-                            checkboxInput("RTF", "Construct *.Doc", Defaults$RTF),
-                            checkboxInput("verbose", "Reveal Function Text?", Defaults$verbose),
-                             textInput("saveAs", "File Name", Defaults$saveAs),
-                             actionButton("outputGo", "Save"),
-                             h1(),
-                             textInput("saveTemplateAs", "Template Name", Defaults$saveTemplateAs),
-                             actionButton("newTemplateGo", "Save")
-                            
-                             )
-                   
-  
-  
-})
-#End Shiny Server
+    wellPanel(
+      checkboxInput("PNG", "Record *.pngs", Defaults$PNG),
+      checkboxInput("RTF", "Construct *.Doc", Defaults$RTF),
+      checkboxInput("verbose", "Reveal Function Text?", Defaults$verbose),
+      textInput("saveAs", "File Name", Defaults$saveAs),
+      actionButton("outputGo", "Save"),
+      h1(),
+      textInput("saveTemplateAs", "Template Name", Defaults$saveTemplateAs),
+      actionButton("newTemplateGo", "Save")
+      
+    )
+    
+    
+    
+  })
+  #End Shiny Server
 })
