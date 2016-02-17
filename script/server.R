@@ -92,7 +92,7 @@ shinyServer(function(input, output, session) {
             dat=dat[rowSums(is.na(dat)) != ncol(dat),]
             dat$V1=NULL
             }	
-  }
+    }
     
     dat=data.frame(dat, stringsAsFactors=TRUE)
     names(dat)[which(names(dat)==input[["DVCol"]])]="DV"
