@@ -9,6 +9,7 @@ shinyServer(function(input, output, session) {
   unlockBinding("tabList", as.environment("package:GUI"))
   tabList<<-tabList()
   plotList$sidebarType <- c("Figures","Figures","Tables","Figures","Figures","Figures","Figures","Figures","Figures","Tables","Figures","Tables")
+  workingDirectory <- Defaults$dataPath
   
   #Open Template
   
@@ -48,50 +49,96 @@ shinyServer(function(input, output, session) {
   )
   
 
+  shinyDirChoose(input, id="dataPath", session=session, roots=c(NMStorage="/data/tflgenerator-ge0.9/NMStorage"))
+  output$dataPath <- renderText({parseDirPath(roots=c(NMStorage="/data/tflgenerator-ge0.9/NMStorage"),input$dataPath)})
+
+ observe(
+   if("dataPath" %nin% names(input)){
+     currentWD <<- Defaults$dataPath
+   }else currentWD <- workingDirectory <- parseDirPath(roots=c(NMStorage=Defaults$dataPath),input$dataPath)
+ )
+
+#    currentWD <- reactive(
+#    if("dataPath" %nin% names(input)){
+#      return(Defaults$dataPath)
+#    }else{
+#     workingDirectory <- parseDirPath(roots=c(NMStorage=Defaults$dataPath),input$dataPath)
+#     return(workingDirectory)
+#    }
+#  )
+
+  readThis <- reactive(
+    list(
+      runno=input$runno,
+      srcData=input$srcData,
+      ext=input$ext,
+      currentWD=try(currentWD),
+      header=input$header,
+      skipLines=input$skipLines
+    ))
+  output$readThis <- renderPrint({readThis()})
   
+  
+
   ##############	
   #Initial/external interactions
   ##############
   
+#  input <- list()
+#  input$runno <- "#"
+#  input$srcData <- "idx_tst_pool_pkf1_cw_mod28_3cwnh_pp_cw50z1b1_3.csv"
+#  input$ext <- ".tab"
+#  input$header <- TRUE
+#  input$skipLines <- 1
+#  currentWD <- file.path(srcDir,"NMStorage)  
+  
   #read data in a reactive format
   dataFile=reactive({
-
-    if(input$dataPath %in% c("Defaults to Working Directory", "", " ")){
-      currentWD<<-workingDirectory
-    }
     
     
-    if(input$dataPath %nin% c("Defaults to Working Directory", "", " ")){
-      currentWD<<-input$dataPath
-    }
-    
-    if(input$runno=="#"){
+    if(input$runno=="#" & input$srcData=="sourcedata.csv"){
       return()
     }
-    
-    
-    extensions=unlist(str_split(input$ext, ","))
-    extensions=gsub("[[:space:]]*", "", extensions)
-    
-    runs=input$runno
-    runs=unlist(str_split(input$runno, ","))
-    runs=gsub("[[:space:]]*", "", runs)
-    
-    dat=matrix()
-    for(irun in runs) {
-          for(iext in extensions){
-            ext=iext
-            fileName=sprintf("%s/%s/%s%s", currentWD, irun, irun, ext)
-                if(!file.exists(fileName)){
-                  warning(paste(fileName, 'does not exist'))
-                  return()
-                }			
-            foo=read.table(fileName, header=input$header, skip=input$skipLines, stringsAsFactors=F, fill=TRUE)
-            foo$Run=irun
-            dat=merge(dat, foo, all=TRUE)
-            dat=dat[rowSums(is.na(dat)) != ncol(dat),]
-            dat$V1=NULL
-            }	
+      
+      
+    if(input$runno!="#"){
+      extensions=unlist(str_split(input$ext, ","))
+      extensions=gsub("[[:space:]]*", "", extensions)
+      
+      runs=input$runno
+      runs=unlist(str_split(input$runno, ","))
+      runs=gsub("[[:space:]]*", "", runs)
+      
+      
+      dat=matrix()
+      for(irun in runs) {
+        for(iext in extensions){
+          ext=iext
+          fileName=sprintf("%s/%s/%s%s", currentWD, irun, irun, ext)
+          if(!file.exists(fileName)){
+            warning(paste(fileName, 'does not exist'))
+            return()
+          }			
+          foo=read.table(fileName, header=input$header, skip=input$skipLines, stringsAsFactors=F, fill=TRUE)
+          foo$Run=irun
+          dat=merge(dat, foo, all=TRUE)
+          dat=dat[rowSums(is.na(dat)) != ncol(dat),]
+          dat$V1=NULL
+        }	
+      }      
+    }
+      
+    if(input$srcData %nin% c("", " ", "sourcedata.csv")){
+      #       if(debug) save(input$srcData, currentWD, file=file.path(srcDir,"tmp","srcData.rda"))
+      srcDatFile=sprintf("%s/%s", currentWD, input$srcData)
+      # if(debug) save(srcDatFile,file=file.path(srcDir,"tmp","srcDatFile.rda"))
+      if(!file.exists(srcDatFile)){
+        warning(paste(srcDatFile, 'does not exist'))
+        return()
+      }			
+      foo=read.csv(srcDatFile, stringsAsFactors=F, fill=TRUE)
+      if(exists("dat")) dat=merge(foo, dat, all=TRUE) else dat <- foo
+      dat=dat[rowSums(is.na(dat)) != ncol(dat),]
     }
     
     dat=data.frame(dat, stringsAsFactors=TRUE)
@@ -155,19 +202,15 @@ shinyServer(function(input, output, session) {
    
   #Raw Contents
   output$contentsHead <- DT::renderDataTable({
-    if("runno" %in% names(input)){	
-      if (input$runno=="#") {
+    if("runno" %nin% names(input)){
         return()
       }
       if(is.null(dataFile())){
         return()
       }
-    }
     return(head(dataFile(), n = 20))
   })
   
-  
- 
   
   #Raw Contents
   output$contentsSummary <- DT::renderDataTable({
@@ -246,9 +289,10 @@ shinyServer(function(input, output, session) {
                       ),
              tabPanel(title="Model Info",
                       wellPanel(
-                        textInput(inputId="dataPath", label="Data Path:", value=Defaults$dataPath),	
-                        textInput(inputId="numModel", label="Number of Models", value="1"),
+                        #textInput(inputId="dataPath", label="Data Path:", value=Defaults$dataPath),	
+                        textInput(inputId="srcData", label='NONMEM source data:',value=Defaults$srcData),
                         textInput(inputId="runno", label="Run Numbers:", value=Defaults$runno),
+                        textInput(inputId="numModel", label="Number of Models", value="1"),
                         textInput(inputId="ext", label="File Extension:", value=Defaults$ext),
                         checkboxInput('header', 'Header?', value=Defaults$header),
                         numericInput("skipLines", "Skip Lines:", value=Defaults$skipLines),

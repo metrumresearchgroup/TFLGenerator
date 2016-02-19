@@ -24,7 +24,9 @@ library(DT)
       	      fileInput(inputId="templatePath", label="Select Personal Template", multiple=FALSE),
       	      h1(""),
       	      actionButton("templateGo", "Go"),
-      	      h2(""),
+      	      h1(""),
+      	      shinyDirButton(id="dataPath", label='Set working directory', title='Please select a working directory'),
+      	      h1(""),
       	      menuItem(text="The Amgen TFL Generator", tabName = "tabIntro", icon=icon("clock")),
       	      menuItem(text="Data Input", tabName="tabDataInput", icon=icon("sliders")),
       	      menuItem(text="Data", tabName="tabData", icon=icon("database")),
@@ -40,7 +42,13 @@ library(DT)
       	dashboardBody(
       	  tabItems(
       	    tabItem(tabName="tabIntro",
-      	            h3("Intro, help, and link to how-to files")
+      	            h1("Intro/session info, help, and link to how-to files"),
+      	            h1(""),
+      	            h2("Working directory:"),
+      	            code(textOutput("dataPath")),
+      	            h1(""),
+      	            h2("Input names:"),
+      	            code(textOutput("readThis"))
       	    ),
       	    tabItem(tabName="tabDataInput",
       	            h3("Data Input"),

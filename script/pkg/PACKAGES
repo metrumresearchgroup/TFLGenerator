@@ -16,11 +16,11 @@ MD5sum: bcbffd84a796a969b5445e1c86fd6273
 NeedsCompilation: no
 
 Package: gridExtra
-Version: 2.0.0
-Imports: gtable, grid, grDevices, graphics, utils
-Suggests: ggplot2, lattice, knitr, testthat
+Version: 0.9
+Depends: R(>= 2.4.0), grid
+Suggests: RGraphics, pixmap, EBImage, ggplot2, lattice
 License: GPL (>= 2)
-MD5sum: 3b0e127f52c3ea2996d10f5f51a476ac
+MD5sum: fd6a6503977c9e22d90334b3a4de0c35
 NeedsCompilation: no
 
 Package: gtools
@@ -31,10 +31,10 @@ MD5sum: 45f8800c0336d35046641fbacc56bdbb
 NeedsCompilation: yes
 
 Package: GUI
-Version: 1.0
+Version: 1.0.01
 Depends: R (>= 1.8.0), grid, gridExtra, ggplot2, gdata, boot, plyr, stringr, scales, Hmisc,
-           shinydashboard, shinyFiles, DT, reshape2, rtf, metrumrg
-MD5sum: eb1f57146b095fccf204360e24cfee12
+          shinydashboard, shinyFiles, DT, reshape2, rtf, metrumrg
+MD5sum: 6455bd7e0e9fa39802fffc9c9f52c740
 NeedsCompilation: no
 
 Package: htmlwidgets
@@ -111,9 +111,9 @@ MD5sum: 98dabc2ee70ac32a12e180dd227c01d3
 NeedsCompilation: no
 
 Package: TFL
-Version: 1.0
-Depends: R (>= 1.8.0),reshape, grid, gridExtra, ggplot2, gdata, boot, plyr, stringr, scales, Hmisc,
-           reshape2, rtf
-MD5sum: c3bd648fc62dfe6bf210ce05c7c24a71
+Version: 1.0.01
+Depends: R (>= 1.8.0),reshape, grid, gridExtra, ggplot2, gdata, boot, plyr, stringr, scales,
+          Hmisc, reshape2, rtf
+MD5sum: bd4c13cde14c254c6b555ef3d2fca0bf
 NeedsCompilation: no
 

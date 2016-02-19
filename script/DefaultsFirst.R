@@ -21,6 +21,7 @@ DefaultsFirst <- list(
       projectTitle =                      "AMG NO" ,
        projectInfo =                            "" ,
           dataPath =              "/data/tflgenerator-ge0.9/NMStorage",
+          srcData =                "sourcedata.csv",
              runno =                            "#" ,
                ext =                        ".tab" ,
             header =                          TRUE ,
