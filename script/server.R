@@ -52,27 +52,21 @@ shinyServer(function(input, output, session) {
   shinyDirChoose(input, id="dataPath", session=session, roots=c(NMStorage="/data/tflgenerator-ge0.9/NMStorage"))
   output$dataPath <- renderText({parseDirPath(roots=c(NMStorage="/data/tflgenerator-ge0.9/NMStorage"),input$dataPath)})
 
- observe(
+   currentWD <- reactive(
    if("dataPath" %nin% names(input)){
-     currentWD <<- Defaults$dataPath
-   }else currentWD <- workingDirectory <- parseDirPath(roots=c(NMStorage=Defaults$dataPath),input$dataPath)
- )
-
-#    currentWD <- reactive(
-#    if("dataPath" %nin% names(input)){
-#      return(Defaults$dataPath)
-#    }else{
-#     workingDirectory <- parseDirPath(roots=c(NMStorage=Defaults$dataPath),input$dataPath)
-#     return(workingDirectory)
-#    }
-#  )
+     return(Defaults$dataPath)
+   }else{
+    workingDirectory <- parseDirPath(roots=c(NMStorage=Defaults$dataPath),input$dataPath)
+    return(workingDirectory)
+   }
+   )
 
   readThis <- reactive(
     list(
       runno=input$runno,
       srcData=input$srcData,
       ext=input$ext,
-      currentWD=try(currentWD),
+      currentWD=currentWD(),
       header=input$header,
       skipLines=input$skipLines
     ))
@@ -114,7 +108,7 @@ shinyServer(function(input, output, session) {
       for(irun in runs) {
         for(iext in extensions){
           ext=iext
-          fileName=sprintf("%s/%s/%s%s", currentWD, irun, irun, ext)
+          fileName=sprintf("%s/%s/%s%s", currentWD(), irun, irun, ext)
           if(!file.exists(fileName)){
             warning(paste(fileName, 'does not exist'))
             return()
@@ -130,7 +124,7 @@ shinyServer(function(input, output, session) {
       
     if(input$srcData %nin% c("", " ", "sourcedata.csv")){
       #       if(debug) save(input$srcData, currentWD, file=file.path(srcDir,"tmp","srcData.rda"))
-      srcDatFile=sprintf("%s/%s", currentWD, input$srcData)
+      srcDatFile=sprintf("%s/%s", currentWD(), input$srcData)
       # if(debug) save(srcDatFile,file=file.path(srcDir,"tmp","srcDatFile.rda"))
       if(!file.exists(srcDatFile)){
         warning(paste(srcDatFile, 'does not exist'))
@@ -215,7 +209,7 @@ shinyServer(function(input, output, session) {
   #Raw Contents
   output$contentsSummary <- DT::renderDataTable({
     if("runno" %in% names(input)){	
-      if (input$runno=="#") {
+      if (input$runno=="#" & input$srcData=="sourcedata.csv") {
         return()
       }
       if(is.null(dataFile())){
@@ -243,7 +237,7 @@ shinyServer(function(input, output, session) {
   
   output$contentsStat <- DT::renderDataTable({
     if("runno" %in% names(input)){	
-      if (input$runno=="#") {
+      if (input$runno=="#" & input$srcData=="sourcedata.csv") {
         return()
       }
       if(is.null(dataFile())){
@@ -535,7 +529,7 @@ shinyServer(function(input, output, session) {
                       
                       #Create the save directory
                       
-                      Dir=sprintf("%s/%s/%s_%s/", currentWD, input$runno, gsub("[[:space:]]|\\.", "_", input$projectTitle), Sys.Date())
+                      Dir=sprintf("%s/%s/%s_%s/", currentWD(), input$runno, gsub("[[:space:]]|\\.", "_", input$projectTitle), Sys.Date())
                       
                       
                       dir.create(Dir,showWarning=FALSE)
@@ -636,7 +630,7 @@ shinyServer(function(input, output, session) {
         ###############			
         #			make a document
         ###############	
-        Dir=sprintf("%s/%s/%s_%s/", currentWD, input$runno, gsub("[[:space:]]|\\.", "_", input$projectTitle), Sys.Date())
+        Dir=sprintf("%s/%s/%s_%s/", currentWD(), input$runno, gsub("[[:space:]]|\\.", "_", input$projectTitle), Sys.Date())
         dir.create(Dir,showWarning=FALSE)
         fileHead=sprintf("%s%s_%s",Dir, input$saveAs, Sys.Date())
         grobFile=sprintf("%s_Grobs.R", fileHead)
