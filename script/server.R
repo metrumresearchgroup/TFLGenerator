@@ -137,7 +137,7 @@ shinyServer(function(input, output, session) {
         warning(paste(srcDatFile, 'does not exist'))
         return()
       }			
-      foo=read.csv(srcDatFile, stringsAsFactors=F, fill=TRUE)
+      foo=as.best(read.csv(srcDatFile, stringsAsFactors=F, fill=TRUE))
       if(exists("dat")) dat=merge(foo, dat, all=TRUE) else dat <- foo
       dat=dat[rowSums(is.na(dat)) != ncol(dat),]
     }
