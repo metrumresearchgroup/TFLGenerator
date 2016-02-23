@@ -68,7 +68,9 @@ shinyServer(function(input, output, session) {
       ext=input$ext,
       currentWD=currentWD(),
       header=input$header,
-      skipLines=input$skipLines
+      skipLines=input$skipLines,
+      dataLimits=input[["dataLimits"]],
+      dataTrans=input[["dataTrans"]]
     ))
   output$readThis <- renderPrint({readThis()})
   
@@ -79,12 +81,19 @@ shinyServer(function(input, output, session) {
   ##############
   
 #  input <- list()
-#  input$runno <- "#"
-#  input$srcData <- "idx_tst_pool_pkf1_cw_mod28_3cwnh_pp_cw50z1b1_3.csv"
+#  input$runno <- "0069"
+#  # input$srcData <- "idx_tst_pool_pkf1_cw_mod28_3cwnh_pp_cw50z1b1_3.csv"
+#  # input$srcData <- "0069/fakeSource.csv"
 #  input$ext <- ".tab"
 #  input$header <- TRUE
 #  input$skipLines <- 1
-#  currentWD <- file.path(srcDir,"NMStorage)  
+#  currentWD <- function() file.path(srcDir,"NMStorage")  
+#  input[["DVCol"]]="DV"
+#  input[["TAFDCol"]]="TIME"
+#  input[["STUDCol"]]="STUD"
+#  input[["NMIDCol"]]="ID"
+#  input[["dataLimits"]] = ""
+#  input[["dataTrans"]] = ""
   
   #read data in a reactive format
   dataFile=reactive({
@@ -123,9 +132,7 @@ shinyServer(function(input, output, session) {
     }
       
     if(input$srcData %nin% c("", " ", "sourcedata.csv")){
-      #       if(debug) save(input$srcData, currentWD, file=file.path(srcDir,"tmp","srcData.rda"))
       srcDatFile=sprintf("%s/%s", currentWD(), input$srcData)
-      # if(debug) save(srcDatFile,file=file.path(srcDir,"tmp","srcDatFile.rda"))
       if(!file.exists(srcDatFile)){
         warning(paste(srcDatFile, 'does not exist'))
         return()
@@ -140,6 +147,7 @@ shinyServer(function(input, output, session) {
     names(dat)[which(names(dat)==input[["TAFDCol"]])]="TAFD"
     names(dat)[which(names(dat)==input[["STUDCol"]])]="STUD"
     names(dat)[which(names(dat)==input[["NMIDCol"]])]="NMID"
+    dat <- dat[order(dat$STUD,dat$NMID,dat$TAFD),]
     
     #rename columns
     rename=ifelse("renameThese" %in% names(input), input[["renameThese"]], "")
@@ -392,6 +400,7 @@ shinyServer(function(input, output, session) {
     return(do.call(tabsetPanel, PanelSet))
 
   })
+  
   output$listingsTabset<-renderUI({
     
     # plotList$sidebarType=c("Figures","Figures","Tables","Figures","Figures","Figures","Figures","Figures","Figures","Figures", "Tables", "Tables")
@@ -424,7 +433,7 @@ shinyServer(function(input, output, session) {
   ############
   #Generating Plots, internal and saving
   ############
-  
+
   for (this_item in plotList$type){
     local({
       item=this_item
@@ -441,22 +450,54 @@ shinyServer(function(input, output, session) {
             n=this_n
             if(n!=0){	
               observeEvent(input[[paste("button",item,n,sep="")]],{ 
+                if(debug){
+                  message <- "DEBUG A"
+                  input_nms <- names(input)
+                  input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
+                  names(input_vals) <- input_nms
+                  save(message, input_vals,n,file=file.path(srcDir,"tmp","message.rda"))
+                } 
                 #check if the defaults/inputs for a plot have been created
                 if(length(grep(paste(item, n,sep=""), names(input)))>0){
+
+                  if(debug){
+                    message <- "DEBUG AA"
+                    save(message,file=file.path(srcDir,"tmp","message.rda"))
+                  }                     
                   
                   ##Check to see if the input has changed since the last time it was rendered
                   idx=grep(paste(item,n,sep=""), names(Defaults), value=TRUE)
                   idn=grep(paste(item,n,sep=""), names(input), value=TRUE)
                   
+                  if(debug){
+                    message <- "DEBUG AAA"
+                    save(message,idx,idn,Defaults,file=file.path(srcDir,"tmp","message.rda"))
+                  }                     
+          
+                  
                   #some values don't exist as inputs, for example the priors variable to check for priors
                   idtest=idx[idx %in% idn]
                   
                   #because of the reactive nature of 'input' comparisons have to be done one at a time
-                  sameAsDefault=sum(sapply(idtest, function(X){input[[X]]==Defaults[X]}))/length(idtest)
+                  if(length(idtest)>0){
+                    sameAsDefault=sum(sapply(idtest, function(X){input[[X]]==Defaults[X]}))/length(idtest)
+                  }
+                  
+                  if(debug){
+                    message <- "DEBUG AAAA"
+                    save(message,idx,idn,Defaults,sameAsDefault,
+                         file=file.path(srcDir,"tmp","message.rda"))
+                  }
                   
                   if(sameAsDefault!=1){
+                    argList=try(createArgList(input, item, n, dataFile=dataFile(), currentWD=currentWD()))
                     
-                    argList=createArgList(input, item, n, dataFile=dataFile())
+                    if(debug){
+                      message <- "DEBUG B"
+                      save(message,argList, file=file.path(srcDir,"tmp","message.rda"))
+                    } 
+                    
+                    
                     callType=argList$callType
                     argList$callType=NULL
                     
@@ -465,11 +506,19 @@ shinyServer(function(input, output, session) {
                       return()
                     }
                     
-                    for(IDX in idx){
-                      Defaults[IDX]<<-input[[IDX]]
+                    if(length(idx)>0){
+                      for(IDX in idx){
+                        Defaults[IDX]<<-input[[IDX]]
+                      }
                     }
                     Defaults[paste("priorExists", item, n, sep="")]<<-TRUE
-                    
+
+                    if(debug){
+                      message <- "DEBUG C"
+                      save(message,file=file.path(srcDir,"tmp","message.rda"))
+                    } 
+                  
+                                      
                     #insert an error block around the plotting
                     p1 = tryCatch({
                       if(debug) save(callType,argList,file=file.path(srcDir,"tmp","output.rda"))
@@ -484,15 +533,31 @@ shinyServer(function(input, output, session) {
                     }
                     )
                     
+                    if(debug){
+                      message <- "DEBUG D"
+                      save(message,file=file.path(srcDir,"tmp","message.rda"))
+                    } 
+                    
+                    
                     #Perform the actual plotting
                     output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
                       print(p1)
                     })					
                     
+                    if(debug){
+                      message <- "DEBUG E"
+                      save(message,file=file.path(srcDir,"tmp","message.rda"))
+                    } 
+                    
+                    
                   }
                   
                   observeEvent(input$outputGo,{
                     if(input$saveAs!=""){
+                      if(debug){
+                        message <- "DEBUG F"
+                        save(message,file=file.path(srcDir,"tmp","message.rda"))
+                      }
                       argList=createArgList(input, item, n, dataFile=dataFile())
                       callType=argList$callType
                       argList$callType=NULL
@@ -602,7 +667,8 @@ shinyServer(function(input, output, session) {
                                 toWhat=useArgs,
                                 input=input,
                                 number=n,
-                                manipArgs=argListManip
+                                manipArgs=argListManip,
+                                currentWD=currentWD()
                       )
                       
                       
@@ -652,7 +718,7 @@ shinyServer(function(input, output, session) {
              "recall"))
              {Defaults[[item]]<<-input[[item]]}
          }
-         recordInput(input=input,Defaults=Defaults)
+         recordInput(input=input,Defaults=Defaults,currentWD=currentWD())
      }
        })
 
