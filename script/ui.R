@@ -43,6 +43,9 @@ library(DT)
       	  tabItems(
       	    tabItem(tabName="tabIntro",
       	            h1("Intro/session info, help, and link to how-to files"),
+      	            h2(""),
+      	            h2("Google drive doc with demo instructions:",
+      	               a("Link",href="https://docs.google.com/document/d/1sGwrTt_rr2gX0X8Ifgaj1VcFWZkY4-Xo4FF4flzWkt8/edit?usp=sharing")),
       	            h1(""),
       	            h2("Working directory:"),
       	            code(textOutput("dataPath")),
