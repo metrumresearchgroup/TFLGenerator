@@ -1,6 +1,7 @@
 
 #rm(list=ls(all=TRUE))
 srcDir <- "/data/tflgenerator-ge0.9"
+root <- "/data/tflgenerator-ge0.9/NMStorage" # shinyFiles requires starting point for browser
 debug <- TRUE
 
 # Define server logic required to summarize and view the selected dataset
@@ -9,8 +10,7 @@ shinyServer(function(input, output, session) {
   unlockBinding("tabList", as.environment("package:GUI"))
   tabList<<-tabList()
   plotList$sidebarType <- c("Figures","Figures","Tables","Figures","Figures","Figures","Figures","Figures","Figures","Tables","Figures","Tables")
-  workingDirectory <- Defaults$dataPath
-  
+
   #Open Template
   
   
@@ -49,29 +49,33 @@ shinyServer(function(input, output, session) {
   )
   
 
-  shinyDirChoose(input, id="dataPath", session=session, roots=c(NMStorage="/data/tflgenerator-ge0.9/NMStorage"))
-  output$dataPath <- renderText({parseDirPath(roots=c(NMStorage="/data/tflgenerator-ge0.9/NMStorage"),input$dataPath)})
+  shinyDirChoose(input, id="dataPath", session=session, roots=c(NMStorage=root))
+  output$dataPath <- renderText({parseDirPath(roots=c(NMStorage=root),input$dataPath)})
 
-   currentWD <- reactive(
-   if("dataPath" %nin% names(input)){
-     return(Defaults$dataPath)
-   }else{
-    workingDirectory <- parseDirPath(roots=c(NMStorage=Defaults$dataPath),input$dataPath)
-    return(workingDirectory)
-   }
-   )
+  currentWD <- reactive(
+    if("dataPath" %nin% names(input)){
+      return(Defaults$dataPath)
+    }else{
+      workingDirectory <- parseDirPath(roots=c(NMStorage=root),input$dataPath)
+      return(workingDirectory)
+    }
+  )
 
-  readThis <- reactive(
+  readThis <- reactive({
     list(
       runno=input$runno,
       srcData=input$srcData,
       ext=input$ext,
       currentWD=currentWD(),
+      templatePath_name=input$templatePath$name,
+      templatePath_datapath=input$templatePath$datapath,
       header=input$header,
       skipLines=input$skipLines,
       dataLimits=input[["dataLimits"]],
       dataTrans=input[["dataTrans"]]
-    ))
+    )
+    })
+  
   output$readThis <- renderPrint({readThis()})
   
   
@@ -550,7 +554,7 @@ shinyServer(function(input, output, session) {
                     } 
                     
                     
-                  }
+                  } # End sameAsDefault!=1
                   
                   observeEvent(input$outputGo,{
                     if(input$saveAs!=""){
@@ -594,14 +598,19 @@ shinyServer(function(input, output, session) {
                       
                       #Create the save directory
                       
-                      Dir=sprintf("%s/%s/%s_%s/", currentWD(), input$runno, gsub("[[:space:]]|\\.", "_", input$projectTitle), Sys.Date())
+                      Dir=sprintf("%s/%s_%s/", currentWD(), gsub("[[:space:]]|\\.", "_", input$projectTitle), Sys.Date())
                       
+                      
+                      fileHead=sprintf("%s%s_%s",Dir, input$saveAs, Sys.Date())
+                      # cat(Dir)
+                      
+                      if(debug){
+                        message="DEBUG G"
+                        saveAs <- input$saveAs
+                        save(message,item,Dir,fileHead,callType, argList, saveAs, file=file.path(srcDir,"tmp","savedir.rda"))
+                      }  
                       
                       dir.create(Dir,showWarning=FALSE)
-                      fileHead=sprintf("%s%s_%s",Dir, input$saveAs, Sys.Date())
-                      cat(Dir)
-                      
-                      if(debug) save(Dir,fileHead,file=file.path(srcDir,"tmp","savedir.rda"))
                       ###############
                       #			Save plots and grobs, record the script
                       ################			
@@ -673,7 +682,7 @@ shinyServer(function(input, output, session) {
                       
                       
                     }	
-                  })     
+                  })   # End "OutputGo"  
                   
                   
                 }
@@ -696,7 +705,7 @@ shinyServer(function(input, output, session) {
         ###############			
         #			make a document
         ###############	
-        Dir=sprintf("%s/%s/%s_%s/", currentWD(), input$runno, gsub("[[:space:]]|\\.", "_", input$projectTitle), Sys.Date())
+        Dir=sprintf("%s/%s_%s/", currentWD(), gsub("[[:space:]]|\\.", "_", input$projectTitle), Sys.Date())
         dir.create(Dir,showWarning=FALSE)
         fileHead=sprintf("%s%s_%s",Dir, input$saveAs, Sys.Date())
         grobFile=sprintf("%s_Grobs.R", fileHead)
@@ -715,12 +724,26 @@ shinyServer(function(input, output, session) {
              "saveAsParm",
              "PNG",
              "RTF",
+             "dataPath", 
              "recall"))
-             {Defaults[[item]]<<-input[[item]]}
+           {Defaults[[item]]<<-input[[item]]}
          }
-         recordInput(input=input,Defaults=Defaults,currentWD=currentWD())
+       if(debug){
+         input_nms <- names(input)
+         input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
+         names(input_vals) <- input_nms
+         
+         message <- try(list(
+           message="DEBUG Y",
+           Defaults=Defaults,
+           currentWD=currentWD(),
+           input=input_vals
+         ))
+         save(message, file=file.path(srcDir,"tmp","message.rda"))
+       }
+       recordInput(input=input,Defaults=Defaults,currentWD=currentWD())
      }
-       })
+  })
 
   
   #Output and Saving Tabset  

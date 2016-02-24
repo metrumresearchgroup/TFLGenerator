@@ -51,7 +51,7 @@ library(DT)
       	            code(textOutput("dataPath")),
       	            h1(""),
       	            h2("Input names:"),
-      	            code(textOutput("readThis"))
+      	            code(verbatimTextOutput("readThis"))
       	    ),
       	    tabItem(tabName="tabDataInput",
       	            h3("Data Input"),
