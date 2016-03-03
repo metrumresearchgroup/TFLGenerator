@@ -1,9 +1,16 @@
+debug <- FALSE
 
 #rm(list=ls(all=TRUE))
 Sys.setenv(PATH=glue(Sys.getenv("PATH"),":/usr/bin"))
 srcDir <- "/data/tflgenerator-ge0.9"
-root <- "/data/tflgenerator-ge0.9/NMStorage" # shinyFiles requires starting point for browser
-debug <- TRUE
+root <- ifelse(
+  dir.exists("/opt/NMStorage_uslv"),
+  "/opt/NMStorage_uslv",
+  file.path(srcDir,"NMStorage")) # shinyFiles requires starting point for browser, we know this exists.
+if(debug){
+  debugDir <- file.path(srcDir,"tmp")
+  dir.create(debugDir)
+}
 
 # Define server logic required to summarize and view the selected dataset
 shinyServer(function(input, output, session) {
@@ -207,7 +214,7 @@ shinyServer(function(input, output, session) {
     if(debug){
       dati <- dat
       tabList <- get("tabList",envir=.GlobalEnv)
-      save(dati,file=file.path(srcDir,"tmp","shinytmpdat.rda"))
+      save(dati,file=file.path(debugDir,"shinytmpdat.rda"))
     }
     # End debugging
 
@@ -445,7 +452,7 @@ shinyServer(function(input, output, session) {
       input_nms <- names(input)
       input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
       names(input_vals) <- input_nms
-      save(message, input_vals,file=file.path(srcDir,"tmp","message.rda"))
+      save(message, input_vals,file=file.path(debugDir,"message.rda"))
     }
     for (item in plotList$type[types]){
       if(paste(item, "Num", sep="") %in% names(input)){
@@ -482,14 +489,14 @@ shinyServer(function(input, output, session) {
                   input_nms <- names(input)
                   input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
                   names(input_vals) <- input_nms
-                  save(message, input_vals,n,file=file.path(srcDir,"tmp","message.rda"))
+                  save(message, input_vals,n,file=file.path(debugDir,"message.rda"))
                 } 
                 #check if the defaults/inputs for a plot have been created
                 if(length(grep(paste(item, n,sep=""), names(input)))>0){
 
                   if(debug){
                     message <- "DEBUG AA"
-                    save(message,file=file.path(srcDir,"tmp","message.rda"))
+                    save(message,file=file.path(debugDir,"message.rda"))
                   }                     
                   
                   ##Check to see if the input has changed since the last time it was rendered
@@ -498,7 +505,7 @@ shinyServer(function(input, output, session) {
                   
                   if(debug){
                     message <- "DEBUG AAA"
-                    save(message,idx,idn,Defaults,file=file.path(srcDir,"tmp","message.rda"))
+                    save(message,idx,idn,Defaults,file=file.path(debugDir,"message.rda"))
                   }                     
           
                   
@@ -513,7 +520,7 @@ shinyServer(function(input, output, session) {
                   if(debug){
                     message <- "DEBUG AAAA"
                     save(message,idx,idn,Defaults,sameAsDefault,
-                         file=file.path(srcDir,"tmp","message.rda"))
+                         file=file.path(debugDir,"message.rda"))
                   }
                   
                   if(sameAsDefault!=1){
@@ -521,7 +528,7 @@ shinyServer(function(input, output, session) {
                     
                     if(debug){
                       message <- "DEBUG B"
-                      save(message,argList, file=file.path(srcDir,"tmp","message.rda"))
+                      save(message,argList, file=file.path(debugDir,"message.rda"))
                     } 
                     
                     
@@ -542,27 +549,27 @@ shinyServer(function(input, output, session) {
 
                     if(debug){
                       message <- "DEBUG C"
-                      save(message,file=file.path(srcDir,"tmp","message.rda"))
+                      save(message,file=file.path(debugDir,"message.rda"))
                     } 
                   
                                       
                     #insert an error block around the plotting
                     p1 = tryCatch({
-                      if(debug) save(callType,argList,file=file.path(srcDir,"tmp","output.rda"))
+                      if(debug) save(callType,argList,file=file.path(debugDir,"output.rda"))
                       do.call(callType,args=argList)
                     }, warning = function(w) {
                       arrangeGrob(textGrob(sprintf("You broke something\n%s", w)),
                                   do.call(callType,args=argList),
                                   heights=c(0.05,1))
                     }, error = function(e) {
-                      if(debug) save(callType,argList,file=file.path(srcDir,"tmp","error.rda"))
+                      if(debug) save(callType,argList,file=file.path(debugDir,"error.rda"))
                       arrangeGrob(textGrob(sprintf("You broke something\n%s", e)))
                     }
                     )
                     
                     if(debug){
                       message <- "DEBUG D"
-                      save(message,file=file.path(srcDir,"tmp","message.rda"))
+                      save(message,file=file.path(debugDir,"message.rda"))
                     } 
                     
                     
@@ -573,7 +580,7 @@ shinyServer(function(input, output, session) {
                     
                     if(debug){
                       message <- "DEBUG E"
-                      save(message,file=file.path(srcDir,"tmp","message.rda"))
+                      save(message,file=file.path(debugDir,"message.rda"))
                     } 
                     
                     
@@ -583,7 +590,7 @@ shinyServer(function(input, output, session) {
                     if(input$saveAs!=""){
                       if(debug){
                         message <- "DEBUG F"
-                        save(message,file=file.path(srcDir,"tmp","message.rda"))
+                        save(message,file=file.path(debugDir,"message.rda"))
                       }
                       argList=createArgList(input, item, n, dataFile=dataFile())
                       callType=argList$callType
@@ -601,14 +608,14 @@ shinyServer(function(input, output, session) {
                       
                       #insert an error block around the plotting
                       p1 = tryCatch({
-                        if(debug) save(callType,argList,file=file.path(srcDir,"tmp","output.rda"))
+                        if(debug) save(callType,argList,file=file.path(debugDir,"output.rda"))
                         do.call(callType,args=argList)
                       }, warning = function(w) {
                         arrangeGrob(textGrob(sprintf("You broke something\n%s", w)),
                                     do.call(callType,args=argList),
                                     heights=c(0.05,1))
                       }, error = function(e) {
-                        if(debug) save(callType,argList,file=file.path(srcDir,"tmp","error.rda"))
+                        if(debug) save(callType,argList,file=file.path(debugDir,"error.rda"))
                         arrangeGrob(textGrob(sprintf("You broke something\n%s", e)))
                       })
                       
@@ -632,7 +639,7 @@ shinyServer(function(input, output, session) {
                         input_nms <- names(input)
                         input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
                         names(input_vals) <- input_nms
-                        save(message,input_vals,item,Dir,fileHead,callType, argList, file=file.path(srcDir,"tmp","savedir.rda"))
+                        save(message,input_vals,item,Dir,fileHead,callType, argList, file=file.path(debugDir,"savedir.rda"))
                       }  
                       
                       dir.create(Dir,showWarning=FALSE)
@@ -764,7 +771,7 @@ shinyServer(function(input, output, session) {
            currentWD=currentWD(),
            input=input_vals
          ))
-         save(message, file=file.path(srcDir,"tmp","message.rda"))
+         save(message, file=file.path(debugDir,"message.rda"))
        }
        recordInput(input=input,Defaults=Defaults,currentWD=currentWD())
      }
