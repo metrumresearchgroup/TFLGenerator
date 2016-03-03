@@ -1,5 +1,5 @@
 author <- c("danp")
-pkgs <- c('TFL','GUI','metrumrg','shinyFiles')
+pkgs <- c('metrumrg','shinyFiles','animation')
 
 user <- Sys.info()["user"]
 parentScriptDir <- getwd()  ## You may need to mod this to be in the top level of scriptDir

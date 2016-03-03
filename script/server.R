@@ -1,5 +1,6 @@
 
 #rm(list=ls(all=TRUE))
+Sys.setenv(PATH=glue(Sys.getenv("PATH"),":/usr/bin"))
 srcDir <- "/data/tflgenerator-ge0.9"
 root <- "/data/tflgenerator-ge0.9/NMStorage" # shinyFiles requires starting point for browser
 debug <- TRUE
@@ -9,9 +10,24 @@ shinyServer(function(input, output, session) {
   Defaults<<-DefaultsFirst
   unlockBinding("tabList", as.environment("package:GUI"))
   tabList<<-tabList()
-  plotList$sidebarType <- c("Figures","Figures","Tables","Figures","Figures","Figures","Figures","Figures","Figures","Tables","Figures","Tables")
+  plotList$sidebarType <- c("Figures","Figures","Tables","Figures","Figures","Figures","Figures",
+                            "Figures","Figures","Tables","Figures","Tables","Tables")
 
-  #Open Template
+
+  # Get client data
+  cdata <- session$clientData
+  
+  # Values from cdata returned as text
+  output$clientDataText <- renderText({
+    cnames <- names(cdata)
+    
+    allvalues <- lapply(cnames, function(name) {
+      paste(name, cdata[[name]], sep=" = ")
+    })
+    paste(allvalues, collapse = "\n")
+  })
+  
+    #Open Template
   
   
   observeEvent(input$templateGo,{
@@ -424,6 +440,13 @@ shinyServer(function(input, output, session) {
     type="Tables"
     types=grep(type, plotList$sidebarType)
     PanelSet=list()
+    if(debug){
+      message <- "DEBUG 470"
+      input_nms <- names(input)
+      input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
+      names(input_vals) <- input_nms
+      save(message, input_vals,file=file.path(srcDir,"tmp","message.rda"))
+    }
     for (item in plotList$type[types]){
       if(paste(item, "Num", sep="") %in% names(input)){
         PanelSet=do.call(what=plotList$Call[plotList$type==item], args=list(plotType=item, input=input, Set=PanelSet) )
@@ -606,8 +629,10 @@ shinyServer(function(input, output, session) {
                       
                       if(debug){
                         message="DEBUG G"
-                        saveAs <- input$saveAs
-                        save(message,item,Dir,fileHead,callType, argList, saveAs, file=file.path(srcDir,"tmp","savedir.rda"))
+                        input_nms <- names(input)
+                        input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
+                        names(input_vals) <- input_nms
+                        save(message,input_vals,item,Dir,fileHead,callType, argList, file=file.path(srcDir,"tmp","savedir.rda"))
                       }  
                       
                       dir.create(Dir,showWarning=FALSE)

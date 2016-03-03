@@ -8,6 +8,7 @@ library(shiny)
 library(shinydashboard)
 library(shinyFiles)
 library(DT)
+library(animation)
 
 #Defaults are used to keep the current entries in dynamic memory, defaults first are the pre-defined defaults
 
@@ -47,11 +48,23 @@ library(DT)
       	            h2("Google drive doc with demo instructions:",
       	               a("Link",href="https://docs.google.com/document/d/1sGwrTt_rr2gX0X8Ifgaj1VcFWZkY4-Xo4FF4flzWkt8/edit?usp=sharing")),
       	            h1(""),
-      	            h2("Working directory:"),
-      	            code(textOutput("dataPath")),
+      	            tags$iframe(src="https://docs.google.com/document/d/1sGwrTt_rr2gX0X8Ifgaj1VcFWZkY4-Xo4FF4flzWkt8/pub?embedded=true",
+      	                        height="700px", width="100%"),
       	            h1(""),
-      	            h2("Input names:"),
-      	            code(verbatimTextOutput("readThis"))
+      	            h2("Working directory:"),
+      	            code(textOutput("dataPath"))
+#       	            ,
+#       	            h1(""),
+#       	            h2("Input names:"),
+#       	            code(verbatimTextOutput("readThis"))
+#       	            ,
+#       	            h1(""),
+#       	            h2("Client data:"),
+#       	            verbatimTextOutput("clientDataText")
+#       	            ,
+#       	            h1(""),
+#       	            h2("Here's a table rendering:"),
+#       	            imageOutput("texTable")
       	    ),
       	    tabItem(tabName="tabDataInput",
       	            h3("Data Input"),
