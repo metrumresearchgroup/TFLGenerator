@@ -512,7 +512,11 @@ shinyServer(function(input, output, session) {
                   
                   if(debug){
                     message <- "DEBUG AAAA"
-                    save(message,idx,idn,Defaults,sameAsDefault,
+                    input_nms <- names(input)
+                    input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
+                    names(input_vals) <- input_nms
+                    
+                    save(message,idx,idn,input_vals,item,n,Defaults,sameAsDefault,
                          file=file.path(srcDir,"tmp","message.rda"))
                   }
                   
@@ -566,14 +570,27 @@ shinyServer(function(input, output, session) {
                     } 
                     
                     
-                    #Perform the actual plotting
-                    output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
-                      print(p1)
-                    })					
+                    if(item %nin% c("demogTabCont")){
+                      #Perform the actual plotting
+                      output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
+                        print(p1)
+                      })					
+                    }else{
+                      output[[paste("Plot",item,n,sep="")]]<<-renderImage(
+                        renderTex(obj=p1,item=paste0(item,n),
+                                  margin=c(left=input[[paste0("leftmargin",item,n)]],
+                                           top=input[[paste0("topmargin",item,n)]],
+                                           bottom=input[[paste0("bottommargin",item,n)]],
+                                           right=input[[paste0("rightmargin",item,n)]]))
+                        ,deleteFile=F)
+                    }
                     
                     if(debug){
+                      input_nms <- names(input)
+                      input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
+                      names(input_vals) <- input_nms
                       message <- "DEBUG E"
-                      save(message,file=file.path(srcDir,"tmp","message.rda"))
+                      save(message,input_vals,item,n,file=file.path(srcDir,"tmp","message.rda"))
                     } 
                     
                     
@@ -613,10 +630,19 @@ shinyServer(function(input, output, session) {
                       })
                       
                       #Perform the actual plotting
-                      output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
-                        print(p1)
+                      if(item %nin% c("demogTabCont")){
+                        #Perform the actual plotting
+                        output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
+                          print(p1)
+                        })					
+                      }else{
+                        output[[paste("Plot",item,n,sep="")]]<<-                        
+                          renderTex(obj=p1,item,n,tmpDir=file.path(Dir,"tables"),
+                                    margin=c(left=input[[paste0("leftmargin",item,n)]],
+                                             top=input[[paste0("topmargin",item,n)]],
+                                             bottom=input[[paste0("bottommargin",item,n)]],
+                                             right=input[[paste0("rightmargin",item,n)]]))
                       }
-                      )					
                       
                       
                       #Create the save directory
@@ -646,9 +672,9 @@ shinyServer(function(input, output, session) {
                       
                       p1csv=data.frame(1)
                       #correct for tables
-                      if(callType %in% c("listofCallTypesTables")){
+                      if(callType %in% c("demogTabCont")){
                         p1csv=p1
-                        p1=tableGrob()					
+                        p1=renderTex(obj=p1,item,tmpDir=Dir)				
                       }
                       
                       

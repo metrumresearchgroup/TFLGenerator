@@ -11,6 +11,7 @@ DefaultsFirst <- list(
        OBSvPREDNum =                             0 ,
          QQplotNum =                             0 ,
           NMTabNum =                             0 ,
+   demogTabContNum =                             0 ,
            saveAll =                         FALSE ,
             saveAs =                            "" ,
           saveParm =                         FALSE ,
