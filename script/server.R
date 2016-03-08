@@ -18,7 +18,7 @@ shinyServer(function(input, output, session) {
   unlockBinding("tabList", as.environment("package:GUI"))
   tabList<<-tabList()
   plotList$sidebarType <- c("Figures","Figures","Tables","Figures","Figures","Figures","Figures",
-                            "Figures","Figures","Tables","Figures","Tables","Tables")
+                            "Figures","Figures","Tables","Figures","Tables","Tables","Tables")
 
 
   # Get client data
@@ -415,7 +415,6 @@ shinyServer(function(input, output, session) {
 #Figures, Tables and Listings Tabset
   output$figuresTabset<-renderUI({
    
-    # plotList$sidebarType=c("Figures","Figures","Tables","Figures","Figures","Figures","Figures","Figures","Figures","Figures", "Tables", "Tables")
     type="Figures"
     types=grep(type, plotList$sidebarType)
     PanelSet=list()
@@ -430,7 +429,6 @@ shinyServer(function(input, output, session) {
   
   output$listingsTabset<-renderUI({
     
-    # plotList$sidebarType=c("Figures","Figures","Tables","Figures","Figures","Figures","Figures","Figures","Figures","Figures", "Tables", "Tables")
     type="Listings"
     types=grep(type, plotList$sidebarType)
     PanelSet=list()
@@ -443,17 +441,9 @@ shinyServer(function(input, output, session) {
     
   })
   output$tablesTabset<-renderUI({
-    # plotList$sidebarType=c("Figures","Figures","Tables","Figures","Figures","Figures","Figures","Figures","Figures","Figures", "Tables", "Tables")
     type="Tables"
     types=grep(type, plotList$sidebarType)
     PanelSet=list()
-    if(debug){
-      message <- "DEBUG 470"
-      input_nms <- names(input)
-      input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
-      names(input_vals) <- input_nms
-      save(message, input_vals,file=file.path(debugDir,"message.rda"))
-    }
     for (item in plotList$type[types]){
       if(paste(item, "Num", sep="") %in% names(input)){
         PanelSet=do.call(what=plotList$Call[plotList$type==item], args=list(plotType=item, input=input, Set=PanelSet) )
@@ -577,7 +567,7 @@ shinyServer(function(input, output, session) {
                     } 
                     
                     
-                    if(item %nin% c("demogTabCont")){
+                    if(item %nin% c("demogTabCont","demogTabCat")){
                       #Perform the actual plotting
                       output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
                         print(p1)
@@ -637,7 +627,7 @@ shinyServer(function(input, output, session) {
                       })
                       
                       #Perform the actual plotting
-                      if(item %nin% c("demogTabCont")){
+                      if(item %nin% c("demogTabCont","demogTabCat")){
                         #Perform the actual plotting
                         output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
                           print(p1)

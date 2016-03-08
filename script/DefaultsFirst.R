@@ -12,6 +12,7 @@ DefaultsFirst <- list(
          QQplotNum =                             0 ,
           NMTabNum =                             0 ,
    demogTabContNum =                             0 ,
+    demogTabCatNum =                             0 ,
            saveAll =                         FALSE ,
             saveAs =                            "" ,
           saveParm =                         FALSE ,
