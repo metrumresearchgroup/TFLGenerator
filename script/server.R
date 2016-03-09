@@ -75,28 +75,20 @@ shinyServer(function(input, output, session) {
   shinyDirChoose(input, id="dataPath", session=session, roots=c(NMStorage=root))
   
   # output$dataPath <- currentWD()
-  output$dataPath <- renderText({parseDirPath(roots=c(NMStorage=root),input$dataPath)})
+  output$dataPath <- renderText({currentWD()})
 
   currentWD <- reactive(
-    if("manualDataPath" %in% names(input)){
-      if("manualDataPath" != Defaults["manualDataPath"]){
-        workingDirectory <- input[["manualDataPath"]]
-        return(workingDirectory)
-      }else{
-        if("dataPath" %nin% names(input)){
-          return(Defaults$dataPath)
-        }else{
-          workingDirectory <- parseDirPath(roots=c(NMStorage=root),input$dataPath)
+    if("dataPath" %nin% names(input)){
+      if(("manualDataPath" %in% names(input)) & ("manualDataPath" != Defaults["manualDataPath"])){
+          workingDirectory <- input[["manualDataPath"]]
           return(workingDirectory)
+        }else{
+          return(Defaults$dataPath)
         }
-      }
     }else{
-      if("dataPath" %nin% names(input)){
-        return(Defaults$dataPath)
-      }else{
-        workingDirectory <- parseDirPath(roots=c(NMStorage=root),input$dataPath)
-        return(workingDirectory)
-      }
+      # The user elected to use the shinyfiles widget
+      workingDirectory <- parseDirPath(roots=c(NMStorage=root),input$dataPath)
+      return(workingDirectory)
     }
   )
   
@@ -585,7 +577,7 @@ shinyServer(function(input, output, session) {
                     } 
                     
                     
-                    if(item %nin% c("demogTabCont","demogTabCat")){
+                    if(item %nin% c("demogTabCont","demogTabCat","NMTab")){
                       #Perform the actual plotting
                       output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
                         print(p1)
@@ -645,7 +637,7 @@ shinyServer(function(input, output, session) {
                       })
                       
                       #Perform the actual plotting
-                      if(item %nin% c("demogTabCont","demogTabCat")){
+                      if(item %nin% c("demogTabCont","demogTabCat","NMTab")){
                         #Perform the actual plotting
                         output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
                           print(p1)
@@ -687,7 +679,7 @@ shinyServer(function(input, output, session) {
                       
                       p1csv=data.frame(1)
                       #correct for tables
-                      if(callType %in% c("demogTabCont")){
+                      if(callType %in% c("demogTabCont","demogTabCat","NMTab")){
                         p1csv=p1
                         p1=renderTex(obj=p1,item,tmpDir=Dir)				
                       }
