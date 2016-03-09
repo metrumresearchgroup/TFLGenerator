@@ -73,23 +73,41 @@ shinyServer(function(input, output, session) {
   
 
   shinyDirChoose(input, id="dataPath", session=session, roots=c(NMStorage=root))
+  
+  # output$dataPath <- currentWD()
   output$dataPath <- renderText({parseDirPath(roots=c(NMStorage=root),input$dataPath)})
 
   currentWD <- reactive(
-    if("dataPath" %nin% names(input)){
-      return(Defaults$dataPath)
+    if("manualDataPath" %in% names(input)){
+      if("manualDataPath" != Defaults["manualDataPath"]){
+        workingDirectory <- input[["manualDataPath"]]
+        return(workingDirectory)
+      }else{
+        if("dataPath" %nin% names(input)){
+          return(Defaults$dataPath)
+        }else{
+          workingDirectory <- parseDirPath(roots=c(NMStorage=root),input$dataPath)
+          return(workingDirectory)
+        }
+      }
     }else{
-      workingDirectory <- parseDirPath(roots=c(NMStorage=root),input$dataPath)
-      return(workingDirectory)
+      if("dataPath" %nin% names(input)){
+        return(Defaults$dataPath)
+      }else{
+        workingDirectory <- parseDirPath(roots=c(NMStorage=root),input$dataPath)
+        return(workingDirectory)
+      }
     }
   )
-
+  
+  
   readThis <- reactive({
     list(
       runno=input$runno,
       srcData=input$srcData,
       ext=input$ext,
       currentWD=currentWD(),
+      manualDataPath=input$manualDataPath,
       templatePath_name=input$templatePath$name,
       templatePath_datapath=input$templatePath$datapath,
       header=input$header,
@@ -318,7 +336,7 @@ shinyServer(function(input, output, session) {
                       ),
              tabPanel(title="Model Info",
                       wellPanel(
-                        #textInput(inputId="dataPath", label="Data Path:", value=Defaults$dataPath),	
+                        textInput(inputId="manualDataPath", label="Data Path (optional):", value=""),	
                         textInput(inputId="srcData", label='NONMEM source data:',value=Defaults$srcData),
                         textInput(inputId="runno", label="Run Numbers:", value=Defaults$runno),
                         textInput(inputId="numModel", label="Number of Models", value="1"),
