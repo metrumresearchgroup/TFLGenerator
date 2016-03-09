@@ -36,6 +36,9 @@ install: script/pkg/$(GUI_NAME)_$(GUI_VERSION).tar.gz script/pkg/$(TFL_NAME)_$(T
 update_server: $(TFL_SHINYDIR)/server.R $(TFL_SHINYDIR)/ui.R
 	cp script/server.R script/ui.R $(TFL_SHINYDIR)
 
+signal_restart: $(TFL_SHINYDIR)/restart.txt
+  touch $(TFL_SHINYDIR)/restart.txt
+
 clean:
 	-rm -f script/pkg/$(GUI_NAME)_*.tar.gz
 	-rm -f script/pkg/$(TFL_NAME)_*.tar.gz
