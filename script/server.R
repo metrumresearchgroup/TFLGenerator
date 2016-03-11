@@ -182,9 +182,10 @@ shinyServer(function(input, output, session) {
     dat=data.frame(dat, stringsAsFactors=TRUE)
     names(dat)[which(names(dat)==input[["DVCol"]])]="DV"
     names(dat)[which(names(dat)==input[["TAFDCol"]])]="TAFD"
-    names(dat)[which(names(dat)==input[["STUDCol"]])]="STUD"
     names(dat)[which(names(dat)==input[["NMIDCol"]])]="NMID"
-    dat <- dat[order(dat$STUD,dat$NMID,dat$TAFD),]
+    names(dat)[which(names(dat)==input[["STUDCol"]])]="STUD"
+
+    if("STUD" %in% names(dat)) dat <- dat[order(dat$STUD,dat$NMID,dat$TAFD),] else dat <- dat[order(dat$NMID,dat$TAFD),]
     
     #rename columns
     rename=ifelse("renameThese" %in% names(input), input[["renameThese"]], "")
