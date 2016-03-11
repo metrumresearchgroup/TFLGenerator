@@ -95,6 +95,8 @@ shinyServer(function(input, output, session) {
   
   readThis <- reactive({
     list(
+      user=Sys.getenv("USER"),
+      home=Sys.getenv("HOME"),
       runno=input$runno,
       srcData=input$srcData,
       ext=input$ext,
@@ -681,7 +683,7 @@ shinyServer(function(input, output, session) {
                       #correct for tables
                       if(callType %in% c("demogTabCont","demogTabCat","NMTab")){
                         p1csv=p1
-                        p1=renderTex(obj=p1,item,tmpDir=Dir)				
+                        p1=renderTex(obj=p1,item,tmpDir=file.path(Dir,"tables"))				
                       }
                       
                       

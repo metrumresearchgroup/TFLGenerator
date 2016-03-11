@@ -26,7 +26,7 @@ library(animation)
       	      h1(""),
       	      actionButton("templateGo", "Go"),
       	      h1(""),
-      	      shinyDirButton(id="dataPath", label='Set working directory', title='Please select a working directory'),
+      	      # shinyDirButton(id="dataPath", label='Set working directory', title='Please select a working directory'),
       	      h1(""),
       	      menuItem(text="The Amgen TFL Generator", tabName = "tabIntro", icon=icon("clock")),
       	      menuItem(text="Data Input", tabName="tabDataInput", icon=icon("sliders")),
