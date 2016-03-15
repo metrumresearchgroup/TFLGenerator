@@ -9,10 +9,12 @@ download.file("https://cran.r-project.org/src/contrib/Archive/ggplot2/ggplot2_1.
               destfile="/root/Rpkg/ggplot2_1.0.1.tar.gz")
 download.file("https://cran.r-project.org/src/contrib/Archive/gridExtra/gridExtra_0.9.tar.gz",
               destfile=file.path("/root/Rpkg/gridExtra_0.9.tar.gz"))
+download.file("https://cran.r-project.org/src/contrib/Archive/Hmisc/Hmisc_3.17-0.tar.gz",
+              destfile=file.path("/root/Rpkg/Hmisc_3.17-0.tar.gz"))
 
 library(tools)
 write_PACKAGES("/root/Rpkg")
-install.packages(c("ggplot2","gridExtra"),
+install.packages(c("ggplot2","gridExtra","Hmisc"),
                  lib = .libPaths()[1],
                  contriburl = c(paste("file://", "root/Rpkg", sep="")),
                  type = "source",
