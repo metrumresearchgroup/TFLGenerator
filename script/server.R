@@ -18,7 +18,8 @@ shinyServer(function(input, output, session) {
   unlockBinding("tabList", as.environment("package:GUI"))
   tabList<<-tabList()
   plotList$sidebarType <- c("Figures","Figures","Tables","Figures","Figures","Figures","Figures",
-                            "Figures","Figures","Tables","Figures","Tables","Tables","Tables")
+                            "Figures","Figures","Tables","Figures","Tables","Tables","Tables",
+                            "Figures")
 
 
   # Get client data

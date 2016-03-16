@@ -2,6 +2,7 @@
 .libPaths("/data/tflgenerator-ge0.9/script/lib")
 library(ggplot2,lib="/usr/local/lib/R/site-library")
 library(gridExtra,lib="/usr/local/lib/R/site-library")
+library(grid)
 library(GUI)
 library(TFL) # the Amgen Internal TFL package
 library(shiny)
