@@ -13,6 +13,7 @@ DefaultsFirst <- list(
           NMTabNum =                             0 ,
    demogTabContNum =                             0 ,
     demogTabCatNum =                             0 ,
+            GOFNum =                             0 ,
            saveAll =                         FALSE ,
             saveAs =                            "" ,
           saveParm =                         FALSE ,

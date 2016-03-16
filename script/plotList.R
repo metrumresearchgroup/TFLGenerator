@@ -5,25 +5,25 @@ plotList <- list(
      "ConcvTime",      "ConcvTimeGroup", "demogTab"     ,   "OBSvPRED",
      "paramDist",      "covCat"        , "covCon"       ,   "corPairs",
      "QQplot"   ,      "NMTab"         , "ConcvTimeMult",   "DescParamStat",
-     "demogTabCont",   "demogTabCat"
+     "demogTabCont",   "demogTabCat"   , "GOF"
   ),
   Ind = c(
     "ConcvTime" ,    "ConcvTimeInd"   , "demogTab"      ,   "OBSvIPRED"  ,
     "paramDist" ,    "covCat"         , "covCon"        ,   "ggpairs"    ,
     "QQplot"    ,    "RNM"            , "ConcvTimeMult" , "DescParamStat",
-    "demogTabCont",  "demogTabCat"   
+    "demogTabCont",  "demogTabCat"    , "GOF"
   ),
   Sum = c(
     "ConcvTime" ,    "ConcvTimeSum"   ,  "demogTab"     , "OBSvIPRED"    ,
     "paramDist" ,    "covCat"         ,  "covCon"       , "ggpairs"      ,
     "QQplot"    ,    "RNM"            , "ConcvTimeMult" , "DescParamStat",
-    "demogTabCont",  "demogTabCat"
+    "demogTabCont",  "demogTabCat"    , "GOF"
   ),
   Call = c(
     "panelTypeConcvTime"  ,    "panelTypeConcvTimeGroup" , "panelTypedemogTab"     ,  "panelTypeOBSvPRED"      ,
   "panelTypeparamDist"  ,    "panelTypecovCat"         , "panelTypecovCon"        , "panelTypecorPairs"       ,
   "panelTypeQQplot"     ,    "panelTypeNMTab"          , "panelTypeConcvTimeMult" , "panelTypeDescParamStat",
-  "panelTypedemogTabCont",   "panelTypedemogTabCat"
+  "panelTypedemogTabCont",   "panelTypedemogTabCat"    , "panelTypeGOF"
   )
 )
 
