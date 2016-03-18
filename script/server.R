@@ -610,10 +610,14 @@ shinyServer(function(input, output, session) {
                   observeEvent(input$outputGo,{
                     if(input$saveAs!=""){
                       if(debug){
-                        message <- "DEBUG F"
-                        save(message,file=file.path(debugDir,"message.rda"))
+                        message <- "DEBUG OUTPUTGO"
+                        input_nms <- names(input)
+                        input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
+                        names(input_vals) <- input_nms
+                        
+                        save(message,item,n,input_vals,idx,Defaults,file=file.path(debugDir,"message.rda"))
                       }
-                      argList=createArgList(input, item, n, dataFile=dataFile())
+                      argList=createArgList(input, item, n, dataFile=dataFile(), currentWD=currentWD())
                       callType=argList$callType
                       argList$callType=NULL
                       
@@ -640,19 +644,19 @@ shinyServer(function(input, output, session) {
                         arrangeGrob(textGrob(sprintf("You broke something\n%s", e)))
                       })
                       
-                      #Perform the actual plotting
                       if(item %nin% c("demogTabCont","demogTabCat","NMTab")){
                         #Perform the actual plotting
                         output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
                           print(p1)
                         })					
                       }else{
-                        output[[paste("Plot",item,n,sep="")]]<<-                        
-                          renderTex(obj=p1,item,n,tmpDir=file.path(Dir,"tables"),
+                        output[[paste("Plot",item,n,sep="")]]<<-renderImage(
+                          renderTex(obj=p1,item=paste0(item,n),
                                     margin=c(left=input[[paste0("leftmargin",item,n)]],
                                              top=input[[paste0("topmargin",item,n)]],
                                              bottom=input[[paste0("bottommargin",item,n)]],
                                              right=input[[paste0("rightmargin",item,n)]]))
+                          ,deleteFile=F)
                       }
                       
                       
@@ -669,7 +673,7 @@ shinyServer(function(input, output, session) {
                         input_nms <- names(input)
                         input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
                         names(input_vals) <- input_nms
-                        save(message,input_vals,item,Dir,fileHead,callType, argList, file=file.path(debugDir,"savedir.rda"))
+                        save(message,input_vals,item,Dir,fileHead,callType, argList, file=file.path(debugDir,"message.rda"))
                       }  
                       
                       dir.create(Dir,showWarning=FALSE)
@@ -677,17 +681,16 @@ shinyServer(function(input, output, session) {
                       #			Save plots and grobs, record the script
                       ################			
                       
-                      p1=do.call(callType, 
-                                 args=argList
-                      )
+                      p1=do.call(callType, args=argList)
                       
-                      p1csv=data.frame(1)
-                      #correct for tables
-                      if(callType %in% c("demogTabCont","demogTabCat","NMTab")){
-                        p1csv=p1
-                        p1=renderTex(obj=p1,item,tmpDir=file.path(Dir,"tables"))				
-                      }
+                      p1csv=data.frame(1) # What is this?
                       
+                      #What to do with TeX tables?
+                      # if(callType %in% c("demogTabCont","demogTabCat","NMTab")){
+                      #   # p1csv=p1
+                      #   # p1=renderTex(obj=p1,item,tmpDir=Dir)
+                      # }
+
                       
                       p1List=list(Facets=ifelse("facetBy" %in% names(argList), argList$facetBy, ""),
                                   Marks=ifelse("markBy" %in% names(argList), argList$markBy, ""),
@@ -700,15 +703,22 @@ shinyServer(function(input, output, session) {
                       )
                       p1Name=paste(item,n, sep="")
                       if(input$PNG){
-                        savePlots(plotName=p1,  directory=Dir, saveName=paste(item,n, sep=""))
+                        if(callType %nin% c("demogTabCont","demogTabCat","RNM")){
+                          savePlots(plotName=p1,  directory=Dir, saveName=paste(item,n, sep=""))
+                        }else{
+                          dir.create(file.path(Dir,"PNG"),showWarnings = F)
+                          f <- renderTex(p1,item,n,p1List$Footnote,tmpDir=file.path(Dir,"PNG"),margin=c(left=10,top=5,right=50,bottom=5))
+                          p1List$Plot <- f['src']
+                        }
                       }
+                      # This is massively inefficient!
                       saveGrob(plot=p1List, Name=p1Name, file=sprintf("%s_Grobs.rda", fileHead))
                       
                       #Insert function recording into script	
                       #Save only the non-default arguments unless the user asks for a verbose script
                       
                       useArgs=argList
-                      if(input$verbose){useArgs=argListComplete}
+                      if(input$verbose){useArgs=createArgList(input,item,n,dataFile(),currentWD=currentWD(),complete=T)}
                       
                       #reduce argList to arguments used in the dataManip
                       argListManip=argList[names(argList) %in% names(formals(manipDat))]
@@ -727,12 +737,12 @@ shinyServer(function(input, output, session) {
                         }
                       }
                       
-                      #Keep a recording of the complete list <-this is only used to write out the complete argument list in the verbose script
-                      argListComplete=formals(callType)
-                      argListComplete$"..."=NULL
-                      for(listName in names(argList)){
-                        argListComplete[[listName]]=argList[[listName]]
-                      }
+                      # #Keep a recording of the complete list <-this is only used to write out the complete argument list in the verbose script
+                      # argListComplete=formals(callType)
+                      # argListComplete$"..."=NULL
+                      # for(listName in names(argList)){
+                      #   argListComplete[[listName]]=argList[[listName]]
+                      # }
                       
                       recordGUI(doWhat=callType, 
                                 toWhat=useArgs,
@@ -761,9 +771,17 @@ shinyServer(function(input, output, session) {
     
   }	 #end for this_item loop
   
+  
+  # RTF
   observeEvent(input$outputGo,{  
       observe(if(input$RTF & input$saveAs!="" ){
-        
+        if(debug){
+          message <- "writing RTF"
+          input_nms <- names(input)
+          input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
+          names(input_vals) <- input_nms
+          save(message,input_vals,guiGrobs,file=file.path(debugDir,"message.rda"))
+        }
         ###############			
         #			make a document
         ###############	
@@ -794,14 +812,8 @@ shinyServer(function(input, output, session) {
          input_nms <- names(input)
          input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
          names(input_vals) <- input_nms
-         
-         message <- try(list(
-           message="DEBUG Y",
-           Defaults=Defaults,
-           currentWD=currentWD(),
-           input=input_vals
-         ))
-         save(message, file=file.path(debugDir,"message.rda"))
+         message <- "DEBUG Y"
+         save(message, Defaults, input_vals, file=file.path(debugDir,"message.rda"))
        }
        recordInput(input=input,Defaults=Defaults,currentWD=currentWD())
      }
@@ -824,8 +836,7 @@ shinyServer(function(input, output, session) {
       
     )
     
-    
-    
+  
   })
   #End Shiny Server
 })
