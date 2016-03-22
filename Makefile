@@ -1,8 +1,12 @@
 GUI_VERSION=$(shell grep -i ^version GUI/DESCRIPTION | cut -d : -d \  -f 2)
 GUI_NAME=$(shell grep -i ^package: GUI/DESCRIPTION | cut -d : -d \  -f 2)
+GUI_VERSION=$(shell grep -i ^[Vv]ersion GUI/DESCRIPTION | cut -d : -d \  -f 2)
+GUI_NAME=$(shell grep -i ^[Pp]ackage: GUI/DESCRIPTION | cut -d : -d \  -f 2)
 
 TFL_VERSION=$(shell grep -i ^version TFL/DESCRIPTION | cut -d : -d \  -f 2)
 TFL_NAME=$(shell grep -i ^package: TFL/DESCRIPTION | cut -d : -d \  -f 2)
+TFL_VERSION=$(shell grep -i ^[Vv]ersion TFL/DESCRIPTION | cut -d : -d \  -f 2)
+TFL_NAME=$(shell grep -i ^[Pp]ackage: TFL/DESCRIPTION | cut -d : -d \  -f 2)
 
 GUI_R_FILES := $(wildcard GUI/R/*.R)
 GUI_FILES := GUI/DESCRIPTION GUI/NAMESPACE $(R_FILES) $(SRC_FILES)

@@ -534,7 +534,11 @@ shinyServer(function(input, output, session) {
                     
                     if(debug){
                       message <- "DEBUG B"
-                      save(message,argList, file=file.path(debugDir,"message.rda"))
+                      input_nms <- names(input)
+                      input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
+                      names(input_vals) <- input_nms
+                      
+                      save(message,argList, input_vals, file=file.path(debugDir,"message.rda"))
                     } 
                     
                     
