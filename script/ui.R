@@ -11,6 +11,7 @@ library(shinyFiles)
 library(DT)
 library(animation)
 library(lazyeval)
+library(dplyr)
 
 #Defaults are used to keep the current entries in dynamic memory, defaults first are the pre-defined defaults
 

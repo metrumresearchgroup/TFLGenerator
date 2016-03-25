@@ -1,7 +1,7 @@
 # Expects to be run from script
 author <- c("danp","polhamus")
 pkgs <- c('metrumrg','shinyFiles','animation','gdata','shinydashboard',
-          'DT','rtf','lazyeval')
+          'DT','rtf','lazyeval','dplyr')
 
 user <- Sys.info()["user"]
 parentScriptDir <- getwd()  ## You may need to mod this to be in the top level of scriptDir

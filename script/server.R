@@ -18,7 +18,7 @@ shinyServer(function(input, output, session) {
   unlockBinding("tabList", as.environment("package:GUI"))
   tabList<<-tabList()
   plotList$sidebarType <- c("Figures","Figures","Tables","Figures","Figures","Figures","Figures",
-                            "Figures","Figures","Tables","Figures","Tables","Tables","Tables",
+                            "Figures","Figures","Tables","Listings","Tables","Tables","Tables",
                             "Figures")
 
 
@@ -119,21 +119,27 @@ shinyServer(function(input, output, session) {
   ##############	
   #Initial/external interactions
   ##############
-  
-#  input <- list()
-#  input$runno <- "0069"
-#  # input$srcData <- "idx_tst_pool_pkf1_cw_mod28_3cwnh_pp_cw50z1b1_3.csv"
-#  # input$srcData <- "0069/fakeSource.csv"
-#  input$ext <- ".tab"
-#  input$header <- TRUE
-#  input$skipLines <- 1
-#  currentWD <- function() file.path(srcDir,"NMStorage")  
-#  input[["DVCol"]]="DV"
-#  input[["TAFDCol"]]="TIME"
-#  input[["STUDCol"]]="STUD"
-#  input[["NMIDCol"]]="ID"
-#  input[["dataLimits"]] = ""
-#  input[["dataTrans"]] = ""
+
+  # Debugging input
+  # currentWD <- function() file.path(srcDir,"NMStorage")
+  # load("tmp/shinytmpdat.rda")
+  # dataFile <- function() dati
+  # nms <- load("tmp/message.rda")
+  # input <- input_vals
+
+  #  input <- list()
+  #  input$runno <- "0069"
+  #  # input$srcData <- "idx_tst_pool_pkf1_cw_mod28_3cwnh_pp_cw50z1b1_3.csv"
+  #  # input$srcData <- "0069/fakeSource.csv"
+  #  input$ext <- ".tab"
+  #  input$header <- TRUE
+  #  input$skipLines <- 1
+  #  input[["DVCol"]]="DV"
+  #  input[["TAFDCol"]]="TIME"
+  #  input[["STUDCol"]]="STUD"
+  #  input[["NMIDCol"]]="ID"
+  #  input[["dataLimits"]] = ""
+  #  input[["dataTrans"]] = ""
   
   #read data in a reactive format
   dataFile=reactive({
@@ -516,6 +522,7 @@ shinyServer(function(input, output, session) {
                   #some values don't exist as inputs, for example the priors variable to check for priors
                   idtest=idx[idx %in% idn]
                   
+                  
                   #because of the reactive nature of 'input' comparisons have to be done one at a time
                   if(length(idtest)>0){
                     sameAsDefault=sum(sapply(idtest, function(X){input[[X]]==Defaults[X]}))/length(idtest)
@@ -533,6 +540,21 @@ shinyServer(function(input, output, session) {
                   
                   if(sameAsDefault!=1){
                     argList=try(createArgList(input, item, n, dataFile=dataFile(), currentWD=currentWD()))
+                    
+                    if(item == "ConcvTimeMult"){
+                      idtest=idx[idx %in% idn]
+                      idtest <- setdiff(idtest,paste0("page",item,n))
+                      sameAsDefault <- sum(sapply(idtest, function(X){input[[X]]==Defaults[X]}))/length(idtest)
+                      # If page is the only thing that changed, don't regen all plots
+                      if(sameAsDefault==1) argList$regenPlots <- F else argList$regenPlots <- T
+                      # if(debug){
+                      #   message="ConcvTime sameAsDefault"
+                      #   input_nms <- names(input)
+                      #   input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
+                      #   names(input_vals) <- input_nms
+                      #   save(message,idx,idn,Defaults,argList,input_vals,file=file.path(debugDir,"page.rda"))
+                      # }
+                    }
                     
                     if(debug){
                       message <- "DEBUG B"
@@ -569,12 +591,14 @@ shinyServer(function(input, output, session) {
                     p1 = tryCatch({
                       if(debug) save(callType,argList,file=file.path(debugDir,"output.rda"))
                       do.call(callType,args=argList)
-                    }, warning = function(w) {
-                      arrangeGrob(textGrob(sprintf("You broke something\n%s", w)),
-                                  do.call(callType,args=argList),
-                                  heights=c(0.05,1))
-                    }, error = function(e) {
-                      if(debug) save(callType,argList,file=file.path(debugDir,"error.rda"))
+                    }, 
+                    # warning = function(w) {
+                    #   arrangeGrob(textGrob(sprintf("You broke something\n%s", w)),
+                    #               do.call(callType,args=argList),
+                    #               heights=c(0.05,1))
+                    # }, 
+                    error = function(e) {
+                      if(debug) save(callType,argList,e,file=file.path(debugDir,"error.rda"))
                       arrangeGrob(textGrob(sprintf("You broke something\n%s", e)))
                     }
                     )
@@ -585,11 +609,13 @@ shinyServer(function(input, output, session) {
                     } 
                     
                     
-                    if(item %nin% c("demogTabCont","demogTabCat","NMTab")){
+                    if(item %nin% c("demogTabCont","demogTabCat","NMTab","ConcvTimeMult")){
                       #Perform the actual plotting
                       output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
                         print(p1)
-                      })					
+                      })
+                    }else if(item=="ConcvTimeMult"){
+                      output[[paste("Plot",item,n,sep="")]] <<- renderImage({ p1 },deleteFile=F)
                     }else{
                       output[[paste("Plot",item,n,sep="")]]<<-renderImage(
                         renderTex(obj=p1,item=paste0(item,n),
@@ -605,7 +631,7 @@ shinyServer(function(input, output, session) {
                       input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
                       names(input_vals) <- input_nms
                       message <- "DEBUG E"
-                      save(message,input_vals,item,n,file=file.path(srcDir,"tmp","message.rda"))
+                      save(message,argList,input_vals,item,n,p1,file=file.path(srcDir,"tmp","message.rda"))
                     } 
                     
                     
@@ -639,20 +665,25 @@ shinyServer(function(input, output, session) {
                       p1 = tryCatch({
                         if(debug) save(callType,argList,file=file.path(debugDir,"output.rda"))
                         do.call(callType,args=argList)
-                      }, warning = function(w) {
-                        arrangeGrob(textGrob(sprintf("You broke something\n%s", w)),
-                                    do.call(callType,args=argList),
-                                    heights=c(0.05,1))
-                      }, error = function(e) {
+                      }, 
+                      # warning = function(w) {
+                      #   arrangeGrob(textGrob(sprintf("You broke something\n%s", w)),
+                      #               do.call(callType,args=argList),
+                      #               heights=c(0.05,1))
+                      # }, 
+                      error = function(e) {
                         if(debug) save(callType,argList,file=file.path(debugDir,"error.rda"))
                         arrangeGrob(textGrob(sprintf("You broke something\n%s", e)))
                       })
+                      
                       
                       if(item %nin% c("demogTabCont","demogTabCat","NMTab")){
                         #Perform the actual plotting
                         output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
                           print(p1)
                         })					
+                      }else if(item=="ConcvTimeMult"){
+                        output[[paste("Plot",item,n,sep="")]] <<- renderImage({ p1 },deleteFile=F)
                       }else{
                         output[[paste("Plot",item,n,sep="")]]<<-renderImage(
                           renderTex(obj=p1,item=paste0(item,n),
@@ -685,6 +716,8 @@ shinyServer(function(input, output, session) {
                       #			Save plots and grobs, record the script
                       ################			
                       
+                      if(item=="ConcvTimeMult") argList$tmpDir <- Dir
+                      
                       p1=do.call(callType, args=argList)
                       
                       p1csv=data.frame(1) # What is this?
@@ -709,6 +742,8 @@ shinyServer(function(input, output, session) {
                       if(input$PNG){
                         if(callType %nin% c("demogTabCont","demogTabCat","RNM")){
                           savePlots(plotName=p1,  directory=Dir, saveName=paste(item,n, sep=""))
+                        }else if(item=="ConcvTimeMult"){
+                          p1List$Plot <- p1['src']
                         }else{
                           dir.create(file.path(Dir,"PNG"),showWarnings = F)
                           f <- renderTex(p1,item,n,p1List$Footnote,tmpDir=file.path(Dir,"PNG"),margin=c(left=10,top=5,right=50,bottom=5))
