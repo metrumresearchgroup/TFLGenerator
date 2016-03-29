@@ -716,7 +716,7 @@ shinyServer(function(input, output, session) {
                       #			Save plots and grobs, record the script
                       ################			
                       
-                      if(item=="ConcvTimeMult") argList$tmpDir <- Dir
+                      if(item%in%"ConcvTimeMult") argList$tmpDir <- file.path(Dir,"PNG")
                       
                       p1=do.call(callType, args=argList)
                       
@@ -740,7 +740,7 @@ shinyServer(function(input, output, session) {
                       )
                       p1Name=paste(item,n, sep="")
                       if(input$PNG){
-                        if(callType %nin% c("demogTabCont","demogTabCat","RNM")){
+                        if(callType %nin% c("demogTabCont","demogTabCat","RNM","ConcvTimeMult")){
                           savePlots(plotName=p1,  directory=Dir, saveName=paste(item,n, sep=""))
                         }else if(item=="ConcvTimeMult"){
                           p1List$Plot <- p1['src']

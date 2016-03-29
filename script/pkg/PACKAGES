@@ -6,6 +6,32 @@ License: GPL
 MD5sum: 619aebb7cad045e3dd694b32ffa5b4f4
 NeedsCompilation: no
 
+Package: assertthat
+Version: 0.1
+Suggests: testthat
+License: GPL-3
+MD5sum: 59f9d7f7c00077ea54d763b78eeb5798
+NeedsCompilation: no
+
+Package: DBI
+Version: 0.3.1
+Depends: R (>= 2.15.0), methods
+Suggests: testthat, RSQLite
+License: LGPL (>= 2)
+MD5sum: 1293e8656d824b4df6bbb67365ddaf63
+NeedsCompilation: no
+
+Package: dplyr
+Version: 0.4.3
+Depends: R (>= 3.1.2)
+Imports: assertthat, utils, R6, Rcpp, magrittr, lazyeval (>= 0.1.10), DBI (>= 0.3)
+LinkingTo: Rcpp (>= 0.12.0), BH (>= 1.58.0-1)
+Suggests: RSQLite (>= 1.0.0), RMySQL, RPostgreSQL, data.table, testthat, knitr, microbenchmark, ggplot2, mgcv, Lahman (>= 3.0-1), nycflights13,
+                methods
+License: MIT + file LICENSE
+MD5sum: 19d4ee8b0a196073c390fa6ecb73eb11
+NeedsCompilation: yes
+
 Package: DT
 Version: 0.1
 Imports: htmltools, htmlwidgets (>= 0.4), magrittr
@@ -21,6 +47,16 @@ Imports: gtools, stats, methods, utils
 Suggests: RUnit
 License: GPL-2
 MD5sum: bcbffd84a796a969b5445e1c86fd6273
+NeedsCompilation: no
+
+Package: ggplot2
+Version: 2.0.0
+Depends: R (>= 2.14)
+Imports: digest, grid, gtable (>= 0.1.1), MASS, plyr (>= 1.7.1), reshape2, scales (>= 0.3.0), stats
+Suggests: ggplot2movies, hexbin, Hmisc, mapproj, maps, maptools, mgcv, multcomp, nlme, testthat, quantreg, knitr
+Enhances: sp
+License: GPL-2
+MD5sum: f43a4581fd7337ca4d3da47bd950861c
 NeedsCompilation: no
 
 Package: gridExtra
@@ -40,9 +76,8 @@ NeedsCompilation: yes
 
 Package: GUI
 Version: 1.0.01
-Depends: R (>= 1.8.0), grid, gridExtra, ggplot2, gdata, boot, plyr, stringr, scales, Hmisc, shinydashboard, shinyFiles, DT, reshape2, rtf,
-               metrumrg
-MD5sum: 2e1802d7124ccd37b2dc95dc97b58588
+Depends: R (>= 1.8.0), grid, gridExtra, ggplot2, gdata, boot, plyr, stringr, scales, Hmisc, shinydashboard, shinyFiles, DT, reshape2, rtf, metrumrg
+MD5sum: f0e2210d7128d714fc83c7900a4399b3
 NeedsCompilation: no
 
 Package: htmlwidgets
@@ -54,12 +89,27 @@ License: MIT + file LICENSE
 MD5sum: 21a71a36225acc3202390dea611b0a31
 NeedsCompilation: no
 
+Package: lazyeval
+Version: 0.1.10
+Depends: R (>= 3.1.0)
+Suggests: knitr, rmarkdown (>= 0.2.65), microbenchmark, testthat
+License: GPL-3
+MD5sum: a3e40488f509df5a6bfd74c1546a4b4a
+NeedsCompilation: yes
+
 Package: metrumrg
 Version: 5.57
 Depends: reshape, lattice, XML, MASS, methods, grid
 Suggests: chron, fork, SASxport
 License: GPL
 MD5sum: 329734500399b1888bb628ce69b0d84c
+NeedsCompilation: no
+
+Package: proto
+Version: 0.3-10
+Suggests: graph, Rgraphviz
+License: GPL-2
+MD5sum: d5523943a5be6ca2f0ab557c900f8212
 NeedsCompilation: no
 
 Package: reshape
@@ -121,6 +171,6 @@ NeedsCompilation: no
 Package: TFL
 Version: 1.0.01
 Depends: R (>= 1.8.0),reshape, grid, gridExtra, ggplot2, gdata, boot, plyr, stringr, scales, Hmisc, reshape2, rtf
-MD5sum: c3de8a62ddb170c0323cc3143afd7c5c
+MD5sum: 15a3bd11fbdbaf73127531e9c51ad7ca
 NeedsCompilation: no
 
