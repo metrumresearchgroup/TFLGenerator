@@ -440,7 +440,11 @@ shinyServer(function(input, output, session) {
     PanelSet=list()
     for (item in plotList$type[types]){
       if(paste(item, "Num", sep="") %in% names(input)){
-        PanelSet=do.call(what=plotList$Call[plotList$type==item], args=list(plotType=item, input=input, Set=PanelSet) )
+        if("varNames" %in% names(formals(plotList$Call[plotList$type==item]))){
+          PanelSet=do.call(what=plotList$Call[plotList$type==item], args=list(plotType=item, input=input, Set=PanelSet, varNames=names(dataFile())) )
+        }else{
+          PanelSet=do.call(what=plotList$Call[plotList$type==item], args=list(plotType=item, input=input, Set=PanelSet ))
+        }
       }
     }
     return(do.call(tabsetPanel, PanelSet))
@@ -473,6 +477,77 @@ shinyServer(function(input, output, session) {
     
   })
 
+  
+  output$currentTFLTabset <- renderUI({
+    outList <- data.frame()
+    for(item in plotList$type){
+      numbers=as.numeric(unlist(str_extract_all(input[[paste(item, "Num", sep="")]], "\\d+")))
+      if(length(numbers)>1){numRange=numbers[which(numbers!=0)]}
+      if(length(numbers)==1){numRange=c(0:numbers)}
+      if(length(numbers)==0){numRange=0}
+      numRange <- setdiff(numRange,0)
+      for(n in numRange){
+        outList <- rbind(outList,data.frame(object=paste0(item,numRange), 
+                                            title=input[[paste0("LegendTitle",item,numRange)]],
+                                            type=plotList$sidebarType[plotList$type==item]))
+      }
+    }
+    outList$type <- factor(outList$type,c("Tables","Figures","Listings"))
+    outList <- dlply(outList,.(type))
+    sidebarLayout(
+      sidebarPanel(
+        selectizeInput(
+          "figureOrder", label="Figures order", 
+          choices=as.character(outList$Figures$title), 
+          multiple=T, options=list(create=F)
+        ),
+        selectizeInput(
+          "tableOrder", label="Tables order", 
+          choices=as.character(outList$Tables$title), 
+          multiple=T, options=list(create=F)
+        ),
+        selectizeInput(
+          "listingOrder", label="Listings order", 
+          choices=as.character(outList$Listings$title), 
+          multiple=T, options=list(create=F)
+        )
+      ),
+      mainPanel(
+        h2("Tables:"),
+        verbatimTextOutput("tflOrder_tables"),
+        h1(""),
+        h2("Figures:"),
+        verbatimTextOutput("tflOrder_figures"),
+        h1(""),
+        h2("Listings:"),
+        verbatimTextOutput("tflOrder_listings")
+      )
+    )
+    
+  })
+  
+  output$tflOrder_tables <- renderPrint({
+    tryCatch(
+      data.frame(Label=paste0("Table ", 1:length(input[["tableOrder"]])),
+                 Title=input[["tableOrder"]]),
+      error=function(e) print("Unspecified")
+    )
+  })
+  
+  output$tflOrder_figures <- renderPrint({
+    tryCatch(
+        data.frame(Label=paste0("Figure ", 1:length(input[["figureOrder"]])),
+                 Title=input[["figureOrder"]]),
+        error=function(e) print("Unspecified")
+    )
+  })
+  output$tflOrder_listings <- renderPrint({
+    tryCatch(
+        data.frame(Label=paste0("Listing ", 1:length(input[["listingOrder"]])),
+                 Title=input[["listingOrder"]]),
+        error=function(e) print("Unspecified")
+    )
+  })
   
   ############
   #Generating Plots, internal and saving
@@ -525,7 +600,7 @@ shinyServer(function(input, output, session) {
                   
                   #because of the reactive nature of 'input' comparisons have to be done one at a time
                   if(length(idtest)>0){
-                    sameAsDefault=sum(sapply(idtest, function(X){input[[X]]==Defaults[X]}))/length(idtest)
+                    sameAsDefault=sum(sapply(idtest, function(X){all(input[[X]]==Defaults[X])}))/length(idtest)
                   }
                   
                   if(debug){
@@ -541,6 +616,7 @@ shinyServer(function(input, output, session) {
                   if(sameAsDefault!=1){
                     argList=try(createArgList(input, item, n, dataFile=dataFile(), currentWD=currentWD()))
                     
+                    # Special routine for multipage
                     if(item == "ConcvTimeMult"){
                       idtest=idx[idx %in% idn]
                       idtest <- setdiff(idtest,paste0("page",item,n))
@@ -736,6 +812,7 @@ shinyServer(function(input, output, session) {
                                   LegendTitle=ifelse(paste("LegendTitle", item, n, sep="") %in% names(input), input[[paste("LegendTitle", item, n, sep="")]], ""),
                                   Legend=ifelse(paste("Legend", item, n, sep="") %in% names(input), input[[paste("Legend", item, n, sep="")]], ""),
                                   Plot=p1,
+                                  Type=plotList$sidebarType[plotList$type==item],
                                   CSV=p1csv
                       )
                       p1Name=paste(item,n, sep="")
@@ -828,6 +905,14 @@ shinyServer(function(input, output, session) {
         dir.create(Dir,showWarning=FALSE)
         fileHead=sprintf("%s%s_%s",Dir, input$saveAs, Sys.Date())
         grobFile=sprintf("%s_Grobs.R", fileHead)
+        figureOrder <- sapply(input$figureOrder, 
+                              function(x) str_split(names(which(x == input[grep("LegendTitle",names(input))])),"LegendTitle")[[1]][2])
+        tableOrder <- sapply(input$tableOrder, 
+                             function(x) str_split(names(which(x == input[grep("LegendTitle",names(input))])),"LegendTitle")[[1]][2])
+        listingOrder <- sapply(input$listingOrder, 
+                               function(x) str_split(names(which(x == input[grep("LegendTitle",names(input))])),"LegendTitle")[[1]][2])
+        guiGrobs <- guiGrobs[c(tableOrder,figureOrder,listingOrder)]
+        
         writeRTF(grobFile)
       })  
   })
@@ -854,10 +939,13 @@ shinyServer(function(input, output, session) {
          message <- "DEBUG Y"
          save(message, Defaults, input_vals, file=file.path(debugDir,"message.rda"))
        }
-       recordInput(input=input,Defaults=Defaults,currentWD=currentWD())
+       tryCatch(recordInput(input=input,Defaults=Defaults,currentWD=currentWD()),
+                warning=function(w) print(w),
+                error=function(e) print(e) 
+       )
      }
   })
-
+  
   
   #Output and Saving Tabset  
   

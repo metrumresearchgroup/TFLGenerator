@@ -96,7 +96,8 @@ library(gtools)
       	            uiOutput("listingsTabset")
       	    ),
       	    tabItem(tabName="tabCurrentTFL",
-      	            h3("Current TFL")
+      	            h3("Current TFL"),
+      	            uiOutput("currentTFLTabset")
       	    ),
       	    tabItem(tabName="tabOutput",
       	            h3("Output"),
