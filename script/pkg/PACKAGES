@@ -26,8 +26,7 @@ Version: 0.4.3
 Depends: R (>= 3.1.2)
 Imports: assertthat, utils, R6, Rcpp, magrittr, lazyeval (>= 0.1.10), DBI (>= 0.3)
 LinkingTo: Rcpp (>= 0.12.0), BH (>= 1.58.0-1)
-Suggests: RSQLite (>= 1.0.0), RMySQL, RPostgreSQL, data.table, testthat, knitr, microbenchmark, ggplot2, mgcv, Lahman (>= 3.0-1), nycflights13,
-                methods
+Suggests: RSQLite (>= 1.0.0), RMySQL, RPostgreSQL, data.table, testthat, knitr, microbenchmark, ggplot2, mgcv, Lahman (>= 3.0-1), nycflights13, methods
 License: MIT + file LICENSE
 MD5sum: 19d4ee8b0a196073c390fa6ecb73eb11
 NeedsCompilation: yes
@@ -49,16 +48,6 @@ License: GPL-2
 MD5sum: bcbffd84a796a969b5445e1c86fd6273
 NeedsCompilation: no
 
-Package: ggplot2
-Version: 2.0.0
-Depends: R (>= 2.14)
-Imports: digest, grid, gtable (>= 0.1.1), MASS, plyr (>= 1.7.1), reshape2, scales (>= 0.3.0), stats
-Suggests: ggplot2movies, hexbin, Hmisc, mapproj, maps, maptools, mgcv, multcomp, nlme, testthat, quantreg, knitr
-Enhances: sp
-License: GPL-2
-MD5sum: f43a4581fd7337ca4d3da47bd950861c
-NeedsCompilation: no
-
 Package: gridExtra
 Version: 2.0.0
 Imports: gtable, grid, grDevices, graphics, utils
@@ -77,7 +66,7 @@ NeedsCompilation: yes
 Package: GUI
 Version: 1.0.01
 Depends: R (>= 1.8.0), grid, gridExtra, ggplot2, gdata, boot, plyr, stringr, scales, Hmisc, shinydashboard, shinyFiles, DT, reshape2, rtf, metrumrg
-MD5sum: f0e2210d7128d714fc83c7900a4399b3
+MD5sum: 5502d8981d961255b7acf499c3f27b53
 NeedsCompilation: no
 
 Package: htmlwidgets
@@ -171,6 +160,6 @@ NeedsCompilation: no
 Package: TFL
 Version: 1.0.01
 Depends: R (>= 1.8.0),reshape, grid, gridExtra, ggplot2, gdata, boot, plyr, stringr, scales, Hmisc, reshape2, rtf
-MD5sum: 15a3bd11fbdbaf73127531e9c51ad7ca
+MD5sum: 428ee86b07666076afe2b4a965b7a40b
 NeedsCompilation: no
 
