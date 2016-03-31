@@ -121,11 +121,11 @@ shinyServer(function(input, output, session) {
   ##############
 
   # Debugging input
-  # currentWD <- function() file.path(srcDir,"NMStorage")
   # load("tmp/shinytmpdat.rda")
   # dataFile <- function() dati
   # nms <- load("tmp/message.rda")
   # input <- input_vals
+  # currentWD <- function() input[["manualDataPath"]]
 
   #  input <- list()
   #  input$runno <- "0069"
@@ -905,15 +905,29 @@ shinyServer(function(input, output, session) {
         dir.create(Dir,showWarning=FALSE)
         fileHead=sprintf("%s%s_%s",Dir, input$saveAs, Sys.Date())
         grobFile=sprintf("%s_Grobs.R", fileHead)
-        figureOrder <- sapply(input$figureOrder, 
-                              function(x) str_split(names(which(x == input[grep("LegendTitle",names(input))])),"LegendTitle")[[1]][2])
-        tableOrder <- sapply(input$tableOrder, 
-                             function(x) str_split(names(which(x == input[grep("LegendTitle",names(input))])),"LegendTitle")[[1]][2])
-        listingOrder <- sapply(input$listingOrder, 
-                               function(x) str_split(names(which(x == input[grep("LegendTitle",names(input))])),"LegendTitle")[[1]][2])
-        guiGrobs <- guiGrobs[c(tableOrder,figureOrder,listingOrder)]
         
-        writeRTF(grobFile)
+        getObj <- function(x){
+          titles <- lapply(grep("LegendTitle",names(input)), function(xx) input[[xx]])
+          names(titles) <- grep("LegendTitle",names(input),value=T)
+          str_split(names(which(x == titles)),"LegendTitle")[[1]][2]
+        }
+        
+        figureOrder <- tryCatch(sapply(input$figureOrder, getObj) ,
+                                error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","figureOrderError.rda")) )
+        tableOrder <- tryCatch(sapply(input$tableOrder, getObj) ,
+                             error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","tableOrderError.rda")))
+        listingOrder <- tryCatch(sapply(input$listingOrder, getObj), 
+                               error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","ListingOrderError.rda")) )
+        guiGrobs <- tryCatch(guiGrobs[c(tableOrder,figureOrder,listingOrder)],
+                             error=function(e) if(debug) save(e,file=file.path(srcDir,"tkmp","guiGrobsOrderError.rda")))
+        
+        tryCatch(writeRTF(grobFile),
+                 error=function(e){
+                   print(paste0("Failed to write RTF: ",e))
+                   if(debug){
+                     save(guiGrobs, grobFile, figureOrder, tableOrder, listingOrder, file=file.path(srcDir,"tmp","rtferror.rda"))
+                   }
+                 })
       })  
   })
   
