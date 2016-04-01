@@ -2,7 +2,7 @@ debug <- FALSE
 
 #rm(list=ls(all=TRUE))
 Sys.setenv(PATH=glue(Sys.getenv("PATH"),":/usr/bin"))
-srcDir <- "/data/tflgenerator-ge0.9"
+srcDir <- "/data/tflgenerator"
 root <- ifelse(
   dir.exists("/opt/NMStorage_uslv"),
   "/opt/NMStorage_uslv",
@@ -12,8 +12,12 @@ if(debug){
   dir.create(debugDir)
 }
 
+cat(file=stderr(), "LOG: Finished preamble\n")
+
 # Define server logic required to summarize and view the selected dataset
 shinyServer(function(input, output, session) {
+  cat(file=stderr(), "LOG: Entering sourcing of shinyServer function\n")
+  
   Defaults<<-DefaultsFirst
   unlockBinding("tabList", as.environment("package:GUI"))
   tabList<<-tabList()
@@ -27,6 +31,7 @@ shinyServer(function(input, output, session) {
   
   # Values from cdata returned as text
   output$clientDataText <- renderText({
+    cat(file=stderr(), "LOG: clientDataText\n")
     cnames <- names(cdata)
     
     allvalues <- lapply(cnames, function(name) {
@@ -39,6 +44,7 @@ shinyServer(function(input, output, session) {
   
   
   observeEvent(input$templateGo,{
+    cat(file=stderr(), "LOG: templateGo\n")
     inFile <- input$templatePath
     if (is.null(inFile))
       return(NULL)
@@ -49,18 +55,20 @@ shinyServer(function(input, output, session) {
   inFile <- input$templatePath
   if (is.null(inFile))
     return(NULL)
+  cat(file=stderr(), "LOG: loading template file\n")
   source(inFile$datapath)
  })
   
   ############
   #Setting Color Schemes
   ############
-  
-  unlockBinding("cleanScales", as.environment("package:TFL"))
+ cat(file=stderr(), "LOG: Setting the color schemes\n")
+ unlockBinding("cleanScales", as.environment("package:TFL"))
   
   observe(
     if("Color" %in% names(input)){
       if(input$Color){
+        cat(file=stderr(), "LOG: setColorScale\n")
         cleanScales<<-setColorScale()}
     }
   )
@@ -68,12 +76,14 @@ shinyServer(function(input, output, session) {
   observe(
     if("Color" %in% names(input)){
       if(!input$Color){
+        cat(file=stderr(), "LOG: setGrayScale\n")
         cleanScales<<-setGrayScale()}
     }
   )
   
-
+  cat(file=stderr(), "LOG: Choosing shinyDir\n")
   shinyDirChoose(input, id="dataPath", session=session, roots=c(NMStorage=root))
+  cat(file=stderr(), "LOG: shinyDir chosen\n")
   
   # output$dataPath <- currentWD()
   output$dataPath <- renderText({currentWD()})
@@ -82,12 +92,15 @@ shinyServer(function(input, output, session) {
     if("dataPath" %nin% names(input)){
       if(("manualDataPath" %in% names(input)) & ("manualDataPath" != Defaults["manualDataPath"])){
           workingDirectory <- input[["manualDataPath"]]
+          cat(file=stderr(), "LOG: setting working directory to manualDataPath\n")
           return(workingDirectory)
         }else{
+          cat(file=stderr(), "LOG: Using default dataPath\n")
           return(Defaults$dataPath)
         }
     }else{
       # The user elected to use the shinyfiles widget
+      cat(file=stderr(), "LOG: using shinyFiles widget for working directory\n")
       workingDirectory <- parseDirPath(roots=c(NMStorage=root),input$dataPath)
       return(workingDirectory)
     }
@@ -114,7 +127,7 @@ shinyServer(function(input, output, session) {
   
   output$readThis <- renderPrint({readThis()})
   
-  
+  cat(file=stderr(), "LOG: Entering initial/external interactions\n")
 
   ##############	
   #Initial/external interactions
@@ -143,7 +156,7 @@ shinyServer(function(input, output, session) {
   
   #read data in a reactive format
   dataFile=reactive({
-    
+    cat(file=stderr(), "LOG: dataFile called\n")
     
     if(input$runno=="#" & input$srcData=="sourcedata.csv"){
       return()
@@ -237,11 +250,11 @@ shinyServer(function(input, output, session) {
       save(dati,file=file.path(debugDir,"shinytmpdat.rda"))
     }
     # End debugging
-
+    cat(file=stderr(), "LOG: dataFile finished successfully\n")
     return(dat)
   })	
   
-  
+  cat(file=stderr(), "LOG: End dataFile definition\n")
   ##############	
   # Output Renders - Just the data set overview and plot title
   ##############
@@ -251,6 +264,8 @@ shinyServer(function(input, output, session) {
    
   #Raw Contents
   output$contentsHead <- DT::renderDataTable({
+    cat(file=stderr(), "LOG: rendering dataTable\n")
+    cat(file=stderr(), "LOG: contentsHead called\n")
     if("runno" %nin% names(input)){
         return()
       }
@@ -263,6 +278,7 @@ shinyServer(function(input, output, session) {
   
   #Raw Contents
   output$contentsSummary <- DT::renderDataTable({
+    cat(file=stderr(), "LOG: performing contents summary\n")
     if("runno" %in% names(input)){	
       if (input$runno=="#" & input$srcData=="sourcedata.csv") {
         return()
@@ -291,6 +307,7 @@ shinyServer(function(input, output, session) {
   })
   
   output$contentsStat <- DT::renderDataTable({
+    cat(file=stderr(), "LOG: calculating contents statistics\n")
     if("runno" %in% names(input)){	
       if (input$runno=="#" & input$srcData=="sourcedata.csv") {
         return()
@@ -321,14 +338,16 @@ shinyServer(function(input, output, session) {
   
   
   output$projectTitle <- renderText({
+    cat(file=stderr(), "LOG: printing project title\n")
     #This prints out the input project title to the appropriate GUI location
     input$projectTitle
   })
   
-  
+  cat(file=stderr(), "LOG: End data summary tab definitions\n")
 #Data Input Tabset
   
   output$DataTabset <- renderUI({
+    cat(file=stderr(), "LOG: creating data input tabset\n")
     tabsetPanel(
              tabPanel(title="Project Information",
                       wellPanel(
@@ -371,6 +390,7 @@ shinyServer(function(input, output, session) {
 
 #Data Tabset  
   output$outputTabset <- renderUI({		
+    cat(file=stderr(), "LOG: creating data view tabset \n")
     #The first PanelSet is what is loaded with the base defaults.  
     PanelSet=list(tabPanel("Raw Data",
                            fluidRow(
@@ -411,7 +431,7 @@ shinyServer(function(input, output, session) {
 
 # Analysis Selection
   output$PlotTabset<-renderUI({
-  
+    cat(file=stderr(), "LOG: creating analysis selection tabset\n")
     panelList=list()
     j=1
     for(item in unique(tabList$tabType)){
@@ -434,7 +454,7 @@ shinyServer(function(input, output, session) {
 
 #Figures, Tables and Listings Tabset
   output$figuresTabset<-renderUI({
-   
+    cat(file=stderr(), "LOG: creating figures tabset \n")
     type="Figures"
     types=grep(type, plotList$sidebarType)
     PanelSet=list()
@@ -452,7 +472,7 @@ shinyServer(function(input, output, session) {
   })
   
   output$listingsTabset<-renderUI({
-    
+    cat(file=stderr(), "LOG: creating listings tabset\n")
     type="Listings"
     types=grep(type, plotList$sidebarType)
     PanelSet=list()
@@ -465,6 +485,7 @@ shinyServer(function(input, output, session) {
     
   })
   output$tablesTabset<-renderUI({
+    cat(file=stderr(), "LOG: creating tables tabset\n")
     type="Tables"
     types=grep(type, plotList$sidebarType)
     PanelSet=list()
@@ -477,8 +498,8 @@ shinyServer(function(input, output, session) {
     
   })
 
-  
   output$currentTFLTabset <- renderUI({
+  cat(file=stderr(), "LOG: creating current TFL tabset\n")
     outList <- data.frame()
     for(item in plotList$type){
       numbers=as.numeric(unlist(str_extract_all(input[[paste(item, "Num", sep="")]], "\\d+")))
@@ -527,6 +548,7 @@ shinyServer(function(input, output, session) {
   })
   
   output$tflOrder_tables <- renderPrint({
+    cat(file=stderr(), "LOG: matching table order to that specified\n")
     tryCatch(
       data.frame(Label=paste0("Table ", 1:length(input[["tableOrder"]])),
                  Title=input[["tableOrder"]]),
@@ -535,6 +557,7 @@ shinyServer(function(input, output, session) {
   })
   
   output$tflOrder_figures <- renderPrint({
+    cat(file=stderr(), "LOG: matching figure order to that specified\n")
     tryCatch(
         data.frame(Label=paste0("Figure ", 1:length(input[["figureOrder"]])),
                  Title=input[["figureOrder"]]),
@@ -542,6 +565,7 @@ shinyServer(function(input, output, session) {
     )
   })
   output$tflOrder_listings <- renderPrint({
+    cat(file=stderr(), "LOG: matching listing order to that specified\n")
     tryCatch(
         data.frame(Label=paste0("Listing ", 1:length(input[["listingOrder"]])),
                  Title=input[["listingOrder"]]),
@@ -553,7 +577,9 @@ shinyServer(function(input, output, session) {
   #Generating Plots, internal and saving
   ############
 
+  cat(file=stderr(), "LOG: Begin generating plots\n")
   for (this_item in plotList$type){
+   
     local({
       item=this_item
       #Observe if any plots of that type have been assigned inputs
@@ -578,7 +604,9 @@ shinyServer(function(input, output, session) {
                 } 
                 #check if the defaults/inputs for a plot have been created
                 if(length(grep(paste(item, n,sep=""), names(input)))>0){
-
+                 
+                  cat(file=stderr(), paste("LOG: checking priors for", item,n, "\n"))
+                  
                   if(debug){
                     message <- "DEBUG AA"
                     save(message,file=file.path(debugDir,"message.rda"))
@@ -614,6 +642,7 @@ shinyServer(function(input, output, session) {
                   }
                   
                   if(sameAsDefault!=1){
+                    cat(file=stderr(), paste("LOG: creating", item, n, "\n"))
                     argList=try(createArgList(input, item, n, dataFile=dataFile(), currentWD=currentWD()))
                     
                     # Special routine for multipage
@@ -714,6 +743,7 @@ shinyServer(function(input, output, session) {
                   } # End sameAsDefault!=1
                   
                   observeEvent(input$outputGo,{
+                    cat(file=stderr(), paste("LOG: outputGo for", item, n, "\n"))
                     if(input$saveAs!=""){
                       if(debug){
                         message <- "DEBUG OUTPUTGO"
@@ -773,7 +803,12 @@ shinyServer(function(input, output, session) {
                       
                       #Create the save directory
                       
-                      Dir=sprintf("%s/%s_%s/", currentWD(), gsub("[[:space:]]|\\.", "_", input$projectTitle), Sys.Date())
+                      Dir=sprintf("%s/%s_%s/", currentWD(), 
+                                  gsub("'","",
+                                       gsub("[[:space:]]|\\.", "_", input$projectTitle)
+                                  ), 
+                                  Sys.Date()
+                      )
                       
                       
                       fileHead=sprintf("%s%s_%s",Dir, input$saveAs, Sys.Date())
@@ -887,10 +922,12 @@ shinyServer(function(input, output, session) {
     
   }	 #end for this_item loop
   
-  
+  cat(file=stderr(), "LOG: End generating plots\n")
   # RTF
   observeEvent(input$outputGo,{  
       observe(if(input$RTF & input$saveAs!="" ){
+        
+        cat(file=stderr(), "LOG: writing RTF\n")
         if(debug){
           message <- "writing RTF"
           input_nms <- names(input)
@@ -923,7 +960,7 @@ shinyServer(function(input, output, session) {
         
         tryCatch(writeRTF(grobFile),
                  error=function(e){
-                   print(paste0("Failed to write RTF: ",e))
+                   cat(file=stderr(), paste("LOG: failed to write RTF\n",e,"\n"))
                    if(debug){
                      save(guiGrobs, grobFile, figureOrder, tableOrder, listingOrder, file=file.path(srcDir,"tmp","rtferror.rda"))
                    }
@@ -932,6 +969,7 @@ shinyServer(function(input, output, session) {
   })
   
   observeEvent(input$newTemplateGo,{  
+    cat(file=stderr(), "LOG: newTemplateGo\n")
      if(input$saveTemplateAs!=""){
          for(item in names(DefaultsFirst)){
            #put in the non-plot related Defaults
@@ -954,8 +992,8 @@ shinyServer(function(input, output, session) {
          save(message, Defaults, input_vals, file=file.path(debugDir,"message.rda"))
        }
        tryCatch(recordInput(input=input,Defaults=Defaults,currentWD=currentWD()),
-                warning=function(w) print(w),
-                error=function(e) print(e) 
+                warning=function(w) cat(file=stderr(), paste("LOG: recordInput warning\n",w)),
+                error=function(e)  cat(file=stderr(), paste("LOG: recordInput error\n",e))
        )
      }
   })
@@ -964,7 +1002,7 @@ shinyServer(function(input, output, session) {
   #Output and Saving Tabset  
   
   output$SaveTabset<-renderUI({
-    
+    cat(file=stderr(), paste("LOG: saveTabset\n"))
     wellPanel(
       checkboxInput("PNG", "Record *.pngs", Defaults$PNG),
       checkboxInput("RTF", "Construct *.Doc", Defaults$RTF),
