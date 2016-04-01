@@ -3,6 +3,7 @@ debug <- FALSE
 #rm(list=ls(all=TRUE))
 Sys.setenv(PATH=glue(Sys.getenv("PATH"),":/usr/bin"))
 srcDir <- "/data/tflgenerator"
+Sys.setenv(PATH=paste0(Sys.getenv("PATH"),":/usr/bin"))
 root <- ifelse(
   dir.exists("/opt/NMStorage_uslv"),
   "/opt/NMStorage_uslv",
@@ -357,7 +358,7 @@ shinyServer(function(input, output, session) {
                       ),
              tabPanel(title="Model Info",
                       wellPanel(
-                        textInput(inputId="manualDataPath", label="Data Path (optional):", value=""),	
+                        textInput(inputId="manualDataPath", label="Parent working directory:", value=""),	
                         textInput(inputId="srcData", label='NONMEM source data:',value=Defaults$srcData),
                         textInput(inputId="runno", label="Run Numbers:", value=Defaults$runno),
                         textInput(inputId="numModel", label="Number of Models", value="1"),
