@@ -19,7 +19,12 @@ cat(file=stderr(), "LOG: Finished preamble\n")
 shinyServer(function(input, output, session) {
   cat(file=stderr(), "LOG: Entering sourcing of shinyServer function\n")
   
-  Defaults<<-DefaultsFirst
+  tryCatch(Defaults<<-DefaultsFirst,
+           error=function(e){
+             cat(file=stderr(),"LOG: Waiting for DefaultsFirst to load")
+             system("sleep 5")
+             Defaults <<- DefaultsFirst
+           })
   unlockBinding("tabList", as.environment("package:GUI"))
   tabList<<-tabList()
   plotList$sidebarType <- c("Figures","Figures","Tables","Figures","Figures","Figures","Figures",
@@ -680,12 +685,21 @@ shinyServer(function(input, output, session) {
                       return()
                     }
                     
+                    if(debug){
+                      message <- "DEBUG B"
+                      input_nms <- names(input)
+                      input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
+                      names(input_vals) <- input_nms
+                      
+                      save(message,argList, input_vals, idx, Defaults, file=file.path(debugDir,"setdefaults.rda"))
+                    } 
+                    
                     if(length(idx)>0){
                       for(IDX in idx){
-                        Defaults[IDX]<<-input[[IDX]]
+                        Defaults[[IDX]]<<-input[[IDX]]
                       }
                     }
-                    Defaults[paste("priorExists", item, n, sep="")]<<-TRUE
+                    Defaults[[paste("priorExists", item, n, sep="")]]<<-TRUE
 
                     if(debug){
                       message <- "DEBUG C"
@@ -764,9 +778,9 @@ shinyServer(function(input, output, session) {
                       }
                       
                       for(IDX in idx){
-                        Defaults[IDX]<<-input[[IDX]]
+                        Defaults[[IDX]]<<-input[[IDX]]
                       }
-                      Defaults[paste("priorExists", item, n, sep="")]<<-TRUE
+                      Defaults[[paste("priorExists", item, n, sep="")]]<<-TRUE
                       
                       #insert an error block around the plotting
                       p1 = tryCatch({
