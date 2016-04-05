@@ -1,18 +1,10 @@
 #rm(list=ls(all=TRUE))
 .libPaths("/data/tflgenerator-ge0.9/script/lib")
-library(ggplot2,lib="/usr/local/lib/R/site-library")
-library(gridExtra,lib="/usr/local/lib/R/site-library")
-library(grid)
 library(GUI)
 library(TFL) # the Amgen Internal TFL package
 library(shiny)
 library(shinydashboard)
 library(shinyFiles)
-library(DT)
-library(animation)
-library(lazyeval)
-library(dplyr)
-library(gtools)
 
 #Defaults are used to keep the current entries in dynamic memory, defaults first are the pre-defined defaults
 

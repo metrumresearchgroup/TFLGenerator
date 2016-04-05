@@ -13,6 +13,22 @@ if(debug){
   dir.create(debugDir)
 }
 
+cat(file=stderr(), "LOG: Start loading packages")
+.libPaths("/data/tflgenerator-ge0.9/script/lib")
+library(ggplot2,lib="/usr/local/lib/R/site-library")
+library(gridExtra,lib="/usr/local/lib/R/site-library")
+library(grid)
+library(GUI)
+library(TFL) # the Amgen Internal TFL package
+library(shiny)
+library(shinydashboard)
+library(shinyFiles)
+library(DT)
+library(animation)
+library(lazyeval)
+library(dplyr)
+library(gtools)
+
 cat(file=stderr(), "LOG: Finished preamble\n")
 
 # Define server logic required to summarize and view the selected dataset
@@ -21,8 +37,9 @@ shinyServer(function(input, output, session) {
   
   tryCatch(Defaults<<-DefaultsFirst,
            error=function(e){
-             cat(file=stderr(),"LOG: Waiting for DefaultsFirst to load")
-             system("sleep 5")
+             cat(file=stderr(),"LOG: Waiting for DefaultsFirst to load\n")
+             cat(file=stderr(),paste("Search path:\n",search()))
+             data(DefaultsFirst)
              Defaults <<- DefaultsFirst
            })
   unlockBinding("tabList", as.environment("package:GUI"))
