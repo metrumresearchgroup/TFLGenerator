@@ -265,6 +265,15 @@ shinyServer(function(input, output, session) {
     wholeLim=limitations(input[["dataLimits"]])	
     wholeTrans=transformations(input[["dataTrans"]])
     dat=manipDat(dat, dataLimits=wholeLim, dataTrans=wholeTrans)
+    parsecommands <- cleanparse(input[["dataParse"]],"dat")
+    if(!is.null(parsecommands)){
+      for(i in 1:length(parsecommands$commands)){
+        if(parsecommands$within[i]) tryCatch(eval(parse(text=paste0("dat <- within(dat, {", parsecommands$commands[i], "})"))),
+                                             error=function(e) cat(file=stderr(),paste("Parsing command broken:\n",parsecommands$commands[i],"\n", e)))
+        if(!parsecommands$within[i]) tryCatch(eval(parse(text=paste0("dat <- ", parsecommands$commands[i]))), 
+                                         error=function(e) cat(file=stderr(),print(paste("Parsing command broken:\n",parsecommands$commands[i],"\n", e))))
+      }
+    }
     
     # For debugging, save a copy of input
     if(debug){
@@ -283,7 +292,6 @@ shinyServer(function(input, output, session) {
   ##############
  
 
-  
    
   #Raw Contents
   output$contentsHead <- DT::renderDataTable({
@@ -300,7 +308,7 @@ shinyServer(function(input, output, session) {
   
   
   #Raw Contents
-  output$contentsSummary <- DT::renderDataTable({
+  output$contentsSummary <- renderPrint({
     cat(file=stderr(), "LOG: performing contents summary\n")
     if("runno" %in% names(input)){	
       if (input$runno=="#" & input$srcData=="sourcedata.csv") {
@@ -311,20 +319,9 @@ shinyServer(function(input, output, session) {
       }
       
       fakeData=dataFile()
-      fakeData=suppressWarnings(data.frame(apply(fakeData, c(1,2), as.numeric)))
-      fakeData=data.frame(summary(fakeData))
-      fakeData$Var2=as.character(fakeData$Var2)
-      fakeData$Var1=str_extract(fakeData$Freq, ".*:")
-      fakeData$Freq=gsub(".*:","", fakeData$Freq)
-      fakeData=fakeData[!is.na(fakeData$Var1),]
-      
-      fakeData=data.frame(cast(fakeData, Var1 ~ Var2, value="Freq"), check.names=FALSE, stringsAsFactors=FALSE)
-      
-      row.names(fakeData)=fakeData$Var1
-      fakeData=data.frame(fakeData[order(row.names(fakeData), decreasing=TRUE),], check.names=FALSE, stringsAsFactors=FALSE)
-      fakeData$Var1=NULL
-      names(fakeData)=gsub("^[[:space:]]*", "", names(fakeData))
-      fakeData=fakeData[,names(dataFile())]
+      classes <- sapply(fakeData,class)
+      fakeData <- summary(fakeData)
+      dimnames(fakeData)[[2]] <- sprintf("%s (%s)",str_trim(dimnames(fakeData)[[2]]),classes)
       return(fakeData)
     }
   })
@@ -382,28 +379,35 @@ shinyServer(function(input, output, session) {
                       wellPanel(
                         textInput(inputId="manualDataPath", label="Parent working directory:", value=""),	
                         textInput(inputId="srcData", label='NONMEM source data:',value=Defaults$srcData),
-                        textInput(inputId="runno", label="Run Numbers:", value=Defaults$runno),
-                        textInput(inputId="numModel", label="Number of Models", value="1"),
-                        textInput(inputId="ext", label="File Extension:", value=Defaults$ext),
+                        textInput(inputId="runno", label="Run Number:", value=Defaults$runno),
+                        #textInput(inputId="numModel", label="Number of Models", value="1"),
+                        textInput(inputId="ext", label="File Extensions:", value=Defaults$ext),
                         checkboxInput('header', 'Header?', value=Defaults$header),
-                        numericInput("skipLines", "Skip Lines:", value=Defaults$skipLines),
-                        textInput(inputId="baseModel", label="Base Model #", value="")
+                        numericInput("skipLines", "Skip Lines:", value=Defaults$skipLines)
+                        #,
+                        #textInput(inputId="baseModel", label="Base Model #", value="")
                       )
               ),
              tabPanel(title="Change E-R SSAP Defaults",
-                      wellPanel( textInput("DVCol", "DV Column", Defaults$DVCol),
-                                 textInput("TAFDCol", "TAFD Column", Defaults$TAFDCol),
-                                 textInput("STUDCol", "STUD Column", Defaults$STUDCol),
-                                 textInput("NMIDCol", "NMID Column", Defaults$NMIDCol)
+                      wellPanel( 
+                        textInput("DVCol", "DV Column", Defaults$DVCol),
+                        textInput("TAFDCol", "TAFD Column", Defaults$TAFDCol),
+                        textInput("STUDCol", "STUD Column", Defaults$STUDCol),
+                        textInput("NMIDCol", "NMID Column", Defaults$NMIDCol)
+                        # selectInput("DVCol", "DV Column", choices=choices, selected=Defaults$DVCol, selectize=T),
+                        # selectInput("TAFDCol", "TAFD Column", choices=choices, selected=Defaults$TAFDCol, selectize=T),
+                        # selectInput("STUDCol", "STUD Column", choices=choices, selected=Defaults$STUDCol, selectize=T),
+                        # selectInput("NMIDCol", "NMID Column", choices=choices, selected=Defaults$NMIDCol, selectize=T)
                                 
                       )
              ), 
              tabPanel(title="Modify All Data",
                     wellPanel(
-                       boxInputLarge(inputId="renameThese", "Rename Columns", value=Defaults$renameThese),
+                      boxInputLarge(inputId="renameThese", "Rename Columns", value=Defaults$renameThese),
                       boxInputLarge(inputId="factorThese", "Factor Columns", value=Defaults$factorThese),
                       boxInputLarge(inputId="dataLimits", "Limit Data by", value=Defaults$dataLimits),
-                      boxInputLarge(inputId="dataTrans", "Transform Data:", value=Defaults$dataTrans) 
+                      boxInputLarge(inputId="dataTrans", "Transform Data:", value=Defaults$dataTrans),
+                      boxInputLarge(inputId="dataParse", "General code parser:", value=Defaults$dataParse)
                       )
     )
 
@@ -425,26 +429,27 @@ shinyServer(function(input, output, session) {
                              )
                            )
                             ),
-                   tabPanel("Data Summary", 
-                            fluidRow(
-                              column(width = 12,
-                                     box(
-                                       title = "Summary", width = NULL, status = "primary",
-                                       div(style = 'overflow-x: scroll', DT::dataTableOutput('contentsSummary'))
-                                     )
-                              )
-                            ),
-                            fluidRow(
-                              column(width = 12,
-                                     box(
-                                       title = "Statistics", width = NULL, status = "primary",
-                                       div(style = 'overflow-x: scroll', DT::dataTableOutput('contentsStat'))
-                                     )
-                              )
-                            )
-
-                            )
-                  )
+                   tabPanel("Data Summary", verbatimTextOutput("contentsSummary"))
+                            # fluidRow(
+                            #   column(width = 12,
+                            #          box(
+                            #            title = "Summary", width = NULL, status = "primary",
+                            #            div(style = 'overflow-x: scroll', DT::dataTableOutput('contentsSummary'))
+                            #          )
+                            #   )
+                            # )
+                            # ,
+                            # fluidRow(
+                            #   column(width = 12,
+                            #          box(
+                            #            title = "Statistics", width = NULL, status = "primary",
+                            #            div(style = 'overflow-x: scroll', DT::dataTableOutput('contentsStat'))
+                            #          )
+                            #   )
+                            # )
+                  # 
+                  #                             )
+    )
     dummy=(do.call(tabsetPanel, PanelSet))
     return(dummy)
     

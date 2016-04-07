@@ -33,6 +33,7 @@ DefaultsFirst <- list(
        factorThese =                            "" ,
         dataLimits =                            "" ,
          dataTrans =                            "" ,
+         dataParse =                            "" ,
               SSAP =                         FALSE ,
              DVCol =                          "DV" ,
            TAFDCol =                        "TIME" ,
