@@ -1,9 +1,8 @@
-debug <- FALSE
+debug <- TRUE
 
 #rm(list=ls(all=TRUE))
-Sys.setenv(PATH=glue(Sys.getenv("PATH"),":/usr/bin"))
-srcDir <- "/data/tflgenerator"
 Sys.setenv(PATH=paste0(Sys.getenv("PATH"),":/usr/bin"))
+srcDir <- "/data/tflgenerator-ge0.9"
 root <- ifelse(
   dir.exists("/opt/NMStorage_uslv"),
   "/opt/NMStorage_uslv",
