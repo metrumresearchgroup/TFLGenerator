@@ -577,7 +577,7 @@ shinyServer(function(input, output, session) {
                                   # boxInputLarge(inputId="dataTrans_table", "Transform Data:", value=Defaults$dataTrans),
                                   # boxInputLarge(inputId="dataLimits_table", "Limit Data by", value=Defaults$dataLimits),
                                   boxInputLarge(inputId="dataParse_table", "Table data manipulation code:", value=Defaults$dataParse_table),
-                                  
+
                                   h1(""),
                                   
                                   #h3("Source data:"),
