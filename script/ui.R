@@ -39,28 +39,27 @@ library(shinyFiles)
       	dashboardBody(
       	  tabItems(
       	    tabItem(tabName="tabIntro",
-      	            h1("Intro/session info, help, and link to how-to files"),
-      	            h2(""),
-      	            h2("Google drive doc with demo instructions:",
+      	            h2("Google drive user guide with demo instructions:",
       	               a("Link",href="https://docs.google.com/document/d/1sGwrTt_rr2gX0X8Ifgaj1VcFWZkY4-Xo4FF4flzWkt8/edit?usp=sharing")),
       	            h1(""),
       	            tags$iframe(src="https://docs.google.com/document/d/1sGwrTt_rr2gX0X8Ifgaj1VcFWZkY4-Xo4FF4flzWkt8/pub?embedded=true",
-      	                        height="700px", width="100%"),
-      	            h1(""),
-      	            h2("Working directory:"),
-      	            code(textOutput("dataPath"))
-#       	            ,
-#       	            h1(""),
-#       	            h2("Input names:"),
-#       	            code(verbatimTextOutput("readThis"))
-#       	            ,
-#       	            h1(""),
-#       	            h2("Client data:"),
-#       	            verbatimTextOutput("clientDataText")
-#       	            ,
-#       	            h1(""),
-#       	            h2("Here's a table rendering:"),
-#       	            imageOutput("texTable")
+      	                        height="700px", width="100%")
+      	            # ,
+      	            # h1(""),
+      	            # h2("Working directory:"),
+      	            # code(textOutput("dataPath"))
+      	            # ,
+      	            # h1(""),
+      	            # h2("Input names:"),
+      	            # code(verbatimTextOutput("readThis"))
+      	            # ,
+      	            # h1(""),
+      	            # h2("Client data:"),
+      	            # verbatimTextOutput("clientDataText")
+      	            # ,
+      	            # h1(""),
+      	            # h2("Here's a table rendering:"),
+      	            # imageOutput("texTable")
       	    ),
       	    tabItem(tabName="tabDataInput",
       	            h3("Data Input"),

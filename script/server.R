@@ -159,6 +159,10 @@ shinyServer(function(input, output, session) {
   # Debugging input
   # load("tmp/shinytmpdat.rda")
   # dataFile <- function() dati
+  # load("tmp/tabdat.rda")
+  # tableFile <- function() tabdat
+  # load("tmp/sourcedat.rda")
+  # sourceFile <- function() sourcedat
   # nms <- load("tmp/message.rda")
   # input <- input_vals
   # currentWD <- function() input[["manualDataPath"]]
@@ -178,14 +182,14 @@ shinyServer(function(input, output, session) {
   #  input[["dataTrans"]] = ""
   
   #read data in a reactive format
-  dataFile=reactive({
-    cat(file=stderr(), "LOG: dataFile called\n")
+  tableFile=reactive({
+    cat(file=stderr(), "LOG: tableFile called\n")
     
-    if(input$runno=="#" & input$srcData=="sourcedata.csv"){
+    if(input$runno=="#"){
       return()
     }
-      
-      
+    
+    
     if(input$runno!="#"){
       extensions=unlist(str_split(input$ext, ","))
       extensions=gsub("[[:space:]]*", "", extensions)
@@ -212,7 +216,79 @@ shinyServer(function(input, output, session) {
         }	
       }      
     }
-      
+    
+    dat=data.frame(dat, stringsAsFactors=F)
+    # names(dat)[which(names(dat)==input[["DVCol"]])]="DV"
+    # names(dat)[which(names(dat)==input[["TAFDCol"]])]="TAFD"
+    # names(dat)[which(names(dat)==input[["NMIDCol"]])]="NMID"
+    # names(dat)[which(names(dat)==input[["STUDCol"]])]="STUD"
+    # 
+    # if("STUD" %in% names(dat)) dat <- dat[order(dat$STUD,dat$NMID,dat$TAFD),] else dat <- dat[order(dat$NMID,dat$TAFD),]
+    
+    # #rename columns
+    # rename=ifelse("renameThese_table" %in% names(input), input[["renameThese_table"]], "")
+    # if(nchar(rename)>1){
+    #   rename=gsub("\n$", "", rename)
+    #   rename=unlist(str_split(rename, "\n"))
+    #   rename=str_split(rename, ";[[:space:]]*")
+    #   for(i in length(rename)){
+    #     if(nchar(rename[[i]][1])>1){
+    #       names(dat)[which(names(dat)==rename[[i]][1])]=rename[[i]][2]
+    #     }	
+    #   }
+    # }
+    # 
+    # # #factor entire sets
+    # fF=ifelse("factorThese_table" %in% names(input), input[["factorThese_table"]], "")
+    # if(nchar(fF)>1){
+    #   fF=gsub("\n$", "", fF)
+    #   fF=unlist(str_split(fF, "\n"))
+    #   fF=str_split(fF, ";[[:space:]]*")
+    #   for(i in length(fF)){
+    #     if(nchar(fF[[i]][1])>1){
+    #       dat[,fF[[i]][1]]=factor(dat[,fF[[i]][1]], levels=unlist(str_split(fF[[i]][2], ",[[:space:]]*")), labels=unlist(str_split(fF[[i]][3], ",[[:space:]]*")))
+    #     }
+    #   }
+    # }
+    # 
+    # # #perform limits and transformations
+    # # #Deal with formatting the data limits for functions
+    # wholeLim=limitations(input[["dataLimits_table"]])
+    # wholeTrans=transformations(input[["dataTrans_table"]])
+    # dat=manipDat(dat, dataLimits=wholeLim, dataTrans=wholeTrans)
+    
+    parsecommands <- cleanparse(input[["dataParse_table"]],"dat")
+    if(!is.null(parsecommands)){
+      for(i in 1:length(parsecommands$commands)){
+        if(parsecommands$within[i]) tryCatch(eval(parse(text=paste0("dat <- within(dat, {", parsecommands$commands[i], "})"))),
+                                             error=function(e) cat(file=stderr(),paste("Parsing command broken:\n",parsecommands$commands[i],"\n", e)))
+        if(!parsecommands$within[i]) tryCatch(eval(parse(text=paste0("dat <- ", parsecommands$commands[i]))),
+                                              error=function(e) cat(file=stderr(),print(paste("Parsing command broken:\n",parsecommands$commands[i],"\n", e))))
+      }
+    }
+    
+    # For debugging, save a copy of input
+    if(debug){
+      tabdat <- dat
+      tabList <- get("tabList",envir=.GlobalEnv)
+      save(tabdat,file=file.path(debugDir,"tabdat.rda"))
+    }
+    # End debugging
+    cat(file=stderr(), "LOG: tableFile finished successfully\n")
+    return(dat)
+  })	
+  
+  cat(file=stderr(), "LOG: End dataFile definition\n")
+  
+  ##################################################################################################
+  #read data in a reactive format
+  sourceFile=reactive({
+    cat(file=stderr(), "LOG: sourceFile called\n")
+    
+    if(input$srcData=="sourcedata.csv"){
+      return()
+    }
+    
     if(input$srcData %nin% c("", " ", "sourcedata.csv")){
       srcDatFile=sprintf("%s/%s", currentWD(), input$srcData)
       if(!file.exists(srcDatFile)){
@@ -224,54 +300,135 @@ shinyServer(function(input, output, session) {
       dat=dat[rowSums(is.na(dat)) != ncol(dat),]
     }
     
-    dat=data.frame(dat, stringsAsFactors=TRUE)
-    names(dat)[which(names(dat)==input[["DVCol"]])]="DV"
-    names(dat)[which(names(dat)==input[["TAFDCol"]])]="TAFD"
-    names(dat)[which(names(dat)==input[["NMIDCol"]])]="NMID"
-    names(dat)[which(names(dat)==input[["STUDCol"]])]="STUD"
-
-    if("STUD" %in% names(dat)) dat <- dat[order(dat$STUD,dat$NMID,dat$TAFD),] else dat <- dat[order(dat$NMID,dat$TAFD),]
+    dat=data.frame(dat, stringsAsFactors=F)
+    # names(dat)[which(names(dat)==input[["DVCol"]])]="DV"
+    # names(dat)[which(names(dat)==input[["TAFDCol"]])]="TAFD"
+    # names(dat)[which(names(dat)==input[["NMIDCol"]])]="NMID"
+    # names(dat)[which(names(dat)==input[["STUDCol"]])]="STUD"
+    # 
+    # if("STUD" %in% names(dat)) dat <- dat[order(dat$STUD,dat$NMID,dat$TAFD),] else dat <- dat[order(dat$NMID,dat$TAFD),]
     
     #rename columns
-    rename=ifelse("renameThese" %in% names(input), input[["renameThese"]], "")
-    if(nchar(rename)>1){
-      rename=gsub("\n$", "", rename)
-      rename=unlist(str_split(rename, "\n"))
-      rename=str_split(rename, ";[[:space:]]*")
-      for(i in length(rename)){
-        if(nchar(rename[[i]][1])>1){
-          names(dat)[which(names(dat)==rename[[i]][1])]=rename[[i]][2]
-        }	
+    # rename=ifelse("renameThese" %in% names(input), input[["renameThese"]], "")
+    # if(nchar(rename)>1){
+    #   rename=gsub("\n$", "", rename)
+    #   rename=unlist(str_split(rename, "\n"))
+    #   rename=str_split(rename, ";[[:space:]]*")
+    #   for(i in length(rename)){
+    #     if(nchar(rename[[i]][1])>1){
+    #       names(dat)[which(names(dat)==rename[[i]][1])]=rename[[i]][2]
+    #     }	
+    #   }
+    # }
+    # 
+    # # #factor entire sets
+    # fF=ifelse("factorThese_source" %in% names(input), input[["factorThese_source"]], "")
+    # if(nchar(fF)>1){
+    #   fF=gsub("\n$", "", fF)
+    #   fF=unlist(str_split(fF, "\n"))
+    #   fF=str_split(fF, ";[[:space:]]*")
+    #   for(i in length(fF)){
+    #     if(nchar(fF[[i]][1])>1){
+    #       dat[,fF[[i]][1]]=factor(dat[,fF[[i]][1]], levels=unlist(str_split(fF[[i]][2], ",[[:space:]]*")), labels=unlist(str_split(fF[[i]][3], ",[[:space:]]*")))
+    #     }
+    #   }
+    # }
+    # 
+    # #perform limits and transformations
+    # # #Deal with formatting the data limits for functions
+    # wholeLim=limitations(input[["dataLimits_source"]])
+    # wholeTrans=transformations(input[["dataTrans_source"]])
+    # dat=manipDat(dat, dataLimits=wholeLim, dataTrans=wholeTrans)
+    parsecommands <- cleanparse(input[["dataParse_source"]],"dat")
+    if(!is.null(parsecommands)){
+      for(i in 1:length(parsecommands$commands)){
+        if(parsecommands$within[i]) tryCatch(eval(parse(text=paste0("dat <- within(dat, {", parsecommands$commands[i], "})"))),
+                                             error=function(e) cat(file=stderr(),paste("Parsing command broken:\n",parsecommands$commands[i],"\n", e)))
+        if(!parsecommands$within[i]) tryCatch(eval(parse(text=paste0("dat <- ", parsecommands$commands[i]))),
+                                              error=function(e) cat(file=stderr(),print(paste("Parsing command broken:\n",parsecommands$commands[i],"\n", e))))
       }
     }
     
+    # For debugging, save a copy of input
+    if(debug){
+      sourcedat <- dat
+      tabList <- get("tabList",envir=.GlobalEnv)
+      save(sourcedat,file=file.path(debugDir,"sourcedat.rda"))
+    }
+    # End debugging
+    cat(file=stderr(), "LOG: sourceFile finished successfully\n")
+    return(dat)
+  })	
+  
+  cat(file=stderr(), "LOG: End sourceFile definition\n")
+  
+  #############################################################################
+  
+  #read data in a reactive format
+  dataFile=reactive({
+    cat(file=stderr(), "LOG: dataFile called\n")
     
+    if(is.null(tableFile()) & is.null(sourceFile())){
+      return()
+    }
     
+    if(!is.null(tableFile()) & !is.null(sourceFile())){
+      dat <- merge(sourceFile(), tableFile(), all=TRUE) 
+    }else {
+      if(!is.null(tableFile())) dat <- tableFile() else dat <- sourceFile()
+    }
+    
+
+    # dat=data.frame(dat, stringsAsFactors=TRUE)
+    if("DVCol" %in% names(input)) names(dat)[which(names(dat)==input[["DVCol"]])] = "DV"
+    if("TAFDCol" %in% names(input)) names(dat)[which(names(dat)==input[["TAFDCol"]])]="TAFD"
+    if("NMIDCol" %in% names(input)) names(dat)[which(names(dat)==input[["NMIDCol"]])]="NMID"
+    if("STUDCol" %in% names(input)) names(dat)[which(names(dat)==input[["STUDCol"]])]="STUD"
+    if("IPREDCol" %in% names(input)) names(dat)[which(names(dat)==input[["IPREDCol"]])]="IPRED"
+    if("PREDCol" %in% names(input)) names(dat)[which(names(dat)==input[["PREDCol"]])]="PRED"
+    
+    if(all("DV","TAFD","NMID")%in%names(dat)){
+      if("STUD" %in% names(dat)) dat <- dat[order(dat$STUD,dat$NMID,dat$TAFD),] else dat <- dat[order(dat$NMID,dat$TAFD),]
+    }
+    
+    # #rename columns
+    # rename=ifelse("renameThese" %in% names(input), input[["renameThese"]], "")
+    # if(nchar(rename)>1){
+    #   rename=gsub("\n$", "", rename)
+    #   rename=unlist(str_split(rename, "\n"))
+    #   rename=str_split(rename, ";[[:space:]]*")
+    #   for(i in length(rename)){
+    #     if(nchar(rename[[i]][1])>1){
+    #       names(dat)[which(names(dat)==rename[[i]][1])]=rename[[i]][2]
+    #     }	
+    #   }
+    # }
+  
     #factor entire sets
-    fF=ifelse("factorThese" %in% names(input), input[["factorThese"]], "")
-    if(nchar(fF)>1){
-      fF=gsub("\n$", "", fF)
-      fF=unlist(str_split(fF, "\n"))
-      fF=str_split(fF, ";[[:space:]]*")
-      for(i in length(fF)){
-        if(nchar(fF[[i]][1])>1){
-          dat[,fF[[i]][1]]=factor(dat[,fF[[i]][1]], levels=unlist(str_split(fF[[i]][2], ",[[:space:]]*")), labels=unlist(str_split(fF[[i]][3], ",[[:space:]]*")))	
-        }	
-      }
-    }
-    
-    #perform limits and transformations
-    #Deal with formatting the data limits for functions
-    wholeLim=limitations(input[["dataLimits"]])	
-    wholeTrans=transformations(input[["dataTrans"]])
-    dat=manipDat(dat, dataLimits=wholeLim, dataTrans=wholeTrans)
+    # fF=ifelse("factorThese" %in% names(input), input[["factorThese"]], "")
+    # if(nchar(fF)>1){
+    #   fF=gsub("\n$", "", fF)
+    #   fF=unlist(str_split(fF, "\n"))
+    #   fF=str_split(fF, ";[[:space:]]*")
+    #   for(i in length(fF)){
+    #     if(nchar(fF[[i]][1])>1){
+    #       dat[,fF[[i]][1]]=factor(dat[,fF[[i]][1]], levels=unlist(str_split(fF[[i]][2], ",[[:space:]]*")), labels=unlist(str_split(fF[[i]][3], ",[[:space:]]*")))	
+    #     }	
+    #   }
+    # }
+    # 
+    # #perform limits and transformations
+    # #Deal with formatting the data limits for functions
+    # wholeLim=limitations(input[["dataLimits"]])	
+    # wholeTrans=transformations(input[["dataTrans"]])
+    # dat=manipDat(dat, dataLimits=wholeLim, dataTrans=wholeTrans)
     parsecommands <- cleanparse(input[["dataParse"]],"dat")
     if(!is.null(parsecommands)){
       for(i in 1:length(parsecommands$commands)){
         if(parsecommands$within[i]) tryCatch(eval(parse(text=paste0("dat <- within(dat, {", parsecommands$commands[i], "})"))),
                                              error=function(e) cat(file=stderr(),paste("Parsing command broken:\n",parsecommands$commands[i],"\n", e)))
         if(!parsecommands$within[i]) tryCatch(eval(parse(text=paste0("dat <- ", parsecommands$commands[i]))), 
-                                         error=function(e) cat(file=stderr(),print(paste("Parsing command broken:\n",parsecommands$commands[i],"\n", e))))
+                                              error=function(e) cat(file=stderr(),print(paste("Parsing command broken:\n",parsecommands$commands[i],"\n", e))))
       }
     }
     
@@ -287,6 +444,8 @@ shinyServer(function(input, output, session) {
   })	
   
   cat(file=stderr(), "LOG: End dataFile definition\n")
+  
+  
   ##############	
   # Output Renders - Just the data set overview and plot title
   ##############
@@ -294,38 +453,55 @@ shinyServer(function(input, output, session) {
 
    
   #Raw Contents
-  output$contentsHead <- DT::renderDataTable({
-    cat(file=stderr(), "LOG: rendering dataTable\n")
-    cat(file=stderr(), "LOG: contentsHead called\n")
+  output$contentsHead_tabledata <- DT::renderDataTable({
+    cat(file=stderr(), "LOG: contentsHead_tabledata called\n")
     if("runno" %nin% names(input)){
         return()
       }
-      if(is.null(dataFile())){
+      if(is.null(tableFile())){
         return()
       }
-    return(head(dataFile(), n = 20))
+    return(datatable(tableFile(),filter="top"))
   })
-  
+  output$contentsHead_sourcedata <- DT::renderDataTable({
+    cat(file=stderr(), "LOG: contentsHead_sourcedata called\n")
+    if("srcData" %nin% names(input)){
+      return()
+    }
+    if(is.null(sourceFile())){
+      return()
+    }
+    return(datatable(sourceFile(), filter="top"))
+  })  
+  output$contentsHead_analysisdata <- DT::renderDataTable({
+    cat(file=stderr(), "LOG: contentsHead_analysisdata called\n")
+    if("srcData" %nin% names(input) & "runno" %nin% names(input)){
+      return()
+    }
+    if(is.null(dataFile())){
+      return()
+    }
+    return(datatable(dataFile(), filter="top"))
+  })  
   
   #Raw Contents
-  output$contentsSummary <- renderPrint({
+  summarizeContents <- function(data){
     cat(file=stderr(), "LOG: performing contents summary\n")
-    if("runno" %in% names(input)){	
-      if (input$runno=="#" & input$srcData=="sourcedata.csv") {
-        return()
-      }
-      if(is.null(dataFile())){
-        return()
-      }
-      
-      fakeData=dataFile()
-      classes <- sapply(fakeData,class)
-      fakeData <- summary(fakeData)
-      dimnames(fakeData)[[2]] <- sprintf("%s (%s)",str_trim(dimnames(fakeData)[[2]]),classes)
-      return(fakeData)
+    if(is.null(data)){
+      return()
     }
-  })
+        
+    fakeData=data
+    classes <- sapply(fakeData,class)
+    fakeData <- summary(fakeData)
+    dimnames(fakeData)[[2]] <- sprintf("%s (%s)",str_trim(dimnames(fakeData)[[2]]),classes)
+    return(fakeData)
+  }
+  output$contentsSummary_tabledata <- renderPrint({summarizeContents(tableFile())})
+  output$contentsSummary_sourcedata <- renderPrint({summarizeContents(sourceFile())})
+  output$contentsSummary_analysisdata <- renderPrint({summarizeContents(dataFile())})
   
+
   output$contentsStat <- DT::renderDataTable({
     cat(file=stderr(), "LOG: calculating contents statistics\n")
     if("runno" %in% names(input)){	
@@ -368,6 +544,9 @@ shinyServer(function(input, output, session) {
   
   output$DataTabset <- renderUI({
     cat(file=stderr(), "LOG: creating data input tabset\n")
+    # choices <- names(dataFile())
+    # if(is.null(choices)) choices <- ""
+    
     tabsetPanel(
              tabPanel(title="Project Information",
                       wellPanel(
@@ -388,30 +567,54 @@ shinyServer(function(input, output, session) {
                         #textInput(inputId="baseModel", label="Base Model #", value="")
                       )
               ),
+             tabPanel(title="Modify Data",
+                    fluidPage(
+                      wellPanel(
+                        fluidRow( 
+                          column( 12,
+                                  #h3("Table data:"),
+                                  # boxInputLarge(inputId="renameThese_table", "Rename Columns", value=Defaults$renameThese),
+                                  # boxInputLarge(inputId="factorThese_table", "Factor Columns", value=Defaults$factorThese),
+                                  # boxInputLarge(inputId="dataTrans_table", "Transform Data:", value=Defaults$dataTrans),
+                                  # boxInputLarge(inputId="dataLimits_table", "Limit Data by", value=Defaults$dataLimits),
+                                  boxInputLarge(inputId="dataParse_table", "Table data manipulation code:", value=Defaults$dataParse_table),
+                                  
+                                  h1(""),
+                                  
+                                  #h3("Source data:"),
+                                  # boxInputLarge(inputId="renameThese_source", "Rename Columns", value=Defaults$renameThese),
+                                  # boxInputLarge(inputId="factorThese_source", "Factor Columns", value=Defaults$factorThese),
+                                  # boxInputLarge(inputId="dataLimits_source", "Limit Data by", value=Defaults$dataLimits),
+                                  # boxInputLarge(inputId="dataTrans_source", "Transform Data:", value=Defaults$dataTrans),
+                                  boxInputLarge(inputId="dataParse_source", "Source data manipulation code:", value=Defaults$dataParse_source),
+
+                                  h1(""),
+                                  #h3("Combined data:"),
+                                  # boxInputLarge(inputId="renameThese", "Rename Columns", value=Defaults$renameThese),
+                                  # boxInputLarge(inputId="factorThese", "Factor Columns", value=Defaults$factorThese),
+                                  # boxInputLarge(inputId="dataLimits", "Limit Data by", value=Defaults$dataLimits),
+                                  # boxInputLarge(inputId="dataTrans", "Transform Data:", value=Defaults$dataTrans),
+                                  boxInputLarge(inputId="dataParse", "Analysis data manipulation code:", value=Defaults$dataParse_analysis)
+                          )
+                        )
+                      )  
+                    )
+             ),
              tabPanel(title="Change E-R SSAP Defaults",
                       wellPanel( 
                         textInput("DVCol", "DV Column", Defaults$DVCol),
                         textInput("TAFDCol", "TAFD Column", Defaults$TAFDCol),
                         textInput("STUDCol", "STUD Column", Defaults$STUDCol),
-                        textInput("NMIDCol", "NMID Column", Defaults$NMIDCol)
+                        textInput("NMIDCol", "NMID Column", Defaults$NMIDCol),
+                        textInput("IPREDCol", "IPRED Column", Defaults$IPREDCol),
+                        textInput("PREDCol", "PRED Columns", Defaults$PREDCol)
                         # selectInput("DVCol", "DV Column", choices=choices, selected=Defaults$DVCol, selectize=T),
                         # selectInput("TAFDCol", "TAFD Column", choices=choices, selected=Defaults$TAFDCol, selectize=T),
                         # selectInput("STUDCol", "STUD Column", choices=choices, selected=Defaults$STUDCol, selectize=T),
                         # selectInput("NMIDCol", "NMID Column", choices=choices, selected=Defaults$NMIDCol, selectize=T)
-                                
+                        
                       )
-             ), 
-             tabPanel(title="Modify All Data",
-                    wellPanel(
-                      boxInputLarge(inputId="renameThese", "Rename Columns", value=Defaults$renameThese),
-                      boxInputLarge(inputId="factorThese", "Factor Columns", value=Defaults$factorThese),
-                      boxInputLarge(inputId="dataLimits", "Limit Data by", value=Defaults$dataLimits),
-                      boxInputLarge(inputId="dataTrans", "Transform Data:", value=Defaults$dataTrans),
-                      boxInputLarge(inputId="dataParse", "General code parser:", value=Defaults$dataParse)
-                      )
-    )
-
-             
+             )
     )
   })
 
@@ -419,17 +622,41 @@ shinyServer(function(input, output, session) {
   output$outputTabset <- renderUI({		
     cat(file=stderr(), "LOG: creating data view tabset \n")
     #The first PanelSet is what is loaded with the base defaults.  
-    PanelSet=list(tabPanel("Raw Data",
-                           fluidRow(
-                             column(width = 12,
-                                    box(
-                                      title = "", width = NULL, status = "primary",
-                                      div(style = 'overflow-x: scroll', DT::dataTableOutput('contentsHead'))
-                                    )
-                             )
-                           )
-                            ),
-                   tabPanel("Data Summary", verbatimTextOutput("contentsSummary"))
+    PanelSet=list(
+      tabPanel("Run Data",
+               fluidRow(
+                 column(width = 12,
+                        box(
+                          title = "", width = NULL, status = "primary",
+                          div(style = 'overflow-x: scroll', DT::dataTableOutput('contentsHead_tabledata'))
+                        )
+                 )
+               )
+      ),
+      tabPanel("Run Data Summary", verbatimTextOutput("contentsSummary_tabledata")),
+      tabPanel("Source Data",
+               fluidRow(
+                 column(width = 12,
+                        box(
+                          title = "", width = NULL, status = "primary",
+                          div(style = 'overflow-x: scroll', DT::dataTableOutput('contentsHead_sourcedata'))
+                        )
+                 )
+               )
+      ),
+      tabPanel("Source Data Summary", verbatimTextOutput("contentsSummary_sourcedata")),
+      tabPanel("Analysis Data",
+               fluidRow(
+                 column(width = 12,
+                        box(
+                          title = "", width = NULL, status = "primary",
+                          div(style = 'overflow-x: scroll', DT::dataTableOutput('contentsHead_analysisdata'))
+                        )
+                 )
+               )
+      ),
+      tabPanel("Analysis Data Summary", verbatimTextOutput("contentsSummary_analysisdata"))
+
                             # fluidRow(
                             #   column(width = 12,
                             #          box(
