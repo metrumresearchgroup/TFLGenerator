@@ -39,6 +39,8 @@ DefaultsFirst <- list(
            TAFDCol =                        "TIME" ,
            STUDCol =                        "STUD" ,
            NMIDCol =                        "ID" ,
+          IPREDCol =                       "IPRED" ,
+           PREDCol =                        "PRED" ,
        renameThese =                            "" ,
          ConcvTime =                          TRUE ,
             Demogs =                          TRUE ,
