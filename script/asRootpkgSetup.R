@@ -1,7 +1,7 @@
-#' This must be run first to force an old installation of gridExtra and ggplot2, and run as root
+#' This must be run first to force installation of archived gridExtra and ggplot2, and run as root
 #' This will install into /usr/local/lib/R/site-library as it appears before /usr/lib/R/library (.Library)
 #' on the site PATH.  Shiny should find these older instantiations in /usr/local/lib/R/site-library first.
-# system("apt-get install -y imagemagick") # Installed on current AMI's (launchpad-v2-1.metworx.com +)
+# system("apt-get install -y imagemagick") # This is no longer necessary as it is installed on current AMI's (>= launchpad-v2-1.metworx.com)
 author <- c("root")
 
 dir.create("/root/Rpkg")

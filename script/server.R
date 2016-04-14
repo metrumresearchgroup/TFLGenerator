@@ -2,7 +2,7 @@ debug <- TRUE
 
 #rm(list=ls(all=TRUE))
 Sys.setenv(PATH=paste0(Sys.getenv("PATH"),":/usr/bin"))
-srcDir <- "/data/tflgenerator-ge0.9"
+srcDir <- "/data/tflgenerator"
 root <- ifelse(
   dir.exists("/opt/NMStorage_uslv"),
   "/opt/NMStorage_uslv",
@@ -13,7 +13,7 @@ if(debug){
 }
 
 cat(file=stderr(), "LOG: Start loading packages")
-.libPaths("/data/tflgenerator-ge0.9/script/lib")
+.libPaths("/data/tflgenerator/script/lib")
 library(ggplot2,lib="/usr/local/lib/R/site-library")
 library(gridExtra,lib="/usr/local/lib/R/site-library")
 library(grid)
@@ -386,7 +386,7 @@ shinyServer(function(input, output, session) {
     if("IPREDCol" %in% names(input)) names(dat)[which(names(dat)==input[["IPREDCol"]])]="IPRED"
     if("PREDCol" %in% names(input)) names(dat)[which(names(dat)==input[["PREDCol"]])]="PRED"
     
-    if(all("DV","TAFD","NMID")%in%names(dat)){
+    if(all(c("DV","TAFD","NMID")%in%names(dat))){
       if("STUD" %in% names(dat)) dat <- dat[order(dat$STUD,dat$NMID,dat$TAFD),] else dat <- dat[order(dat$NMID,dat$TAFD),]
     }
     
@@ -1006,8 +1006,10 @@ shinyServer(function(input, output, session) {
                   } # End sameAsDefault!=1
                   
                   observeEvent(input$outputGo,{
-                    cat(file=stderr(), paste("LOG: outputGo for", item, n, "\n"))
                     if(input$saveAs!=""){
+                      cat(file=stderr(), paste("LOG: outputGo for", item, n, 
+                                               ", outputGo value:", input$outputGo, 
+                                               ", inputButton value:", input[[paste("button",item,n,sep="")]],"\n"))
                       if(debug){
                         message <- "DEBUG OUTPUTGO"
                         input_nms <- names(input)
@@ -1029,6 +1031,8 @@ shinyServer(function(input, output, session) {
                         Defaults[[IDX]]<<-input[[IDX]]
                       }
                       Defaults[[paste("priorExists", item, n, sep="")]]<<-TRUE
+
+                      if(item%in%"ConcvTimeMult") argList$tmpDir <- file.path(Dir,"PNG")
                       
                       #insert an error block around the plotting
                       p1 = tryCatch({
@@ -1090,9 +1094,6 @@ shinyServer(function(input, output, session) {
                       #			Save plots and grobs, record the script
                       ################			
                       
-                      if(item%in%"ConcvTimeMult") argList$tmpDir <- file.path(Dir,"PNG")
-                      
-                      p1=do.call(callType, args=argList)
                       
                       p1csv=data.frame(1) # What is this?
                       
@@ -1157,13 +1158,25 @@ shinyServer(function(input, output, session) {
                       # for(listName in names(argList)){
                       #   argListComplete[[listName]]=argList[[listName]]
                       # }
-                      
-                      recordGUI(doWhat=callType, 
+                      if(debug){
+                        input_vals <- reactiveValuesToList(input,all.names=T)
+                        save(callType, useArgs, input_vals, n, argListManip, file=file.path(srcDir,"tmp","message.rda"))
+                      }
+                      tryCatch(
+                        recordGUI(doWhat=callType, 
                                 toWhat=useArgs,
                                 input=input,
                                 number=n,
                                 manipArgs=argListManip,
-                                currentWD=currentWD()
+                                currentWD=currentWD()),
+                        error=function(e){
+                          cat(file=stderr(), sprintf("Record GUI failed with %s %s\n",item,n))
+                          if(debug){
+                          input_vals <- reactiveValuesToList(input,all.names=T)
+                          save(e,callType, useArgs, input_vals, n, argListManip, file=file.path(srcDir,"tmp","record_output.rda"))
+                          }
+                          
+                        }
                       )
                       
                       

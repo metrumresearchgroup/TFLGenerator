@@ -1,17 +1,13 @@
-GUI_VERSION=$(shell grep -i ^version GUI/DESCRIPTION | cut -d : -d \  -f 2)
-GUI_NAME=$(shell grep -i ^package: GUI/DESCRIPTION | cut -d : -d \  -f 2)
 GUI_VERSION=$(shell grep -i ^[Vv]ersion GUI/DESCRIPTION | cut -d : -d \  -f 2)
 GUI_NAME=$(shell grep -i ^[Pp]ackage: GUI/DESCRIPTION | cut -d : -d \  -f 2)
 
-TFL_VERSION=$(shell grep -i ^version TFL/DESCRIPTION | cut -d : -d \  -f 2)
-TFL_NAME=$(shell grep -i ^package: TFL/DESCRIPTION | cut -d : -d \  -f 2)
 TFL_VERSION=$(shell grep -i ^[Vv]ersion TFL/DESCRIPTION | cut -d : -d \  -f 2)
 TFL_NAME=$(shell grep -i ^[Pp]ackage: TFL/DESCRIPTION | cut -d : -d \  -f 2)
 
 GUI_R_FILES := $(wildcard GUI/R/*.R)
 GUI_FILES := GUI/DESCRIPTION GUI/NAMESPACE $(R_FILES) $(SRC_FILES)
 GUI_DATA_FILES := $(wildcard GUI/data/*.rda)
-TFL_SHINYDIR := /data/shiny-server/TFL\ Generator
+TFL_SHINYDIR := /data/shiny-server/TFL\ generator
 
 TFL_R_FILES := $(wildcard TFL/R/*.R)
 TFL_FILES := TFL/DESCRIPTION TFL/NAMESPACE $(R_FILES) $(SRC_FILES)
