@@ -13,7 +13,7 @@ library(shinyFiles)
 
 	dashboardPage(
       	# Application title
-      	dashboardHeader(title="AMGEN TFL Generator"),
+      	dashboardHeader(title="Pharmacometrics TFL Generator"),
       	dashboardSidebar(
       	  sidebarMenu(
       	     
