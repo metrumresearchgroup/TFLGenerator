@@ -1,8 +1,8 @@
-debug <- TRUE
+debug <- F
 
 #rm(list=ls(all=TRUE))
 Sys.setenv(PATH=paste0(Sys.getenv("PATH"),":/usr/bin"))
-srcDir <- "/data/tflgenerator-ge0.9"
+srcDir <- "/data/tflgenerator"
 root <- ifelse(
   dir.exists("/opt/NMStorage_uslv"),
   "/opt/NMStorage_uslv",
@@ -13,7 +13,7 @@ if(debug){
 }
 
 cat(file=stderr(), "LOG: Start loading packages")
-.libPaths("/data/tflgenerator-ge0.9/script/lib")
+.libPaths("/data/tflgenerator/script/lib")
 library(ggplot2,lib="/usr/local/lib/R/site-library")
 library(gridExtra,lib="/usr/local/lib/R/site-library")
 library(grid)
