@@ -1144,7 +1144,8 @@ shinyServer(function(input, output, session) {
                       p1List$Plot <- p1['src']
                     }else{
                       dir.create(file.path(Dir,"PNG"),showWarnings = F)
-                      f <- renderTex(p1,item,n,p1List$Footnote,tmpDir=file.path(Dir,"PNG"),margin=c(left=10,top=5,right=50,bottom=5))
+                      f <- renderTex(p1,item=item,footnote=p1List$Footnote,tmpDir=file.path(Dir,"PNG"),
+                                     margin=c(left=10,top=5,right=50,bottom=5))
                       p1List$Plot <- f['src']
                     }
                   }
