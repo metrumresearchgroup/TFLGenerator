@@ -21,6 +21,16 @@ License: LGPL (>= 2)
 MD5sum: 1293e8656d824b4df6bbb67365ddaf63
 NeedsCompilation: no
 
+Package: devtools
+Version: 1.11.0
+Depends: R (>= 3.0.2)
+Imports: httr (>= 0.4), utils, tools, methods, memoise (>= 1.0.0), whisker, digest, rstudioapi (>= 0.2.0), jsonlite, stats, git2r (>= 0.11.0), withr
+Suggests: curl (>= 0.9), crayon, testthat (>= 0.7), BiocInstaller, Rcpp (>= 0.10.0), MASS, rmarkdown, knitr, hunspell (>= 1.2), lintr (>= 0.2.1), bitops, roxygen2 (>=
+                   5.0.0), evaluate, rversions, covr, gmailr (> 0.7.0)
+License: GPL (>= 2)
+MD5sum: 2f8ba27b4a3e9fbf7ce164fddb40a3d9
+NeedsCompilation: yes
+
 Package: dplyr
 Version: 0.4.3
 Depends: R (>= 3.1.2)
@@ -48,6 +58,16 @@ License: GPL-2
 MD5sum: bcbffd84a796a969b5445e1c86fd6273
 NeedsCompilation: no
 
+Package: ggplot2
+Version: 2.0.0
+Depends: R (>= 2.14)
+Imports: digest, grid, gtable (>= 0.1.1), MASS, plyr (>= 1.7.1), reshape2, scales (>= 0.3.0), stats
+Suggests: ggplot2movies, hexbin, Hmisc, mapproj, maps, maptools, mgcv, multcomp, nlme, testthat, quantreg, knitr
+Enhances: sp
+License: GPL-2
+MD5sum: f43a4581fd7337ca4d3da47bd950861c
+NeedsCompilation: no
+
 Package: gridExtra
 Version: 2.0.0
 Imports: gtable, grid, grDevices, graphics, utils
@@ -66,7 +86,7 @@ NeedsCompilation: yes
 Package: GUI
 Version: 1.0.01
 Depends: R (>= 1.8.0), grid, gridExtra, ggplot2, gdata, boot, plyr, stringr, scales, Hmisc, shinydashboard, shinyFiles, DT, reshape2, rtf, metrumrg
-MD5sum: 5502d8981d961255b7acf499c3f27b53
+MD5sum: 343991e24c1b03c6f5b7891cce2c7971
 NeedsCompilation: no
 
 Package: htmlwidgets
@@ -160,6 +180,6 @@ NeedsCompilation: no
 Package: TFL
 Version: 1.0.01
 Depends: R (>= 1.8.0),reshape, grid, gridExtra, ggplot2, gdata, boot, plyr, stringr, scales, Hmisc, reshape2, rtf
-MD5sum: 428ee86b07666076afe2b4a965b7a40b
+MD5sum: eb894de0664729ff324410f777c3d2ae
 NeedsCompilation: no
 
