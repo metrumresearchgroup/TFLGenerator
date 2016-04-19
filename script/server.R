@@ -1061,6 +1061,13 @@ shinyServer(function(input, output, session) {
                   # }
                   # Defaults[[paste("priorExists", item, n, sep="")]]<<-TRUE
                   
+                  Dir=sprintf("%s/%s_%s/", currentWD(), 
+                              gsub("'","",
+                                   gsub("[[:space:]]|\\.", "_", input$projectTitle)
+                              ), 
+                              Sys.Date()
+                  )
+                  
                   if(item%in%"ConcvTimeMult") argList$tmpDir <- file.path(Dir,"PNG")
                   
                   #insert an error block around the plotting
@@ -1092,12 +1099,7 @@ shinyServer(function(input, output, session) {
                   
                   #Create the save directory
                   
-                  Dir=sprintf("%s/%s_%s/", currentWD(), 
-                              gsub("'","",
-                                   gsub("[[:space:]]|\\.", "_", input$projectTitle)
-                              ), 
-                              Sys.Date()
-                  )
+
                   
                   
                   fileHead=sprintf("%s%s_%s",Dir, input$saveAs, Sys.Date())
