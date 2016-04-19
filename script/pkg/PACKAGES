@@ -92,7 +92,7 @@ Package: GUI
 Version: 1.0.01
 Depends: R (>= 1.8.0), grid, gridExtra, ggplot2, gdata, boot, plyr, stringr, scales,
          Hmisc, shinydashboard, shinyFiles, DT, reshape2, rtf, metrumrg
-MD5sum: 3f91ab10955f35f708cb96460bd4e443
+MD5sum: e926df33a39cba7c64681a9e788be25f
 NeedsCompilation: no
 
 Package: Hmisc
@@ -197,6 +197,6 @@ Package: TFL
 Version: 1.0.01
 Depends: R (>= 1.8.0),reshape, grid, gridExtra, ggplot2, gdata, boot, plyr, stringr,
          scales, Hmisc, reshape2, rtf
-MD5sum: ab58344496fb1fe49c89bada6d3fcf53
+MD5sum: 39ee659bc0de02b715fb013ced68acbb
 NeedsCompilation: no
 
