@@ -43,9 +43,7 @@ shinyServer(function(input, output, session) {
            })
   unlockBinding("tabList", as.environment("package:GUI"))
   tabList<<-tabList()
-  plotList$sidebarType <- c("Figures","Figures","Tables","Figures","Figures","Figures","Figures",
-                            "Figures","Figures","Tables","Listings","Tables","Tables","Tables",
-                            "Figures")
+
 
 
   # Get client data
@@ -976,8 +974,15 @@ shinyServer(function(input, output, session) {
                       save(message,file=file.path(debugDir,"message.rda"))
                     } 
                     
-                    
-                    if(item %nin% c("demogTabCont","demogTabCat","NMTab","ConcvTimeMult")){
+                    if(item %in% c("inputTable", "inputListing", "inputFigure", "inputListing_text")){
+                      if("src" %in% names(p1)){
+                        output[[paste("Plot",item,n,sep="")]] <<-
+                          renderImage(p1,deleteFile=F)
+                      }else{
+                        output[[paste("Plot",item,n,sep="")]] <<- 
+                          renderPrint({ head(p1$preview,n=input[[paste0("previewhead",item,n)]])})
+                      }
+                    }else if(item %nin% c("demogTabCont","demogTabCat","NMTab","ConcvTimeMult")){
                       #Perform the actual plotting
                       output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
                         print(p1)
@@ -990,7 +995,8 @@ shinyServer(function(input, output, session) {
                                   margin=c(left=input[[paste0("leftmargin",item,n)]],
                                            top=input[[paste0("topmargin",item,n)]],
                                            bottom=input[[paste0("bottommargin",item,n)]],
-                                           right=input[[paste0("rightmargin",item,n)]]))
+                                           right=input[[paste0("rightmargin",item,n)]]),
+                                  footnote=input[[paste("Footnote",item,n,sep="")]])
                         ,deleteFile=F)
                     }
                     
@@ -1134,13 +1140,22 @@ shinyServer(function(input, output, session) {
                               Stratification="",
                               LegendTitle=ifelse(paste("LegendTitle", item, n, sep="") %in% names(input), input[[paste("LegendTitle", item, n, sep="")]], ""),
                               Legend=ifelse(paste("Legend", item, n, sep="") %in% names(input), input[[paste("Legend", item, n, sep="")]], ""),
+                              Footnote=ifelse(paste("Footnote",item,n,sep="") %in% names(input), input[[paste("Footnote",item,n,sep="")]], ""),
                               Plot=p1,
                               Type=plotList$sidebarType[plotList$type==item],
                               CSV=p1csv
                   )
+                  if(p1List$Footnote=="") p1List$Footnote <- NULL
                   p1Name=paste(item,n, sep="")
                   if(input$PNG){
-                    if(callType %nin% c("demogTabCont","demogTabCat","RNM","ConcvTimeMult")){
+                    if(item %in% c("inputTable", "inputListing", "inputFigure", "inputListing_text")){
+                       if("src" %in% names(p1)){
+                         p1List$Plot <- p1$src 
+                         if(item=="inputTable") p1List$Footnote <- NULL
+                       }else{
+                         p1List$longText <- p1$preview
+                       }
+                    }else if(callType %nin% c("demogTabCont","demogTabCat","RNM","ConcvTimeMult")){
                       savePlots(plotName=p1,  directory=Dir, saveName=paste(item,n, sep=""))
                     }else if(item=="ConcvTimeMult"){
                       p1List$Plot <- p1['src']
@@ -1238,19 +1253,20 @@ shinyServer(function(input, output, session) {
         grobFile=sprintf("%s_Grobs.R", fileHead)
         
         getObj <- function(x){
-          titles <- lapply(grep("LegendTitle",names(input)), function(xx) input[[xx]])
-          names(titles) <- grep("LegendTitle",names(input),value=T)
+          input_vals <- reactiveValuesToList(input)
+          titles <- lapply(grep("LegendTitle",names(input_vals)), function(xx) input_vals[[xx]])
+          names(titles) <- grep("LegendTitle",names(input_vals),value=T)
           str_split(names(which(x == titles)),"LegendTitle")[[1]][2]
         }
         
-        figureOrder <- tryCatch(sapply(input$figureOrder, getObj) ,
+        figureOrder <- tryCatch(sapply(input[["figureOrder"]], getObj) ,
                                 error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","figureOrderError.rda")) )
-        tableOrder <- tryCatch(sapply(input$tableOrder, getObj) ,
+        tableOrder <- tryCatch(sapply(input[["tableOrder"]], getObj) ,
                              error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","tableOrderError.rda")))
-        listingOrder <- tryCatch(sapply(input$listingOrder, getObj), 
+        listingOrder <- tryCatch(sapply(input[["listingOrder"]], getObj), 
                                error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","ListingOrderError.rda")) )
         guiGrobs <- tryCatch(guiGrobs[c(tableOrder,figureOrder,listingOrder)],
-                             error=function(e) if(debug) save(e,file=file.path(srcDir,"tkmp","guiGrobsOrderError.rda")))
+                             error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","guiGrobsOrderError.rda")))
         
         tryCatch(writeRTF(grobFile),
                  error=function(e){

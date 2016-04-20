@@ -56,7 +56,11 @@ dataParse_analysis =                            "" ,
            verbose =                         FALSE ,
   ConcvTimeMultNum =                             0 ,
        demogTabNum =                             0 ,
-  DescParamStatNum =                             0
+  DescParamStatNum =                             0 ,
+     inputTableNum =                             0 ,
+    inputFigureNum =                             0 ,
+   inputListingNum =                             0 ,
+inputListing_textNum =                           0
 )
 
 save(DefaultsFirst,file=file.path(getwd(),"GUI","data","DefaultsFirst.rda")) # Expects to run from top of repo
