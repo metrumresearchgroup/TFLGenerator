@@ -13,7 +13,7 @@ library(shinyFiles)
 
 	dashboardPage(
       	# Application title
-      	dashboardHeader(title="Pharmacometrics TFL Generator"),
+      	dashboardHeader(title="Pharmacometrics TFL"),
       	dashboardSidebar(
       	  sidebarMenu(
       	     
@@ -24,7 +24,7 @@ library(shinyFiles)
       	      h1(""),
       	      # shinyDirButton(id="dataPath", label='Set working directory', title='Please select a working directory'),
       	      h1(""),
-      	      menuItem(text="Pharmacometrics TFL Generator", tabName = "tabIntro", icon=icon("clock")),
+      	      menuItem(text="Pharmacometrics TFL", tabName = "tabIntro", icon=icon("clock")),
       	      menuItem(text="Data Input", tabName="tabDataInput", icon=icon("sliders")),
       	      menuItem(text="Data", tabName="tabData", icon=icon("database")),
       	      menuItem(text="Analysis Selection", tabName="tabAnalysisSelection", icon=icon("check-square-o")),
