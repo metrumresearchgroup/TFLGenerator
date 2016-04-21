@@ -847,6 +847,38 @@ shinyServer(function(input, output, session) {
             n=this_n
             if(n!=0){	
               observeEvent(input[[paste("button",item,n,sep="")]],{ 
+                
+                local({
+                  
+                  # Autosave routine
+                  if(dir.exists(currentWD()) & input[["projectTitle"]]!=""){
+                    if(currentWD()!=DefaultsFirst["dataPath"]){
+                      Defaults.autosave <- Defaults
+                      for(item in names(DefaultsFirst)){
+                        #put in the non-plot related Defaults
+                        if (item %nin% c(
+                          "saveAll",
+                          "saveAs",
+                          "saveParm",
+                          "saveAsParm",
+                          "PNG",
+                          "RTF",
+                          "dataPath", 
+                          "recall"))
+                        { Defaults.autosave[[item]]<-input[[item]] }
+                      }
+                      if(debug){
+                        input_vals <- reactiveValuesToList(input)
+                        save(Defaults.autosave, input_vals, file=file.path(srcDir,"tmp","autosave-debug.rda"))
+                      }
+                      tryCatch(recordInput(input=reactiveValuesToList(input),Defaults=Defaults.autosave,currentWD=currentWD(),autosave=T),
+                               warning=function(w) cat(file=stderr(), paste("LOG: autosave warning\n",w)),
+                               error=function(e)  cat(file=stderr(), paste("LOG: autosave error\n",e))
+                      )
+                    }
+                  }
+                })
+
                 if(debug){
                   message <- "DEBUG A"
                   input_nms <- names(input)
@@ -980,7 +1012,7 @@ shinyServer(function(input, output, session) {
                           renderImage(p1,deleteFile=F)
                       }else{
                         output[[paste("Plot",item,n,sep="")]] <<- 
-                          renderPrint({ head(p1$preview,n=input[[paste0("previewhead",item,n)]])})
+                          renderPrint({ writeLines(head(p1$preview,n=input[[paste0("previewhead",item,n)]]))})
                       }
                     }else if(item %nin% c("demogTabCont","demogTabCat","NMTab","ConcvTimeMult")){
                       #Perform the actual plotting
@@ -1058,6 +1090,14 @@ shinyServer(function(input, output, session) {
                     save(message,item,n,input_vals,Defaults,file=file.path(debugDir,"message.rda"))
                   }
                   
+                  Dir=sprintf("%s/%s_%s/", currentWD(), 
+                              gsub("'","",
+                                   gsub("[[:space:]]|\\.", "_", input$projectTitle)
+                              ), 
+                              Sys.Date()
+                  )
+                  dir.create(file.path(Dir,"PNG"),recursive=T)
+                  
                   argList=createArgList(input, item, n, dataFile=dataFile(), currentWD=currentWD())
                   callType=argList$callType
                   argList$callType=NULL
@@ -1067,14 +1107,11 @@ shinyServer(function(input, output, session) {
                   # }
                   # Defaults[[paste("priorExists", item, n, sep="")]]<<-TRUE
                   
-                  Dir=sprintf("%s/%s_%s/", currentWD(), 
-                              gsub("'","",
-                                   gsub("[[:space:]]|\\.", "_", input$projectTitle)
-                              ), 
-                              Sys.Date()
-                  )
                   
-                  if(item%in%"ConcvTimeMult") argList$tmpDir <- file.path(Dir,"PNG")
+                  if(item%in%"ConcvTimeMult"){
+                    argList$tmpDir <- file.path(Dir,"PNG")
+                    argList$regenPlots <- T
+                  }
                   
                   #insert an error block around the plotting
                   p1 = tryCatch({
@@ -1147,25 +1184,25 @@ shinyServer(function(input, output, session) {
                   )
                   if(p1List$Footnote=="") p1List$Footnote <- NULL
                   p1Name=paste(item,n, sep="")
-                  if(input$PNG){
-                    if(item %in% c("inputTable", "inputListing", "inputFigure", "inputListing_text")){
-                       if("src" %in% names(p1)){
-                         p1List$Plot <- p1$src 
-                         if(item=="inputTable") p1List$Footnote <- NULL
-                       }else{
-                         p1List$longText <- p1$preview
-                       }
-                    }else if(callType %nin% c("demogTabCont","demogTabCat","RNM","ConcvTimeMult")){
-                      savePlots(plotName=p1,  directory=Dir, saveName=paste(item,n, sep=""))
-                    }else if(item=="ConcvTimeMult"){
-                      p1List$Plot <- p1['src']
+                  if(callType=="ConcvTimeMult") p1List$Plot <- p1$src
+
+                                    #if(input$PNG){
+                  if(item %in% c("inputTable", "inputListing", "inputFigure", "inputListing_text")){
+                    if("src" %in% names(p1)){
+                      p1List$Plot <- p1$src 
+                      if(item=="inputTable") p1List$Footnote <- NULL
                     }else{
-                      dir.create(file.path(Dir,"PNG"),showWarnings = F)
-                      f <- renderTex(p1,item=item,footnote=p1List$Footnote,tmpDir=file.path(Dir,"PNG"),
-                                     margin=c(left=10,top=5,right=50,bottom=5))
-                      p1List$Plot <- f['src']
+                      p1List$longText <- p1$preview
                     }
+                  }else if(callType %nin% c("demogTabCont","demogTabCat","RNM","ConcvTimeMult")){
+                    savePlots(plotName=p1,  directory=Dir, saveName=paste(item,n, sep=""))
+                  }else if(item%nin%"ConcvTimeMult"){
+                    f <- renderTex(p1,item=item,footnote=p1List$Footnote,tmpDir=file.path(Dir,"PNG"),
+                                   margin=c(left=10,top=5,right=50,bottom=5))
+                    p1List$Plot <- f['src']
                   }
+                  
+                  #}
                   # This is massively inefficient!
                   saveGrob(plot=p1List, Name=p1Name, file=sprintf("%s_Grobs.rda", fileHead))
                   
@@ -1225,58 +1262,53 @@ shinyServer(function(input, output, session) {
         } # End if any input
       }) # End local
     } # End for this item
+    
+    observe(if(input$RTF & input$saveAs!="" ){
+      
+      cat(file=stderr(), "LOG: writing RTF\n")
+      if(debug){
+        message <- "writing RTF"
+        input_nms <- names(input)
+        input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
+        names(input_vals) <- input_nms
+        save(message,input_vals,guiGrobs,file=file.path(debugDir,"message.rda"))
+      }
+      ###############			
+      #			make a document
+      ###############	
+      Dir=sprintf("%s/%s_%s/", currentWD(), gsub("[[:space:]]|\\.", "_", input$projectTitle), Sys.Date())
+      dir.create(Dir,showWarning=FALSE)
+      fileHead=sprintf("%s%s_%s",Dir, input$saveAs, Sys.Date())
+      grobFile=sprintf("%s_Grobs.R", fileHead)
+      
+      getObj <- function(x){
+        input_vals <- reactiveValuesToList(input)
+        titles <- lapply(grep("LegendTitle",names(input_vals)), function(xx) input_vals[[xx]])
+        names(titles) <- grep("LegendTitle",names(input_vals),value=T)
+        str_split(names(which(x == titles)),"LegendTitle")[[1]][2]
+      }
+      
+      figureOrder <- tryCatch(sapply(input[["figureOrder"]], getObj) ,
+                              error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","figureOrderError.rda")) )
+      tableOrder <- tryCatch(sapply(input[["tableOrder"]], getObj) ,
+                             error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","tableOrderError.rda")))
+      listingOrder <- tryCatch(sapply(input[["listingOrder"]], getObj), 
+                               error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","ListingOrderError.rda")) )
+      guiGrobs <- tryCatch(guiGrobs[c(tableOrder,figureOrder,listingOrder)],
+                           error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","guiGrobsOrderError.rda")))
+      
+      tryCatch(writeRTF(grobFile, ordering=names(guiGrobs)),
+               error=function(e){
+                 cat(file=stderr(), paste("LOG: failed to write RTF\n",e,"\n"))
+                 if(debug){
+                   save(guiGrobs, grobFile, figureOrder, tableOrder, listingOrder, file=file.path(srcDir,"tmp","rtferror.rda"))
+                 }
+               })
+    })  
   }) # End observer for outputGo
                   
 
   ##################################################
-  
-  
-  cat(file=stderr(), "LOG: End generating plots\n")
-  # RTF
-  observeEvent(input$outputGo,{  
-      observe(if(input$RTF & input$saveAs!="" ){
-        
-        cat(file=stderr(), "LOG: writing RTF\n")
-        if(debug){
-          message <- "writing RTF"
-          input_nms <- names(input)
-          input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
-          names(input_vals) <- input_nms
-          save(message,input_vals,guiGrobs,file=file.path(debugDir,"message.rda"))
-        }
-        ###############			
-        #			make a document
-        ###############	
-        Dir=sprintf("%s/%s_%s/", currentWD(), gsub("[[:space:]]|\\.", "_", input$projectTitle), Sys.Date())
-        dir.create(Dir,showWarning=FALSE)
-        fileHead=sprintf("%s%s_%s",Dir, input$saveAs, Sys.Date())
-        grobFile=sprintf("%s_Grobs.R", fileHead)
-        
-        getObj <- function(x){
-          input_vals <- reactiveValuesToList(input)
-          titles <- lapply(grep("LegendTitle",names(input_vals)), function(xx) input_vals[[xx]])
-          names(titles) <- grep("LegendTitle",names(input_vals),value=T)
-          str_split(names(which(x == titles)),"LegendTitle")[[1]][2]
-        }
-        
-        figureOrder <- tryCatch(sapply(input[["figureOrder"]], getObj) ,
-                                error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","figureOrderError.rda")) )
-        tableOrder <- tryCatch(sapply(input[["tableOrder"]], getObj) ,
-                             error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","tableOrderError.rda")))
-        listingOrder <- tryCatch(sapply(input[["listingOrder"]], getObj), 
-                               error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","ListingOrderError.rda")) )
-        guiGrobs <- tryCatch(guiGrobs[c(tableOrder,figureOrder,listingOrder)],
-                             error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","guiGrobsOrderError.rda")))
-        
-        tryCatch(writeRTF(grobFile),
-                 error=function(e){
-                   cat(file=stderr(), paste("LOG: failed to write RTF\n",e,"\n"))
-                   if(debug){
-                     save(guiGrobs, grobFile, figureOrder, tableOrder, listingOrder, file=file.path(srcDir,"tmp","rtferror.rda"))
-                   }
-                 })
-      })  
-  })
   
   observeEvent(input$newTemplateGo,{  
     cat(file=stderr(), "LOG: newTemplateGo\n")
@@ -1307,6 +1339,7 @@ shinyServer(function(input, output, session) {
        )
      }
   })
+  
   
   
   #Output and Saving Tabset  
