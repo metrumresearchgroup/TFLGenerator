@@ -1012,7 +1012,7 @@ shinyServer(function(input, output, session) {
                           renderImage(p1,deleteFile=F)
                       }else{
                         output[[paste("Plot",item,n,sep="")]] <<- 
-                          renderPrint({ writeLines(head(p1$preview,n=input[[paste0("previewhead",item,n)]]))})
+                          renderPrint({ head(p1$preview,n=input[[paste0("previewhead",item,n)]])})
                       }
                     }else if(item %nin% c("demogTabCont","demogTabCat","NMTab","ConcvTimeMult")){
                       #Perform the actual plotting
