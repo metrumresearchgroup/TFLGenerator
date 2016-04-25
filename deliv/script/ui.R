@@ -27,7 +27,6 @@ library(shinyFiles)
       	      menuItem(text="Pharmacometrics TFL", tabName = "tabIntro", icon=icon("clock")),
       	      menuItem(text="Data Input", tabName="tabDataInput", icon=icon("sliders")),
       	      menuItem(text="Data", tabName="tabData", icon=icon("database")),
-      	      menuItem(text="Data Exclusions", tabName="tabDataExc", icon=icon("sliders")),
       	      menuItem(text="Analysis Selection", tabName="tabAnalysisSelection", icon=icon("check-square-o")),
       	      menuItem(text="Figures", tabName="tabFigures", icon=icon("bar-chart")),
       	      menuItem(text="Tables", tabName="tabTables", icon=icon("table")),
@@ -66,10 +65,6 @@ library(shinyFiles)
       	            h3("Data Input"),
       	            uiOutput("DataTabset")
       	     ),
-      	    tabItem(tabName="tabDataExc",
-      	            h3("Data exclusions"),
-      	            uiOutput("DataExcTabset")
-      	    ),
       	    tabItem(tabName="tabData",
       	            h3("Data"),
       	            uiOutput("outputTabset")

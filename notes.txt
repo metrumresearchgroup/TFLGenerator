@@ -1,0 +1,10 @@
+-- panel for exclusions only generates once.  Likely due to isolate, how to get around this?  Reactive value for only one column of reactive dataframe?
+-- look into unit testing
+-- Example for specifying exclusions:
+
+OE <- "Keep"
+OE[ DV < 0.05 ] <- "BQL"
+OE[ TAFD > 150 ] <- "Observation after end of study"
+
+SUBEX <- "Keep"
+SUBEX[ RACE=="88" | RACE==88 ] <- "Missing race"

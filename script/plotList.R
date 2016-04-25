@@ -6,35 +6,40 @@ plotList <- list(
      "paramDist",      "covCat"        , "covCon"       ,   "corPairs",
      "QQplot"   ,      "NMTab"         , "ConcvTimeMult",   "DescParamStat",
      "demogTabCont",   "demogTabCat"   , "GOF"          ,   "inputTable"   ,
-     "inputFigure",    "inputListing"  , "inputListing_text"
+     "inputFigure",    "inputListing"  , "inputListing_text",
+     "subjectExclusionsTab", "observationExclusionsTab"
   ),
   Ind = c(
     "ConcvTime" ,    "ConcvTimeInd"   , "demogTab"      ,   "OBSvIPRED"  ,
     "paramDist" ,    "covCat"         , "covCon"        ,   "ggpairs"    ,
     "QQplot"    ,    "RNM"            , "ConcvTimeMult" , "DescParamStat",
     "demogTabCont",  "demogTabCat"    , "GOF"           , "inputFile"    ,
-    "inputFile"   ,  "inputFile"      , "inputFile"
+    "inputFile"   ,  "inputFile"      , "inputFile",
+    "subjectExclusionsTab", "observationExclusionsTab"
   ),
   Sum = c(
     "ConcvTime" ,    "ConcvTimeSum"   ,  "demogTab"     , "OBSvIPRED"    ,
     "paramDist" ,    "covCat"         ,  "covCon"       , "ggpairs"      ,
     "QQplot"    ,    "RNM"            , "ConcvTimeMult" , "DescParamStat",
     "demogTabCont",  "demogTabCat"    , "GOF"           , "inputFile"    ,
-    "inputFile",     "inputFile"      , "inputFile"
+    "inputFile",     "inputFile"      , "inputFile",
+    "subjectExclusionsTab", "observationExclusionsTab"
   ),
   Call = c(
     "panelTypeConcvTime"      ,  "panelTypeConcvTimeGroup" , "panelTypedemogTab"      , "panelTypeOBSvPRED"         ,
   "panelTypeparamDist"        ,  "panelTypecovCat"         , "panelTypecovCon"        , "panelTypecorPairs"         ,
   "panelTypeQQplot"           ,  "panelTypeNMTab"          , "panelTypeConcvTimeMult" , "panelTypeDescParamStat"    ,
   "panelTypedemogTabCont"     ,  "panelTypedemogTabCat"    , "panelTypeGOF"           , "panelTypeinputFile_image"  ,
-  "panelTypeinputFile_image"  ,  "panelTypeinputFile_image", "panelTypeinputFile"
+  "panelTypeinputFile_image"  ,  "panelTypeinputFile_image", "panelTypeinputFile",
+  "panelTypesubjectExclusionsTab", "panelTypeobservationExclusionsTab"
   ),
   sidebarType = 
     c("Figures"               , "Figures"                 , "Tables"                 , "Figures"                    ,
       "Figures"               , "Figures"                 , "Figures"                , "Figures"                    , 
       "Figures"               , "Tables"                  , "Listings"               , "Tables"                     ,
       "Tables"                , "Tables"                  , "Figures"                , "Tables"                     ,
-      "Figures"               , "Listings"                , "Listings" 
+      "Figures"               , "Listings"                , "Listings",
+      "Listings"              , "Listings"
   )
 )
 

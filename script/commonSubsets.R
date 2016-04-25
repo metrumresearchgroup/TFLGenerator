@@ -1,0 +1,1 @@
+subset($DATA, !is.na(DV) & DV!="." & TAFD>=0 & CMTFLAG%in%c(1))
