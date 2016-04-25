@@ -115,3 +115,27 @@ Comments (date):
 -------------------------
 
 demogTabCat, Categorical demographics table, TFL/R/demogTabCat.R
+
+QC'd by:            Commit ID:     
+Comments (date):
+
+
+-------------------------
+
+subjectExclusionsTab, Subject exclusions table, TFL/R/subjectExclusionsTab.R 
+
+QC'd by:            Commit ID:     
+Comments (date):
+
+
+-------------------------
+
+observationExclusionsTab, Observation exclusions table, TFL/R/observationExclusionsTab.R 
+
+QC'd by:            Commit ID:     
+Comments (date):
+
+
+-------------------------
+
+

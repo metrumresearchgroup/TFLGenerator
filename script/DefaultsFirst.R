@@ -39,7 +39,7 @@ dataParse_analysis =                            "" ,
               SSAP =                         FALSE ,
              DVCol =                          "DV" ,
            TAFDCol =                        "TIME" ,
-           STUDCol =                        "STUD" ,
+           STUDYCol =                       "STUDY" ,
            NMIDCol =                        "ID" ,
           IPREDCol =                       "IPRED" ,
            PREDCol =                        "PRED" ,
@@ -60,7 +60,9 @@ dataParse_analysis =                            "" ,
      inputTableNum =                             0 ,
     inputFigureNum =                             0 ,
    inputListingNum =                             0 ,
-inputListing_textNum =                           0
+inputListing_textNum =                           0 ,
+subjectExclusionsTabNum =                        0 ,
+observationExclusionsTabNum =                    0
 )
 
 save(DefaultsFirst,file=file.path(getwd(),"GUI","data","DefaultsFirst.rda")) # Expects to run from top of repo

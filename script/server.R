@@ -41,8 +41,14 @@ shinyServer(function(input, output, session) {
              data(DefaultsFirst)
              Defaults <<- DefaultsFirst
            })
-  unlockBinding("tabList", as.environment("package:GUI"))
-  tabList<<-tabList()
+  # tryCatch(unlockBinding("tabList", as.environment("package:GUI")),
+  #          error=function(e){
+  #            cat(file=stderr(),"LOG: Waiting on tabList\n")
+  #            cat(file=stderr(),paste("Search path:\n",search()))
+  #            system("sleep 5")
+  #            unlockBinding("tabList", as.environment("package:GUI"))
+  #          })
+  # tabList<<-tabList()
 
 
 
@@ -173,7 +179,7 @@ shinyServer(function(input, output, session) {
   #  input$skipLines <- 1
   #  input[["DVCol"]]="DV"
   #  input[["TAFDCol"]]="TIME"
-  #  input[["STUDCol"]]="STUD"
+  #  input[["STUDYCol"]]="STUDY"
   #  input[["NMIDCol"]]="ID"
   #  input[["dataLimits"]] = ""
   #  input[["dataTrans"]] = ""
@@ -181,6 +187,8 @@ shinyServer(function(input, output, session) {
   #read data in a reactive format
   tableFile=reactive({
     cat(file=stderr(), "LOG: tableFile called\n")
+    
+    if("runno" %nin% names(input)) return()
     
     if(input$runno=="#"){
       return()
@@ -202,10 +210,10 @@ shinyServer(function(input, output, session) {
           ext=iext
           fileName=sprintf("%s/%s/%s%s", currentWD(), irun, irun, ext)
           if(!file.exists(fileName)){
-            warning(paste(fileName, 'does not exist'))
             return()
           }			
-          foo=read.table(fileName, header=input$header, skip=input$skipLines, stringsAsFactors=F, fill=TRUE)
+          foo=try(read.table(fileName, header=input$header, skip=input$skipLines, stringsAsFactors=F, fill=TRUE))
+          if(class(foo)=="try-error") return()
           foo$Run=irun
           dat=merge(dat, foo, all=TRUE)
           dat=dat[rowSums(is.na(dat)) != ncol(dat),]
@@ -215,44 +223,7 @@ shinyServer(function(input, output, session) {
     }
     
     dat=data.frame(dat, stringsAsFactors=F)
-    # names(dat)[which(names(dat)==input[["DVCol"]])]="DV"
-    # names(dat)[which(names(dat)==input[["TAFDCol"]])]="TAFD"
-    # names(dat)[which(names(dat)==input[["NMIDCol"]])]="NMID"
-    # names(dat)[which(names(dat)==input[["STUDCol"]])]="STUD"
-    # 
-    # if("STUD" %in% names(dat)) dat <- dat[order(dat$STUD,dat$NMID,dat$TAFD),] else dat <- dat[order(dat$NMID,dat$TAFD),]
-    
-    # #rename columns
-    # rename=ifelse("renameThese_table" %in% names(input), input[["renameThese_table"]], "")
-    # if(nchar(rename)>1){
-    #   rename=gsub("\n$", "", rename)
-    #   rename=unlist(str_split(rename, "\n"))
-    #   rename=str_split(rename, ";[[:space:]]*")
-    #   for(i in length(rename)){
-    #     if(nchar(rename[[i]][1])>1){
-    #       names(dat)[which(names(dat)==rename[[i]][1])]=rename[[i]][2]
-    #     }	
-    #   }
-    # }
-    # 
-    # # #factor entire sets
-    # fF=ifelse("factorThese_table" %in% names(input), input[["factorThese_table"]], "")
-    # if(nchar(fF)>1){
-    #   fF=gsub("\n$", "", fF)
-    #   fF=unlist(str_split(fF, "\n"))
-    #   fF=str_split(fF, ";[[:space:]]*")
-    #   for(i in length(fF)){
-    #     if(nchar(fF[[i]][1])>1){
-    #       dat[,fF[[i]][1]]=factor(dat[,fF[[i]][1]], levels=unlist(str_split(fF[[i]][2], ",[[:space:]]*")), labels=unlist(str_split(fF[[i]][3], ",[[:space:]]*")))
-    #     }
-    #   }
-    # }
-    # 
-    # # #perform limits and transformations
-    # # #Deal with formatting the data limits for functions
-    # wholeLim=limitations(input[["dataLimits_table"]])
-    # wholeTrans=transformations(input[["dataTrans_table"]])
-    # dat=manipDat(dat, dataLimits=wholeLim, dataTrans=wholeTrans)
+
     
     parsecommands <- cleanparse(input[["dataParse_table"]],"dat")
     if(!is.null(parsecommands)){
@@ -282,6 +253,8 @@ shinyServer(function(input, output, session) {
   sourceFile=reactive({
     cat(file=stderr(), "LOG: sourceFile called\n")
     
+    if("srcData" %nin% names(input)) return()
+    
     if(input$srcData=="sourcedata.csv"){
       return()
     }
@@ -289,53 +262,15 @@ shinyServer(function(input, output, session) {
     if(input$srcData %nin% c("", " ", "sourcedata.csv")){
       srcDatFile=sprintf("%s/%s", currentWD(), input$srcData)
       if(!file.exists(srcDatFile)){
-        warning(paste(srcDatFile, 'does not exist'))
         return()
       }			
-      foo=as.best(read.csv(srcDatFile, stringsAsFactors=F, fill=TRUE))
-      if(exists("dat")) dat=merge(foo, dat, all=TRUE) else dat <- foo
+      dat=try(as.best(read.csv(srcDatFile, stringsAsFactors=F, fill=TRUE)))
+      if(class(dat)=="try-error") return()
       dat=dat[rowSums(is.na(dat)) != ncol(dat),]
     }
     
     dat=data.frame(dat, stringsAsFactors=F)
-    # names(dat)[which(names(dat)==input[["DVCol"]])]="DV"
-    # names(dat)[which(names(dat)==input[["TAFDCol"]])]="TAFD"
-    # names(dat)[which(names(dat)==input[["NMIDCol"]])]="NMID"
-    # names(dat)[which(names(dat)==input[["STUDCol"]])]="STUD"
-    # 
-    # if("STUD" %in% names(dat)) dat <- dat[order(dat$STUD,dat$NMID,dat$TAFD),] else dat <- dat[order(dat$NMID,dat$TAFD),]
-    
-    #rename columns
-    # rename=ifelse("renameThese" %in% names(input), input[["renameThese"]], "")
-    # if(nchar(rename)>1){
-    #   rename=gsub("\n$", "", rename)
-    #   rename=unlist(str_split(rename, "\n"))
-    #   rename=str_split(rename, ";[[:space:]]*")
-    #   for(i in length(rename)){
-    #     if(nchar(rename[[i]][1])>1){
-    #       names(dat)[which(names(dat)==rename[[i]][1])]=rename[[i]][2]
-    #     }	
-    #   }
-    # }
-    # 
-    # # #factor entire sets
-    # fF=ifelse("factorThese_source" %in% names(input), input[["factorThese_source"]], "")
-    # if(nchar(fF)>1){
-    #   fF=gsub("\n$", "", fF)
-    #   fF=unlist(str_split(fF, "\n"))
-    #   fF=str_split(fF, ";[[:space:]]*")
-    #   for(i in length(fF)){
-    #     if(nchar(fF[[i]][1])>1){
-    #       dat[,fF[[i]][1]]=factor(dat[,fF[[i]][1]], levels=unlist(str_split(fF[[i]][2], ",[[:space:]]*")), labels=unlist(str_split(fF[[i]][3], ",[[:space:]]*")))
-    #     }
-    #   }
-    # }
-    # 
-    # #perform limits and transformations
-    # # #Deal with formatting the data limits for functions
-    # wholeLim=limitations(input[["dataLimits_source"]])
-    # wholeTrans=transformations(input[["dataTrans_source"]])
-    # dat=manipDat(dat, dataLimits=wholeLim, dataTrans=wholeTrans)
+
     parsecommands <- cleanparse(input[["dataParse_source"]],"dat")
     if(!is.null(parsecommands)){
       for(i in 1:length(parsecommands$commands)){
@@ -359,11 +294,14 @@ shinyServer(function(input, output, session) {
   
   cat(file=stderr(), "LOG: End sourceFile definition\n")
   
+
+  
   #############################################################################
   
+
   #read data in a reactive format
   dataFile=reactive({
-    cat(file=stderr(), "LOG: dataFile called\n")
+  cat(file=stderr(), "LOG: dataFile called\n")
     
     if(is.null(tableFile()) & is.null(sourceFile())){
       return()
@@ -380,45 +318,14 @@ shinyServer(function(input, output, session) {
     if("DVCol" %in% names(input)) names(dat)[which(names(dat)==input[["DVCol"]])] = "DV"
     if("TAFDCol" %in% names(input)) names(dat)[which(names(dat)==input[["TAFDCol"]])]="TAFD"
     if("NMIDCol" %in% names(input)) names(dat)[which(names(dat)==input[["NMIDCol"]])]="NMID"
-    if("STUDCol" %in% names(input)) names(dat)[which(names(dat)==input[["STUDCol"]])]="STUD"
+    if("STUDYCol" %in% names(input)) names(dat)[which(names(dat)==input[["STUDYCol"]])]="STUDY"
     if("IPREDCol" %in% names(input)) names(dat)[which(names(dat)==input[["IPREDCol"]])]="IPRED"
     if("PREDCol" %in% names(input)) names(dat)[which(names(dat)==input[["PREDCol"]])]="PRED"
     
     if(all(c("DV","TAFD","NMID")%in%names(dat))){
-      if("STUD" %in% names(dat)) dat <- dat[order(dat$STUD,dat$NMID,dat$TAFD),] else dat <- dat[order(dat$NMID,dat$TAFD),]
+      if("STUDY" %in% names(dat)) dat <- dat[order(dat$STUDY,dat$NMID,dat$TAFD),] else dat <- dat[order(dat$NMID,dat$TAFD),]
     }
     
-    # #rename columns
-    # rename=ifelse("renameThese" %in% names(input), input[["renameThese"]], "")
-    # if(nchar(rename)>1){
-    #   rename=gsub("\n$", "", rename)
-    #   rename=unlist(str_split(rename, "\n"))
-    #   rename=str_split(rename, ";[[:space:]]*")
-    #   for(i in length(rename)){
-    #     if(nchar(rename[[i]][1])>1){
-    #       names(dat)[which(names(dat)==rename[[i]][1])]=rename[[i]][2]
-    #     }	
-    #   }
-    # }
-  
-    #factor entire sets
-    # fF=ifelse("factorThese" %in% names(input), input[["factorThese"]], "")
-    # if(nchar(fF)>1){
-    #   fF=gsub("\n$", "", fF)
-    #   fF=unlist(str_split(fF, "\n"))
-    #   fF=str_split(fF, ";[[:space:]]*")
-    #   for(i in length(fF)){
-    #     if(nchar(fF[[i]][1])>1){
-    #       dat[,fF[[i]][1]]=factor(dat[,fF[[i]][1]], levels=unlist(str_split(fF[[i]][2], ",[[:space:]]*")), labels=unlist(str_split(fF[[i]][3], ",[[:space:]]*")))	
-    #     }	
-    #   }
-    # }
-    # 
-    # #perform limits and transformations
-    # #Deal with formatting the data limits for functions
-    # wholeLim=limitations(input[["dataLimits"]])	
-    # wholeTrans=transformations(input[["dataTrans"]])
-    # dat=manipDat(dat, dataLimits=wholeLim, dataTrans=wholeTrans)
     parsecommands <- cleanparse(input[["dataParse"]],"dat")
     if(!is.null(parsecommands)){
       for(i in 1:length(parsecommands$commands)){
@@ -429,11 +336,108 @@ shinyServer(function(input, output, session) {
       }
     }
     
+    dat0 <- dat
+    # Can we calculate whole subject exclusions yet?
+    defs <- grep("subjectExclusion[[:digit:]]",names(Defaults),value=T)
+    if(length(defs)>0){
+      
+      # Get the exclusions inputs, assign to Defaults for autosave
+      for(excl in grep("subjectExclusion",names(input),value=T)){
+        if(!grepl("contentsHead",excl)){
+          # For some reason that's not clear to me, this leads to duplicates sometimes in the Defaults.  
+          # Mitigate that by taking the newest:
+          if(excl %in% names(get("Defaults",.GlobalEnv))) Defaults[[excl]] <<- NULL
+          Defaults[[excl]] <<- input[[excl]]
+        }
+      }
+
+      codes <- sapply(defs, function(x) str_trim(strsplit(Defaults[[x]],"::",fixed=T)[[1]][1]))
+      reasons <- sapply(defs, function(x) str_trim(strsplit(Defaults[[x]],"::",fixed=T)[[1]][2]))
+      codes <- codes[!is.na(reasons)]
+      reasons <- reasons[!is.na(reasons)]
+      if(length(reasons)>0){
+        if(any(reasons!="")){
+          cat(file=stderr(), "LOG: calculating subject exclusions\n")
+          if(debug){
+            save(defs,codes,reasons,Defaults,file=file.path(srcDir,"tmp/defs_subj.rda"))
+          }
+          
+          excldat <- dat[dat[,input[["subjectExclusion_col"]]] %in% codes, ]
+          
+          # Ensure there are no patients in the excluded dataset left
+          if("NMID" %in% names(dat)){
+            if(c("STUDY" %in% names(dat))){
+              ids <- unique(paste(excldat$NMID, excldat$STUDY))
+              subjectExclusions <- dat[paste(dat$NMID,dat$STUDY)%in%ids,]
+              dat <- dat[paste(dat$NMID,dat$STUDY)%nin%ids,]
+            }else{
+              ids <- unique(paste(excldat$NMID))
+              subjectExclusions <- dat[paste(dat$NMID) %in% ids,]
+              dat <- dat[paste(dat$NMID)%nin%ids,]
+            }
+            subjectExclusions$excl_reasons <- 
+              metrumrg:::map(subjectExclusions[,input[["subjectExclusion_col"]]],
+                             codes, reasons)
+            #Make this available everywhere
+            subjectExclusions <<- subjectExclusions
+          }
+        }
+      }
+    }
+    
+    # Can we calculate observation exclusions yet?
+    defs <- grep("observationExclusion[[:digit:]]",names(Defaults),value=T)
+    if(length(defs)>0){
+      # Get the exclusions inputs, assign to Defaults for autosave
+      for(excl in grep("observationExclusion",names(input),value=T)){
+        if(!grepl("contentsHead",excl)) Defaults[[excl]] <<- input[[excl]]
+        if(excl %in% names(get("Defaults",.GlobalEnv))) Defaults[[excl]] <<- NULL
+        Defaults[[excl]] <<- input[[excl]]
+      }
+      
+      if(debug){
+        save(defs,Defaults,file=file.path(srcDir,"tmp/defs_obs.rda"))
+      }
+      codes <- sapply(defs, function(x) str_trim(strsplit(Defaults[[x]],"::",fixed=T)[[1]][1]))
+      reasons <- sapply(defs, function(x) str_trim(strsplit(Defaults[[x]],"::",fixed=T)[[1]][2]))
+      codes <- codes[!is.na(reasons)]
+      reasons <- reasons[!is.na(reasons)]
+      
+      if(length(reasons)>0){
+        if(any(reasons!="")){
+          
+          cat(file=stderr(), "LOG: calculating observation exclusions\n")
+          
+          defs <- grep("observationExclusion[[:digit:]]",names(Defaults),value=T)
+          codes <- sapply(defs, function(x) strsplit(Defaults[[x]],"::",fixed=T)[[1]][1])
+          reasons <- sapply(defs, function(x) strsplit(Defaults[[x]],"::",fixed=T)[[1]][2])
+          codes <- codes[!is.na(reasons)]
+          reasons <- reasons[!is.na(reasons)]
+          
+          observationExclusions <- dat[dat[,input[["observationExclusion_col"]]] %in% codes, ]
+          dat <- dat[dat[,input[["observationExclusion_col"]]] %nin% codes,]
+          
+          observationExclusions$excl_reasons <- 
+            metrumrg:::map(observationExclusions[,input[["observationExclusion_col"]]],
+                           codes, reasons)
+          #Make this available in global
+          observationExclusions <<- observationExclusions
+          
+        }
+      }
+      
+    }
+
+
     # For debugging, save a copy of input
     if(debug){
       dati <- dat
       tabList <- get("tabList",envir=.GlobalEnv)
-      save(dati,file=file.path(debugDir,"shinytmpdat.rda"))
+      if(exists("subjectExclusions") & exists("observationExclusions")){
+        save(dati,dat0,subjectExclusions,observationExclusions,Defaults,file=file.path(debugDir,"shinytmpdat.rda"))
+      }else{
+        save(dati,Defaults,file=file.path(debugDir,"shinytmpdat.rda"))
+      }
     }
     # End debugging
     cat(file=stderr(), "LOG: dataFile finished successfully\n")
@@ -452,34 +456,48 @@ shinyServer(function(input, output, session) {
   #Raw Contents
   output$contentsHead_tabledata <- DT::renderDataTable({
     cat(file=stderr(), "LOG: contentsHead_tabledata called\n")
-    if("runno" %nin% names(input)){
-        return()
-      }
-      if(is.null(tableFile())){
-        return()
-      }
+    req(input$runno, tableFile())
+    # if("runno" %nin% names(input)){
+    #     return()
+    #   }
+    #   if(is.null(tableFile())){
+    #     return()
+    #   }
     return(datatable(tableFile(),filter="top"))
   })
   output$contentsHead_sourcedata <- DT::renderDataTable({
     cat(file=stderr(), "LOG: contentsHead_sourcedata called\n")
-    if("srcData" %nin% names(input)){
-      return()
-    }
-    if(is.null(sourceFile())){
-      return()
-    }
+    req(input$srcData,sourceFile())
+    # if("srcData" %nin% names(input)){
+    #   return()
+    # }
+    # if(is.null(sourceFile())){
+    #   return()
+    # }
     return(datatable(sourceFile(), filter="top"))
   })  
   output$contentsHead_analysisdata <- DT::renderDataTable({
     cat(file=stderr(), "LOG: contentsHead_analysisdata called\n")
-    if("srcData" %nin% names(input) & "runno" %nin% names(input)){
-      return()
-    }
-    if(is.null(dataFile())){
-      return()
-    }
+    req(input$srcData,input$runno)
     return(datatable(dataFile(), filter="top"))
   })  
+
+  output$contentsHead_subjectExclusions <- DT::renderDataTable({ NULL })
+  
+  observeEvent(input$generatesubjectExclusions,{
+    cat(file=stderr(),"LOG: contentsHead_subjectExclusions called\n")
+    foo <- isolate(dataFile())
+    output$contentsHead_subjectExclusions <- 
+      DT::renderDataTable({datatable(subjectExclusions, filter="top")})
+  })
+        
+  output$contentsHead_observationExclusions <- DT::renderDataTable({NULL})
+  observeEvent(input$generateobservationExclusions,{
+    cat(file=stderr(), "LOG: contentsHead_observationExclusions called\n")
+    foo <- isolate(dataFile())
+    output$contentsHead_observationExclusions <-
+      DT::renderDataTable({datatable(observationExclusions, filter="top")})
+  })
   
   #Raw Contents
   summarizeContents <- function(data){
@@ -487,7 +505,7 @@ shinyServer(function(input, output, session) {
     if(is.null(data)){
       return()
     }
-        
+    
     fakeData=data
     classes <- sapply(fakeData,class)
     fakeData <- summary(fakeData)
@@ -497,37 +515,15 @@ shinyServer(function(input, output, session) {
   output$contentsSummary_tabledata <- renderPrint({summarizeContents(tableFile())})
   output$contentsSummary_sourcedata <- renderPrint({summarizeContents(sourceFile())})
   output$contentsSummary_analysisdata <- renderPrint({summarizeContents(dataFile())})
-  
 
-  output$contentsStat <- DT::renderDataTable({
-    cat(file=stderr(), "LOG: calculating contents statistics\n")
-    if("runno" %in% names(input)){	
-      if (input$runno=="#" & input$srcData=="sourcedata.csv") {
-        return()
-      }
-      if(is.null(dataFile())){
-        return()
-      }
-      
-      fakeData=apply(dataFile(), c(2), unique)
-      #	fakeData=sapply(fakeData, as.numeric)
-      fakeData=sapply(fakeData, function(x){
-        if(length(x)>15){
-          x=c(min(x,na.rm=TRUE), max(x, na.rm=TRUE), sample(x, 13, replace=FALSE))
-          x=x[order(x)]
-        }
-        if(length(x)<=15){
-          x=unique(x)
-          if(length(x)<15){
-            x=c(x[order(x)], rep("", times=(15-length(x))))
-          }	
-        }
-        return(x)})
-      fakeData=data.frame(fakeData, check.names=FALSE, stringsAsFactors=FALSE)
-      fakeData=fakeData[,names(dataFile())]
-      return(fakeData)
-    }
-  })
+  # output$contentsSummary_subjectExclusions <- renderPrint(NULL)
+  # observeEvent(exists("subjectExclusions"),{
+  #   output$contentsSummary_subjectExclusions <- renderPrint({summarizeContents(subjectExclusions)})
+  # })
+  # output@contentsSummary_observationExclusions <- renderPrint(NULL)
+  # observeEvent(exists("observationExclusions"),{
+  #   output$contentsSummary_observationExclusions <- renderPrint({summarizeContents(observationExclusions)})
+  # })
   
   
   output$projectTitle <- renderText({
@@ -537,13 +533,63 @@ shinyServer(function(input, output, session) {
   })
   
   cat(file=stderr(), "LOG: End data summary tab definitions\n")
-#Data Input Tabset
+  #Data Input Tabset
   
+  excl_list <- reactive({
+    # if(req(input$generateExclusions) == 0) return(list(h1(""),renderText("Press button to generate exclusions mapping")))
+    # if("subjectExclusion_col" %nin% names(input)) return(list(renderPrint("Input exclusion column")))
+    # if(input$subjectExclusion_col == "") return(list(renderPrint("Input exclusion column")))
+    cat(file=stderr(),"LOG: excl_list called\n")
+    nms <- isolate(unique(dataFile()[,input$subjectExclusion_col]))
+    nms <- paste0(nms,"::")
+    # If there's no existing default, or if the exclusion indicator is different
+    # for the exclusion, set it it to ""
+    for(i in seq_along(nms)){
+      Defaults[[paste0("subjectExclusion",i)]] <<- 
+        ifelse(any(grepl(nms[i],Defaults,fixed=T)), 
+               grep(nms[i],Defaults,fixed=T,value=T)[1],
+               nms[i])
+    }
+    out <- lapply(seq_along(nms),
+                  function(i){
+                    id <- strsplit(nms[i],"::",fixed=T)[[1]][1]
+                    textInput(paste0("subjectExclusion",i),
+                              paste0("Exclusion reason for ",id, " (add reason after <id>::)"),
+                              Defaults[[paste0("subjectExclusion",i)]])
+                  })
+    out <- c(out, list(h1("")),list(actionButton("generatesubjectExclusions","Generate subject exclusions")))
+    return(out)
+  })
+
+  obsexcl_list <- reactive({
+    # if(req(input$generateExclusions) == 0) return(list(h1(""),renderText("Press button to generate exclusions mapping")))
+    # if("subjectExclusion_col" %nin% names(input)) return(list(renderPrint("Input exclusion column")))
+    # if(input$subjectExclusion_col == "") return(list(renderPrint("Input exclusion column")))
+    cat(file=stderr(),"LOG: obsexcl_list called\n")
+    nms <- isolate(unique(dataFile()[,input$observationExclusion_col]))
+    nms <- paste0(nms,"::")
+    # If there's no existing default, or if the exclusion indicator is different
+    # for the exclusion, set it it to ""
+    for(i in seq_along(nms)){
+      Defaults[[paste0("observationExclusion",i)]] <<- 
+        ifelse(any(grepl(nms[i],Defaults,fixed=T)), 
+               grep(nms[i],Defaults,fixed=T,value=T)[1],
+               nms[i])
+    }
+    out <- lapply(seq_along(nms),
+                  function(i){
+                    id <- strsplit(nms[i],"::",fixed=T)[[1]][1]
+                    textInput(paste0("observationExclusion",i),
+                              paste0("Exclusion reason for ",id, " (add reason after <id>::)"),
+                              Defaults[[paste0("observationExclusion",i)]])
+                  })
+    out <- c(out,list(h1("")),list(actionButton("generateobservationExclusions","Generate observation exclusions")))
+    return(out)
+  })
+  
+
   output$DataTabset <- renderUI({
     cat(file=stderr(), "LOG: creating data input tabset\n")
-    # choices <- names(dataFile())
-    # if(is.null(choices)) choices <- ""
-    
     tabsetPanel(
              tabPanel(title="Project Information",
                       wellPanel(
@@ -601,21 +647,19 @@ shinyServer(function(input, output, session) {
                       wellPanel( 
                         textInput("DVCol", "DV Column", Defaults$DVCol),
                         textInput("TAFDCol", "TAFD Column", Defaults$TAFDCol),
-                        textInput("STUDCol", "STUD Column", Defaults$STUDCol),
+                        textInput("STUDYCol", "STUDY Column", Defaults$STUDYCol),
                         textInput("NMIDCol", "NMID Column", Defaults$NMIDCol),
                         textInput("IPREDCol", "IPRED Column", Defaults$IPREDCol),
-                        textInput("PREDCol", "PRED Columns", Defaults$PREDCol)
-                        # selectInput("DVCol", "DV Column", choices=choices, selected=Defaults$DVCol, selectize=T),
-                        # selectInput("TAFDCol", "TAFD Column", choices=choices, selected=Defaults$TAFDCol, selectize=T),
-                        # selectInput("STUDCol", "STUD Column", choices=choices, selected=Defaults$STUDCol, selectize=T),
-                        # selectInput("NMIDCol", "NMID Column", choices=choices, selected=Defaults$NMIDCol, selectize=T)
-                        
+                        textInput("PREDCol", "PRED Columns", Defaults$PREDCol),
+                        textInput("subjectExclusion_col", "Subject exclusion column\n(analysis dataset)",""),
+                        textInput("observationExclusion_col", "Observation exclusion column\n(analysis dataset)","")
                       )
              )
+
     )
   })
 
-#Data Tabset  
+  #Data Tabset  
   output$outputTabset <- renderUI({		
     cat(file=stderr(), "LOG: creating data view tabset \n")
     #The first PanelSet is what is loaded with the base defaults.  
@@ -653,31 +697,60 @@ shinyServer(function(input, output, session) {
                )
       ),
       tabPanel("Analysis Data Summary", verbatimTextOutput("contentsSummary_analysisdata"))
-
-                            # fluidRow(
-                            #   column(width = 12,
-                            #          box(
-                            #            title = "Summary", width = NULL, status = "primary",
-                            #            div(style = 'overflow-x: scroll', DT::dataTableOutput('contentsSummary'))
-                            #          )
-                            #   )
-                            # )
-                            # ,
-                            # fluidRow(
-                            #   column(width = 12,
-                            #          box(
-                            #            title = "Statistics", width = NULL, status = "primary",
-                            #            div(style = 'overflow-x: scroll', DT::dataTableOutput('contentsStat'))
-                            #          )
-                            #   )
-                            # )
-                  # 
-                  #                             )
     )
     dummy=(do.call(tabsetPanel, PanelSet))
     return(dummy)
     
-
+  })
+  
+  
+  output$DataExcTabset <- renderUI({
+    cat(file=stderr(), "LOG: creating data exclusions tabset\n")
+    tabsetPanel(
+      tabPanel(
+        title="Subject exclusions",
+        tabsetPanel(
+          tabPanel(title="Subject exclusion specification",
+                   h1(""),
+                   do.call(wellPanel,excl_list())
+          ),
+          tabPanel("Subject Exclusion Data",
+                   fluidRow(
+                     column(width = 12,
+                            box(
+                              title = "", width = NULL, status = "primary",
+                              div(style = 'overflow-x: scroll', DT::dataTableOutput('contentsHead_subjectExclusions'))
+                            )
+                     )
+                   )
+          )
+          # ,
+          # tabPanel("Subject Exclusions Data Summary", verbatimTextOutput("contentsSummary_subjectExclusions"))
+        )
+      ),
+      tabPanel(
+        title="Observation exclusions",
+        tabsetPanel(
+          
+          tabPanel(title="Observation exclusion specification",
+                   h1(""),
+                   do.call(wellPanel,obsexcl_list())
+          ),
+          tabPanel("Observation Exclusion Data",
+                   fluidRow(
+                     column(width = 12,
+                            box(
+                              title = "", width = NULL, status = "primary",
+                              div(style = 'overflow-x: scroll', DT::dataTableOutput('contentsHead_observationExclusions'))
+                            )
+                     )
+                   )
+          )
+          # ,
+          # tabPanel("Observation Exclusions Data Summary", verbatimTextOutput("contentsSummary_observationExclusions"))
+        )
+      )
+    )
   })
   
 
@@ -853,28 +926,31 @@ shinyServer(function(input, output, session) {
                   # Autosave routine
                   if(dir.exists(currentWD()) & input[["projectTitle"]]!=""){
                     if(currentWD()!=DefaultsFirst["dataPath"]){
-                      Defaults.autosave <- Defaults
-                      for(item in names(DefaultsFirst)){
-                        #put in the non-plot related Defaults
-                        if (item %nin% c(
-                          "saveAll",
-                          "saveAs",
-                          "saveParm",
-                          "saveAsParm",
-                          "PNG",
-                          "RTF",
-                          "dataPath", 
-                          "recall"))
-                        { Defaults.autosave[[item]]<-input[[item]] }
-                      }
-                      if(debug){
-                        input_vals <- reactiveValuesToList(input)
-                        save(Defaults.autosave, input_vals, file=file.path(srcDir,"tmp","autosave-debug.rda"))
-                      }
-                      tryCatch(recordInput(input=reactiveValuesToList(input),Defaults=Defaults.autosave,currentWD=currentWD(),autosave=T),
-                               warning=function(w) cat(file=stderr(), paste("LOG: autosave warning\n",w)),
-                               error=function(e)  cat(file=stderr(), paste("LOG: autosave error\n",e))
-                      )
+                      isolate({
+                        Defaults.autosave <- Defaults
+                        for(item in names(DefaultsFirst)){
+                          #put in the non-plot related Defaults
+                          if (item %nin% c(
+                            "saveAll",
+                            "saveAs",
+                            "saveParm",
+                            "saveAsParm",
+                            "PNG",
+                            "RTF",
+                            "dataPath", 
+                            "recall"))
+                          { Defaults.autosave[[item]]<-input[[item]] }
+                        }
+                        if(debug){
+                          input_vals <- reactiveValuesToList(input)
+                          save(Defaults.autosave, input_vals, file=file.path(srcDir,"tmp","autosave-debug.rda"))
+                        }
+                        tryCatch(recordInput(input=reactiveValuesToList(input),Defaults=Defaults.autosave,currentWD=currentWD(),autosave=T),
+                                 warning=function(w) cat(file=stderr(), paste("LOG: autosave warning\n",w)),
+                                 error=function(e)  cat(file=stderr(), paste("LOG: autosave error\n",e))
+                        )  
+                      })
+                     
                     }
                   }
                 })
@@ -1006,13 +1082,14 @@ shinyServer(function(input, output, session) {
                       save(message,file=file.path(debugDir,"message.rda"))
                     } 
                     
-                    if(item %in% c("inputTable", "inputListing", "inputFigure", "inputListing_text")){
+                    if(item %in% c("inputTable", "inputListing", "inputFigure", "inputListing_text",
+                                   "observationExclusionsTab","subjectExclusionsTab")){
                       if("src" %in% names(p1)){
                         output[[paste("Plot",item,n,sep="")]] <<-
                           renderImage(p1,deleteFile=F)
                       }else{
                         output[[paste("Plot",item,n,sep="")]] <<- 
-                          renderPrint({ head(p1$preview,n=input[[paste0("previewhead",item,n)]])})
+                          renderPrint({ print(head(p1$preview,n=input[[paste0("previewhead",item,n)]]),row.names=F)})
                       }
                     }else if(item %nin% c("demogTabCont","demogTabCat","NMTab","ConcvTimeMult")){
                       #Perform the actual plotting
@@ -1186,8 +1263,14 @@ shinyServer(function(input, output, session) {
                   p1Name=paste(item,n, sep="")
                   if(callType=="ConcvTimeMult") p1List$Plot <- p1$src
 
-                                    #if(input$PNG){
-                  if(item %in% c("inputTable", "inputListing", "inputFigure", "inputListing_text")){
+                  if(grepl("Exclusion",item)){
+                    copy <- try(file.copy(from=p1$file,to=file.path(Dir,"PNG")))
+                    if(class(copy)=="try-error"){
+                      argList$tmpDir <- file.path(Dir,"PNG")
+                      p1 <- do.call(callType,argList)
+                      p1List$Plot <- p1
+                    } 
+                  }else if(item %in% c("inputTable", "inputListing", "inputFigure", "inputListing_text")){
                     if("src" %in% names(p1)){
                       p1List$Plot <- p1$src 
                       if(item=="inputTable") p1List$Footnote <- NULL
@@ -1202,7 +1285,6 @@ shinyServer(function(input, output, session) {
                     p1List$Plot <- f['src']
                   }
                   
-                  #}
                   # This is massively inefficient!
                   saveGrob(plot=p1List, Name=p1Name, file=sprintf("%s_Grobs.rda", fileHead))
                   
@@ -1347,7 +1429,7 @@ shinyServer(function(input, output, session) {
   output$SaveTabset<-renderUI({
     cat(file=stderr(), paste("LOG: saveTabset\n"))
     wellPanel(
-      checkboxInput("PNG", "Record *.pngs", Defaults$PNG),
+      #checkboxInput("PNG", "Record *.pngs", Defaults$PNG),
       checkboxInput("RTF", "Construct *.Doc", Defaults$RTF),
       checkboxInput("verbose", "Reveal Function Text?", Defaults$verbose),
       textInput("saveAs", "File Name", Defaults$saveAs),
