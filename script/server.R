@@ -297,6 +297,7 @@ shinyServer(function(input, output, session) {
 
   
   #############################################################################
+  revals <- reactiveValues(nms_subj="",nms_obs="")
   
 
   #read data in a reactive format
@@ -337,6 +338,9 @@ shinyServer(function(input, output, session) {
     }
     
     dat0 <- dat
+    revals$nms_subj <- isolate(unique(dat[,input$subjectExclusion_col]))
+    revals$nms_obs <- isolate(unique(dat[,input$observationExclusion_col]))
+    
     # Can we calculate whole subject exclusions yet?
     defs <- grep("subjectExclusion[[:digit:]]",names(Defaults),value=T)
     if(length(defs)>0){
@@ -535,13 +539,14 @@ shinyServer(function(input, output, session) {
   cat(file=stderr(), "LOG: End data summary tab definitions\n")
   #Data Input Tabset
   
+  
   excl_list <- reactive({
     # if(req(input$generateExclusions) == 0) return(list(h1(""),renderText("Press button to generate exclusions mapping")))
     # if("subjectExclusion_col" %nin% names(input)) return(list(renderPrint("Input exclusion column")))
     # if(input$subjectExclusion_col == "") return(list(renderPrint("Input exclusion column")))
     cat(file=stderr(),"LOG: excl_list called\n")
-    nms <- isolate(unique(dataFile()[,input$subjectExclusion_col]))
-    nms <- paste0(nms,"::")
+    #nms <- isolate(unique(dataFile()[,input$subjectExclusion_col]))
+    nms <- paste0(revals$nms_subj,"::")
     # If there's no existing default, or if the exclusion indicator is different
     # for the exclusion, set it it to ""
     for(i in seq_along(nms)){
@@ -566,8 +571,8 @@ shinyServer(function(input, output, session) {
     # if("subjectExclusion_col" %nin% names(input)) return(list(renderPrint("Input exclusion column")))
     # if(input$subjectExclusion_col == "") return(list(renderPrint("Input exclusion column")))
     cat(file=stderr(),"LOG: obsexcl_list called\n")
-    nms <- isolate(unique(dataFile()[,input$observationExclusion_col]))
-    nms <- paste0(nms,"::")
+    #nms <- isolate(unique(dataFile()[,input$observationExclusion_col]))
+    nms <- paste0(revals$nms_obs,"::")
     # If there's no existing default, or if the exclusion indicator is different
     # for the exclusion, set it it to ""
     for(i in seq_along(nms)){
