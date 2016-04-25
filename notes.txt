@@ -4,7 +4,7 @@
 
 OE <- "Keep"
 OE[ DV < 0.05 ] <- "BQL"
-OE[ TAFD > 500 ] <- "Observation after end of study"
+OE[ TAFD > 150 ] <- "Observation after end of study"
 
 SUBEX <- "Keep"
 SUBEX[ RACE=="88" | RACE==88 ] <- "Missing race"
