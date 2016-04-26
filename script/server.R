@@ -195,35 +195,40 @@ shinyServer(function(input, output, session) {
     }
     
     
-    if(input$runno!="#"){
-      extensions=unlist(str_split(input$ext, ","))
-      extensions=gsub("[[:space:]]*", "", extensions)
+    withProgress(message="Loading...", value=.25, {
       
-      runs=input$runno
-      runs=unlist(str_split(input$runno, ","))
-      runs=gsub("[[:space:]]*", "", runs)
-      
-      
-      dat=matrix()
-      for(irun in runs) {
-        for(iext in extensions){
-          ext=iext
-          fileName=sprintf("%s/%s/%s%s", currentWD(), irun, irun, ext)
-          if(!file.exists(fileName)){
-            return()
-          }			
-          foo=try(read.table(fileName, header=input$header, skip=input$skipLines, stringsAsFactors=F, fill=TRUE))
-          if(class(foo)=="try-error") return()
-          foo$Run=irun
-          dat=merge(dat, foo, all=TRUE)
-          dat=dat[rowSums(is.na(dat)) != ncol(dat),]
-          dat$V1=NULL
-        }	
-      }      
-    }
+      if(input$runno!="#"){
+        
+        extensions=unlist(str_split(input$ext, ","))
+        extensions=gsub("[[:space:]]*", "", extensions)
+        
+        runs=input$runno
+        runs=unlist(str_split(input$runno, ","))
+        runs=gsub("[[:space:]]*", "", runs)
+        
+        
+        dat=matrix()
+        for(irun in runs) {
+          for(iext in extensions){
+            ext=iext
+            fileName=sprintf("%s/%s/%s%s", currentWD(), irun, irun, ext)
+            if(!file.exists(fileName)){
+              return()
+            }			
+            foo=try(read.table(fileName, header=input$header, skip=input$skipLines, stringsAsFactors=F, fill=TRUE))
+            if(class(foo)=="try-error") return()
+            foo$Run=irun
+            dat=merge(dat, foo, all=TRUE)
+            dat=dat[rowSums(is.na(dat)) != ncol(dat),]
+            dat$V1=NULL
+          }	
+        }
+        incProgress(amount=1/length(runs))
+      }
+    })
     
     dat=data.frame(dat, stringsAsFactors=F)
-
+    
     
     parsecommands <- cleanparse(input[["dataParse_table"]],"dat")
     if(!is.null(parsecommands)){
@@ -259,27 +264,30 @@ shinyServer(function(input, output, session) {
       return()
     }
     
-    if(input$srcData %nin% c("", " ", "sourcedata.csv")){
-      srcDatFile=sprintf("%s/%s", currentWD(), input$srcData)
-      if(!file.exists(srcDatFile)){
-        return()
-      }			
-      dat=try(as.best(read.csv(srcDatFile, stringsAsFactors=F, fill=TRUE)))
-      if(class(dat)=="try-error") return()
-      dat=dat[rowSums(is.na(dat)) != ncol(dat),]
-    }
-    
-    dat=data.frame(dat, stringsAsFactors=F)
-
-    parsecommands <- cleanparse(input[["dataParse_source"]],"dat")
-    if(!is.null(parsecommands)){
-      for(i in 1:length(parsecommands$commands)){
-        if(parsecommands$within[i]) tryCatch(eval(parse(text=paste0("dat <- within(dat, {", parsecommands$commands[i], "})"))),
-                                             error=function(e) cat(file=stderr(),paste("Parsing command broken:\n",parsecommands$commands[i],"\n", e)))
-        if(!parsecommands$within[i]) tryCatch(eval(parse(text=paste0("dat <- ", parsecommands$commands[i]))),
-                                              error=function(e) cat(file=stderr(),print(paste("Parsing command broken:\n",parsecommands$commands[i],"\n", e))))
+    withProgress(message="Loading...", value=.25, {
+      
+      if(input$srcData %nin% c("", " ", "sourcedata.csv")){
+        srcDatFile=sprintf("%s/%s", currentWD(), input$srcData)
+        if(!file.exists(srcDatFile)){
+          return()
+        }			
+        dat=try(as.best(read.csv(srcDatFile, stringsAsFactors=F, fill=TRUE)))
+        if(class(dat)=="try-error") return()
+        dat=dat[rowSums(is.na(dat)) != ncol(dat),]
       }
-    }
+      incProgress(amount=.5)
+      dat=data.frame(dat, stringsAsFactors=F)
+      
+      parsecommands <- cleanparse(input[["dataParse_source"]],"dat")
+      if(!is.null(parsecommands)){
+        for(i in 1:length(parsecommands$commands)){
+          if(parsecommands$within[i]) tryCatch(eval(parse(text=paste0("dat <- within(dat, {", parsecommands$commands[i], "})"))),
+                                               error=function(e) cat(file=stderr(),paste("Parsing command broken:\n",parsecommands$commands[i],"\n", e)))
+          if(!parsecommands$within[i]) tryCatch(eval(parse(text=paste0("dat <- ", parsecommands$commands[i]))),
+                                                error=function(e) cat(file=stderr(),print(paste("Parsing command broken:\n",parsecommands$commands[i],"\n", e))))
+        }
+      }
+    })
     
     # For debugging, save a copy of input
     if(debug){

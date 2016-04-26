@@ -2,9 +2,12 @@
 -- look into unit testing
 -- Example for specifying exclusions:
 
-OE <- "Keep"
-OE[ DV < 0.05 ] <- "BQL"
-OE[ TAFD > 150 ] <- "Observation after end of study"
+ObsExc <- "Keep"
+ObsExc[ DV < 0.05 ] <- "BQL"
+ObsExc[ TAFD > 100 ] <- "EOS"
 
-SUBEX <- "Keep"
-SUBEX[ RACE=="88" | RACE==88 ] <- "Missing race"
+SubjExc <- "Keep"
+SubjExc[ RACE=="88" | RACE==88 ] <- "Missing race"
+
+
+-- Commit ID cbff82970 works with 434source.csv
