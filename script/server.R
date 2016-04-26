@@ -305,7 +305,7 @@ shinyServer(function(input, output, session) {
 
   
   #############################################################################
-  revals <- reactiveValues(nms_subj="",nms_obs="")
+  revals <- reactiveValues(nms_subj="",nms_obs="",nms_df="")
   
 
   #read data in a reactive format
@@ -348,7 +348,6 @@ shinyServer(function(input, output, session) {
     dat0 <- dat
     if(input[["subjectExclusion_col"]]!="") revals$nms_subj <- isolate(unique(dat[,input$subjectExclusion_col]))
     if(input[["observationExclusion_col"]]!="") revals$nms_obs <- isolate(unique(dat[,input$observationExclusion_col]))
-    
     # Can we calculate whole subject exclusions yet?
     defs <- grep("subjectExclusion[[:digit:]]",names(Defaults),value=T)
     if(length(defs)>0){
@@ -440,7 +439,7 @@ shinyServer(function(input, output, session) {
       
     }
 
-
+    revals$nms_df <- isolate(names(dat))
     # For debugging, save a copy of input
     if(debug){
       dati <- dat
@@ -799,7 +798,7 @@ shinyServer(function(input, output, session) {
     for (item in plotList$type[types]){
       if(paste(item, "Num", sep="") %in% names(input)){
         if("varNames" %in% names(formals(plotList$Call[plotList$type==item]))){
-          PanelSet=do.call(what=plotList$Call[plotList$type==item], args=list(plotType=item, input=input, Set=PanelSet, varNames=names(dataFile())) )
+          PanelSet=do.call(what=plotList$Call[plotList$type==item], args=list(plotType=item, input=input, Set=PanelSet, varNames=revals$nms_df))
         }else{
           PanelSet=do.call(what=plotList$Call[plotList$type==item], args=list(plotType=item, input=input, Set=PanelSet ))
         }
