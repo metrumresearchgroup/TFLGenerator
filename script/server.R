@@ -285,7 +285,7 @@ shinyServer(function(input, output, session) {
     if(debug){
       sourcedat <- dat
       tabList <- get("tabList",envir=.GlobalEnv)
-      save(sourcedat,file=file.path(debugDir,"sourcedat.rda"))
+      save(sourcedat,input_vals,tabList,file=file.path(debugDir,"sourcedat.rda"))
     }
     # End debugging
     cat(file=stderr(), "LOG: sourceFile finished successfully\n")
@@ -338,8 +338,8 @@ shinyServer(function(input, output, session) {
     }
     
     dat0 <- dat
-    revals$nms_subj <- isolate(unique(dat[,input$subjectExclusion_col]))
-    revals$nms_obs <- isolate(unique(dat[,input$observationExclusion_col]))
+    if(input[["subjectExclusion_col"]]!="") revals$nms_subj <- isolate(unique(dat[,input$subjectExclusion_col]))
+    if(input[["observationExclusion_col"]]!="") revals$nms_obs <- isolate(unique(dat[,input$observationExclusion_col]))
     
     # Can we calculate whole subject exclusions yet?
     defs <- grep("subjectExclusion[[:digit:]]",names(Defaults),value=T)
@@ -931,7 +931,8 @@ shinyServer(function(input, output, session) {
                   # Autosave routine
                   if(dir.exists(currentWD()) & input[["projectTitle"]]!=""){
                     if(currentWD()!=DefaultsFirst["dataPath"]){
-                      isolate({
+                      
+                        cat(file=stderr(),"LOG: Running autosave routine")
                         Defaults.autosave <- Defaults
                         for(item in names(DefaultsFirst)){
                           #put in the non-plot related Defaults
@@ -954,8 +955,8 @@ shinyServer(function(input, output, session) {
                                  warning=function(w) cat(file=stderr(), paste("LOG: autosave warning\n",w)),
                                  error=function(e)  cat(file=stderr(), paste("LOG: autosave error\n",e))
                         )  
-                      })
-                     
+                        cat(file=stderr(), "LOG: Exiting autosave routine")
+                      
                     }
                   }
                 })
@@ -1029,7 +1030,7 @@ shinyServer(function(input, output, session) {
                     if(debug){
                       message <- "DEBUG B"
                       input_nms <- names(input)
-                      input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
+                      input_vals <- reactiveValuesToList(input)
                       names(input_vals) <- input_nms
                       
                       save(message,argList, input_vals, file=file.path(debugDir,"message.rda"))
@@ -1040,9 +1041,6 @@ shinyServer(function(input, output, session) {
                     argList$callType=NULL
                     
                     
-                    if(is.null(dataFile())){
-                      return()
-                    }
                     
                     if(debug){
                       message <- "DEBUG B"

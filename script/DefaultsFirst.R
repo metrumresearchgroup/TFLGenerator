@@ -23,7 +23,7 @@ DefaultsFirst <- list(
             recall =                         FALSE ,
       projectTitle =                      "AMG NO" ,
        projectInfo =                            "" ,
-          dataPath =              "/data/tflgenerator-ge0.9/NMStorage",
+          dataPath =              "/opt/NMStorage_uslv",
     manualDataPath =                            "" ,
           srcData =                "sourcedata.csv",
              runno =                            "#" ,
