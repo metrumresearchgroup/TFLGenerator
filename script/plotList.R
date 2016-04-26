@@ -2,7 +2,8 @@ gitDir <- getwd()
 
 plotList <- list(
   type = c(
-     "ConcvTime",      "ConcvTimeGroup", "demogTab"     ,   "OBSvPRED",
+     "ConcvTime",      "ConcvTimeGroup", 
+     "OBSvPRED",
      "paramDist",      "covCat"        , "covCon"       ,   "corPairs",
      "QQplot"   ,      "NMTab"         , "ConcvTimeMult",   "DescParamStat",
      "demogTabCont",   "demogTabCat"   , "GOF"          ,   "inputTable"   ,
@@ -10,33 +11,37 @@ plotList <- list(
      "subjectExclusionsTab", "observationExclusionsTab"
   ),
   Ind = c(
-    "ConcvTime" ,    "ConcvTimeInd"   , "demogTab"      ,   "OBSvIPRED"  ,
+    "ConcvTime" ,    "ConcvTimeInd"   ,   
+    "OBSvIPRED"  ,
     "paramDist" ,    "covCat"         , "covCon"        ,   "ggpairs"    ,
-    "QQplot"    ,    "RNM"            , "ConcvTimeMult" , "DescParamStat",
+    "QQplot"    ,    "RNM"            , "ConcvTimeMult" , 
     "demogTabCont",  "demogTabCat"    , "GOF"           , "inputFile"    ,
     "inputFile"   ,  "inputFile"      , "inputFile",
     "subjectExclusionsTab", "observationExclusionsTab"
   ),
   Sum = c(
-    "ConcvTime" ,    "ConcvTimeSum"   ,  "demogTab"     , "OBSvIPRED"    ,
+    "ConcvTime" ,    "ConcvTimeSum"   ,  
+    "OBSvIPRED"    ,
     "paramDist" ,    "covCat"         ,  "covCon"       , "ggpairs"      ,
-    "QQplot"    ,    "RNM"            , "ConcvTimeMult" , "DescParamStat",
+    "QQplot"    ,    "RNM"            , "ConcvTimeMult" ,
     "demogTabCont",  "demogTabCat"    , "GOF"           , "inputFile"    ,
     "inputFile",     "inputFile"      , "inputFile",
     "subjectExclusionsTab", "observationExclusionsTab"
   ),
   Call = c(
-    "panelTypeConcvTime"      ,  "panelTypeConcvTimeGroup" , "panelTypedemogTab"      , "panelTypeOBSvPRED"         ,
+    "panelTypeConcvTime"      ,  "panelTypeConcvTimeGroup" ,
+    "panelTypeOBSvPRED"         ,
   "panelTypeparamDist"        ,  "panelTypecovCat"         , "panelTypecovCon"        , "panelTypecorPairs"         ,
-  "panelTypeQQplot"           ,  "panelTypeNMTab"          , "panelTypeConcvTimeMult" , "panelTypeDescParamStat"    ,
+  "panelTypeQQplot"           ,  "panelTypeNMTab"          , "panelTypeConcvTimeMult" , 
   "panelTypedemogTabCont"     ,  "panelTypedemogTabCat"    , "panelTypeGOF"           , "panelTypeinputFile_image"  ,
   "panelTypeinputFile_image"  ,  "panelTypeinputFile_image", "panelTypeinputFile",
   "panelTypesubjectExclusionsTab", "panelTypeobservationExclusionsTab"
   ),
   sidebarType = 
-    c("Figures"               , "Figures"                 , "Tables"                 , "Figures"                    ,
+    c("Figures"               , "Figures"                 , 
+      "Figures"               ,
       "Figures"               , "Figures"                 , "Figures"                , "Figures"                    , 
-      "Figures"               , "Tables"                  , "Listings"               , "Tables"                     ,
+      "Figures"               , "Tables"                  , "Listings"               , 
       "Tables"                , "Tables"                  , "Figures"                , "Tables"                     ,
       "Figures"               , "Listings"                , "Listings",
       "Listings"              , "Listings"
