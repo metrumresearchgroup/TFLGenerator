@@ -33,6 +33,8 @@ cat(file=stderr(), "LOG: Finished preamble\n")
 # Define server logic required to summarize and view the selected dataset
 shinyServer(function(input, output, session) {
   cat(file=stderr(), "LOG: Entering sourcing of shinyServer function\n")
+  try(rm("originalTableData",envir = .GlobalEnv))
+  try(rm("originalSourceData",envir = .GlobalEnv))
   
   tryCatch(Defaults<<-DefaultsFirst,
            error=function(e){
@@ -206,28 +208,32 @@ shinyServer(function(input, output, session) {
         runs=unlist(str_split(input$runno, ","))
         runs=gsub("[[:space:]]*", "", runs)
         
-        
-        dat=matrix()
-        for(irun in runs) {
-          for(iext in extensions){
-            ext=iext
-            fileName=sprintf("%s/%s/%s%s", currentWD(), irun, irun, ext)
-            if(!file.exists(fileName)){
-              return()
-            }			
-            foo=try(read.table(fileName, header=input$header, skip=input$skipLines, stringsAsFactors=F, fill=TRUE))
-            if(class(foo)=="try-error") return()
-            foo$Run=irun
-            dat=merge(dat, foo, all=TRUE)
-            dat=dat[rowSums(is.na(dat)) != ncol(dat),]
-            dat$V1=NULL
-          }	
+        if(!exists("originalTableData",envir=.GlobalEnv)){
+          dat=matrix()
+          for(irun in runs) {
+            for(iext in extensions){
+              ext=iext
+              fileName=sprintf("%s/%s/%s%s", currentWD(), irun, irun, ext)
+              if(!file.exists(fileName)){
+                return()
+              }			
+              foo=try(read.table(fileName, header=input$header, skip=input$skipLines, stringsAsFactors=F, fill=TRUE))
+              if(class(foo)=="try-error") return()
+              if(nrow(foo)==0) return()
+              foo$Run=irun
+              dat=merge(dat, foo, all=TRUE)
+              dat=dat[rowSums(is.na(dat)) != ncol(dat),]
+              dat$V1=NULL
+            }	
+          }
+          originalTableData <<- dat
         }
         incProgress(amount=1/length(runs))
       }
     })
     
-    dat=data.frame(dat, stringsAsFactors=F)
+    dat=try(data.frame(get("originalTableData",envir=.GlobalEnv), stringsAsFactors=F))
+    if(class(dat)=="try-error") return()
     
     
     parsecommands <- cleanparse(input[["dataParse_table"]],"dat")
@@ -270,9 +276,15 @@ shinyServer(function(input, output, session) {
         srcDatFile=sprintf("%s/%s", currentWD(), input$srcData)
         if(!file.exists(srcDatFile)){
           return()
-        }			
-        dat=try(as.best(read.csv(srcDatFile, stringsAsFactors=F, fill=TRUE)))
-        if(class(dat)=="try-error") return()
+        }
+        if(!exists("originalSourceData",envir=.GlobalEnv)){
+          originalSourceData <<- try(as.best(read.csv(srcDatFile, stringsAsFactors=F, fill=TRUE)))
+          if(class(originalSourceData)=="try-error"){
+            rm("originalSourceData",envir = .GlobalEnv)
+            return()
+          }
+        }
+        dat <- get("originalSourceData",envir = .GlobalEnv) # Point to a copy here
         dat=dat[rowSums(is.na(dat)) != ncol(dat),]
       }
       incProgress(amount=.5)
@@ -293,7 +305,8 @@ shinyServer(function(input, output, session) {
     if(debug){
       sourcedat <- dat
       tabList <- get("tabList",envir=.GlobalEnv)
-      save(sourcedat,input_vals,tabList,file=file.path(debugDir,"sourcedat.rda"))
+      global <- ls(envir = .GlobalEnv)
+      save(sourcedat,tabList,global,file=file.path(debugDir,"sourcedat.rda"))
     }
     # End debugging
     cat(file=stderr(), "LOG: sourceFile finished successfully\n")
@@ -599,6 +612,11 @@ shinyServer(function(input, output, session) {
     return(out)
   })
   
+  observeEvent(input$clearDataCache, { 
+    cat(file=stderr(),"Clearing data cache")
+    try(rm("originalTableData",envir=.GlobalEnv))
+    try(rm("originalSourceData",envir=.GlobalEnv))
+    })
 
   output$DataTabset <- renderUI({
     cat(file=stderr(), "LOG: creating data input tabset\n")
@@ -617,7 +635,8 @@ shinyServer(function(input, output, session) {
                         #textInput(inputId="numModel", label="Number of Models", value="1"),
                         textInput(inputId="ext", label="File Extensions:", value=Defaults$ext),
                         checkboxInput('header', 'Header?', value=Defaults$header),
-                        numericInput("skipLines", "Skip Lines:", value=Defaults$skipLines)
+                        numericInput("skipLines", "Skip Lines:", value=Defaults$skipLines),
+                        actionButton("clearDataCache","Clear cached data")
                         #,
                         #textInput(inputId="baseModel", label="Base Model #", value="")
                       )

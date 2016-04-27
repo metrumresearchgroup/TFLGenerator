@@ -5,7 +5,7 @@ plotList <- list(
      "ConcvTime",      "ConcvTimeGroup", 
      "OBSvPRED",
      "paramDist",      "covCat"        , "covCon"       ,   "corPairs",
-     "QQplot"   ,      "NMTab"         , "ConcvTimeMult",   "DescParamStat",
+     "QQplot"   ,      "NMTab"         , "ConcvTimeMult",   
      "demogTabCont",   "demogTabCat"   , "GOF"          ,   "inputTable"   ,
      "inputFigure",    "inputListing"  , "inputListing_text",
      "subjectExclusionsTab", "observationExclusionsTab"
