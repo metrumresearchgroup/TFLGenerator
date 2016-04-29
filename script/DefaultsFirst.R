@@ -62,7 +62,11 @@ dataParse_analysis =                            "" ,
    inputListingNum =                             0 ,
 inputListing_textNum =                           0 ,
 subjectExclusionsTabNum =                        0 ,
-observationExclusionsTabNum =                    0
+observationExclusionsTabNum =                    0 ,
+subjectExclusion_col =                   "SUBJEXC" ,
+observationExclusion_col =                "OBSEXC" ,
+subjectExclusionsSummaryTabNum =                 0 ,
+observationExclusionsSummaryTabNum =             0
 )
 
 save(DefaultsFirst,file=file.path(getwd(),"GUI","data","DefaultsFirst.rda")) # Expects to run from top of repo

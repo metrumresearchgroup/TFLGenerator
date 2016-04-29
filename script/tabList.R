@@ -22,7 +22,9 @@ tabList=list(
               "inputListingNum",
               "inputListing_textNum",
               "subjectExclusionsTabNum",
-              "observationExclusionsTabNum"
+              "observationExclusionsTabNum",
+              "subjectExclusionsSummaryTabNum",
+              "observationExclusionsSummaryTabNum"
               #, "DescListNum"
     ),
     label=c("Serum Concentration Versus Time-Individual",
@@ -45,11 +47,13 @@ tabList=list(
             "Figure from disk",
             "Listing from disk (table or figure as png)",
             "Listing from disk (text file)",
-            "Subject exclusions table",
-            "Observations exclusions table"
+            "Subject exclusions listing",
+            "Observations exclusions listing",
+            "Summary of subject exclusions",
+            "Summary of observation exclusions"
             #, "Descriptive Listing"
     ),
-    value=rep(0,19),
+    value=rep(0,21),
     # value=c(Defaults$ConcvTimeNum,
     #         Defaults$ConcvTimeMultNum,
     #         Defaults$ConcvTimeGroupNum,
@@ -95,7 +99,9 @@ tabList=list(
               "Listings",
               "Listings",
               "Listings",
-              "Listings"
+              "Listings",
+              "Tables",
+              "Tables"
               #, "Listings"
     ),
     sidebarType=c("Figures",
@@ -119,7 +125,9 @@ tabList=list(
                   "Listings",
                   "Listings",
                   "Listings",
-                  "Listings"
+                  "Listings",
+                  "Tables",
+                  "Tables"
                   #,"Listings"
     )
 )

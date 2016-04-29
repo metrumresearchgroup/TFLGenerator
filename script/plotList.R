@@ -8,7 +8,9 @@ plotList <- list(
      "QQplot"   ,      "NMTab"         , "ConcvTimeMult",   
      "demogTabCont",   "demogTabCat"   , "GOF"          ,   "inputTable"   ,
      "inputFigure",    "inputListing"  , "inputListing_text",
-     "subjectExclusionsTab", "observationExclusionsTab"
+     "subjectExclusionsTab", "observationExclusionsTab",
+     "subjectExclusionsSummaryTab",
+     "observationExclusionsSummaryTab"
   ),
   Ind = c(
     "ConcvTime" ,    "ConcvTimeInd"   ,   
@@ -17,7 +19,9 @@ plotList <- list(
     "QQplot"    ,    "RNM"            , "ConcvTimeMult" , 
     "demogTabCont",  "demogTabCat"    , "GOF"           , "inputFile"    ,
     "inputFile"   ,  "inputFile"      , "inputFile",
-    "subjectExclusionsTab", "observationExclusionsTab"
+    "subjectExclusionsTab", "observationExclusionsTab",
+    "subjectExclusionsSummaryTab",
+    "observationExclusionsSummaryTab"
   ),
   Sum = c(
     "ConcvTime" ,    "ConcvTimeSum"   ,  
@@ -26,7 +30,9 @@ plotList <- list(
     "QQplot"    ,    "RNM"            , "ConcvTimeMult" ,
     "demogTabCont",  "demogTabCat"    , "GOF"           , "inputFile"    ,
     "inputFile",     "inputFile"      , "inputFile",
-    "subjectExclusionsTab", "observationExclusionsTab"
+    "subjectExclusionsTab", "observationExclusionsTab",
+    "subjectExclusionsSummaryTab",
+    "observationExclusionsSummaryTab"
   ),
   Call = c(
     "panelTypeConcvTime"      ,  "panelTypeConcvTimeGroup" ,
@@ -35,7 +41,9 @@ plotList <- list(
   "panelTypeQQplot"           ,  "panelTypeNMTab"          , "panelTypeConcvTimeMult" , 
   "panelTypedemogTabCont"     ,  "panelTypedemogTabCat"    , "panelTypeGOF"           , "panelTypeinputFile_image"  ,
   "panelTypeinputFile_image"  ,  "panelTypeinputFile_image", "panelTypeinputFile",
-  "panelTypesubjectExclusionsTab", "panelTypeobservationExclusionsTab"
+  "panelTypesubjectExclusionsTab", "panelTypeobservationExclusionsTab",
+  "panelTypesubjectExclusionsSummaryTab",
+  "panelTypeobservationExclusionsSummaryTab"
   ),
   sidebarType = 
     c("Figures"               , "Figures"                 , 
@@ -44,7 +52,9 @@ plotList <- list(
       "Figures"               , "Tables"                  , "Listings"               , 
       "Tables"                , "Tables"                  , "Figures"                , "Tables"                     ,
       "Figures"               , "Listings"                , "Listings",
-      "Listings"              , "Listings"
+      "Listings"              , "Listings",
+      "Tables"                ,
+      "Tables"
   )
 )
 
