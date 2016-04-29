@@ -1,5 +1,5 @@
--- panel for exclusions only generates once.  Likely due to isolate, how to get around this?  Reactive value for only one column of reactive dataframe?
--- look into unit testing
+-- GOF has issues with defaults checking
+-- Check input box size with subjectExclusions table
 -- Example for specifying exclusions:
 
 ObsExc <- "Keep"
