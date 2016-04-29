@@ -76,7 +76,7 @@ library(shinyFiles)
       	    ),
       	    tabItem(tabName="tabAnalysisSelection",
       	            h3("Analysis Selection"),
-      	            checkboxInput(inputId="Color", label="Color?", value=TRUE),
+      	            #checkboxInput(inputId="Color", label="Color?", value=TRUE),
       	            uiOutput("PlotTabset")
       	    ),
       	    tabItem(tabName="tabFigures",
