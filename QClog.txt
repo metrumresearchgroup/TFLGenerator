@@ -12,56 +12,56 @@ _________________________
 
 covCat, Categorical covariance plots, TFL/R/covCat.R 
 
-QC'd by:            Commit ID:     
+QC'd by: Jia Kang           Commit ID: 2407f07  
 Comments (date):
 
 -------------------------
 
 ConcvTimeInd, Concentration vs time profiles (Individuals), TFL/R/ConcvTimeInd.R
 
-QC'd by:            Commit ID:     
+QC'd by: Jia Kang           Commit ID:   2407f07 
 Comments (date):
 
 -------------------------
 
 QQplot, QQplot of two variables, TFL/R/QQplot.R
 
-QC'd by:            Commit ID:     
-Comments (date):
+QC'd by:  Jia Kang         Commit ID:  2407f07 
+Comments (date): Please check the MarkBy
 
 -------------------------
 
 paramDist, Parameter distributon plot, TFL/R/paramDist.R
 
-QC'd by:            Commit ID:     
+QC'd by:  Jia Kang         Commit ID:  2407f07     
 Comments (date):
 
 -------------------------
 
 OBSvIPRED, Observed vs predicted concentrations, TFL/R/OBSvIPRED.R
 
-QC'd by:            Commit ID:     
+QC'd by:  Jia Kang         Commit ID:  2407f07 
 Comments (date):
 
 -------------------------
 
 GOF, Goodness of fit, TFL/R/GOF.R
 
-QC'd by:            Commit ID:     
+QC'd by:  Jia Kang         Commit ID:  2407f07      
 Comments (date):
 
 -------------------------
 
 covCon, Continuous covariance, TFL/R/covCon.R
 
-QC'd by:            Commit ID:     
+QC'd by:  Jia Kang         Commit ID:  2407f07   
 Comments (date):
 
 -------------------------
 
 ConcvTimeSum, Concentration vs time (summary), TFL/R/ConcvTimeSum.R
 
-QC'd by:            Commit ID:     
+QC'd by:  Jia Kang         Commit ID:  2407f07     
 Comments (date):
 
 
@@ -69,7 +69,7 @@ Comments (date):
 
 ConcvTimeMult, Concentration vs time (multipanel listing), TFL/R/ConcvTimeMult.R
 
-QC'd by:            Commit ID:     
+QC'd by:  Jia Kang         Commit ID:  2407f07   
 Comments (date):
 
 
@@ -77,17 +77,8 @@ Comments (date):
 
 ggpairs, Pairwise correlation plot, TFL/R/ggpairs.R
 
-QC'd by:            Commit ID:     
+QC'd by:  Jia Kang         Commit ID:  2407f07      
 Comments (date):
-
-
--------------------------
-
-ggpairs, Pairwise correlation plot, TFL/R/ggpairs.R
-
-QC'd by:            Commit ID:     
-Comments (date):
-
 
 
 __________________________________________________
@@ -101,14 +92,14 @@ _________________________
 
 RNM, NONMEM run summary, TFL/R/RNM.R 
 
-QC'd by:            Commit ID:     
+QC'd by:  Jia Kang         Commit ID:  2407f07     
 Comments (date):
 
 -------------------------
 
 demogTabCont, Continuous demographics table, TFL/R/demogTabCont.R 
 
-QC'd by:            Commit ID:     
+QC'd by:  Jia Kang         Commit ID:  2407f07      
 Comments (date):
 
 
@@ -116,7 +107,7 @@ Comments (date):
 
 demogTabCat, Categorical demographics table, TFL/R/demogTabCat.R
 
-QC'd by:            Commit ID:     
+QC'd by:  Jia Kang         Commit ID:  2407f07     
 Comments (date):
 
 
@@ -124,7 +115,7 @@ Comments (date):
 
 subjectExclusionsTab, Subject exclusions table, TFL/R/subjectExclusionsTab.R 
 
-QC'd by:            Commit ID:     
+QC'd by:  Jia Kang         Commit ID:  2407f07     
 Comments (date):
 
 
@@ -132,7 +123,7 @@ Comments (date):
 
 observationExclusionsTab, Observation exclusions table, TFL/R/observationExclusionsTab.R 
 
-QC'd by:            Commit ID:     
+QC'd by:  Jia Kang         Commit ID:  2407f07     
 Comments (date):
 
 
