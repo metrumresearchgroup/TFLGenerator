@@ -1,0 +1,130 @@
+\documentclass{article}
+\usepackage[parfill]{parskip}
+\usepackage[absolute]{textpos}
+\usepackage{graphicx}
+\usepackage[T1]{fontenc}
+\usepackage[scaled]{helvet}
+%\usepackage[scaled]{helvet}
+
+\usepackage{lscape}
+\usepackage{courier}
+\renewcommand*\familydefault{\sfdefault}
+\usepackage[left=1in,top=1in,bottom=1.25in,right=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyhdr,lastpage}
+\pagestyle{fancy}
+\rhead{\scriptsize \opnum:  \optitle}
+%\chead{Middle top}
+\newenvironment{changemargin}[2]{%
+\begin{list}{}{%
+\setlength{\topsep}{0pt}%
+\setlength{\leftmargin}{#1}%
+\setlength{\rightmargin}{#2}%
+\setlength{\listparindent}{\parindent}%
+\setlength{\itemindent}{\parindent}%
+\setlength{\parsep}{\parskip}%
+}%
+\item[]}{\end{list}}
+\lhead{\includegraphics[scale=.6]{logonew.pdf}\\\smallskip\scriptsize Qualification}
+
+\fancyfoot[C]{Page \thepage\ of \pageref{LastPage}}
+\usepackage[colorlinks=true,linkcolor=black,urlcolor=blue]{hyperref}
+
+%\newcommand{\opnum}{Release 2} 
+\newcommand{\optitle}{Pharmacometrics TFL Generator Qualification Plan}
+\newcommand{\opnum}{Release 1.0.0} 
+\newcommand{\tfl}{Pharmacometrics TFL Generator}
+
+\begin{document}
+
+\vspace*{3cm}
+{\Large{\textbf{\opnum\newline \newline \optitle}}}
+\vspace{3.0cm}
+
+\begin{tabular}{p{11.0cm}p{2.0cm}}
+\hline
+Authored by & Date \vspace{1cm}\\
+
+\hline
+Approved by & Date \vspace{2cm}\\
+
+\end{tabular}
+
+
+\newpage
+
+\section*{Introduction}
+Metrum Research Group (MetrumRG) intends to qualify the \tfl\ through a series of activities involving functional requirements development, test development, test documentation, testing, and reporting. This document provides the overall qualification plan, and outlines the required elements of the project.
+
+\section*{Definitions}
+
+The following terms may be used throughout the set of qualification documents:
+
+{\bf Envision:} Metworx facilitated platform for leveraging the functionality of shiny-server with the compuational backing of Metworx
+
+{\bf Functional Requirements:}  Processes and functionality that systems (software or hardware) are intended to accomplish.
+
+{\bf Metworx:} A MetrumRG Ruby on Rails web application that provides an interface to launching  AWS computational infrastructure and performing work with the infrastructure in a unified process.
+
+{\bf Qualification:} Successful demonstration, through documentation and testing, of an information system's (or component of the system) functionality, that provides a high degree of assurance that the system will consistently and reproducibly yield a product or result meeting its predetermined specification, expected performance, and/or quality attributes.
+
+{\bf TFL:} Tables, figures, and listings in the typical pharmacometrics workflow
+
+{\bf Validation:} Successful demonstration, through documentation and testing, of a software's intrinsic functionality (correct coding, syntax, start up and run without error).
+
+{\bf Workflow:} The combination of an individually created AWS computational infrastructure and the associated graphical workspace (RStudio, PiranaJS) brought together by Metworx
+
+\newpage
+
+\section*{\tfl\ Overview and Quality Framework}
+
+\tfl\ is a web application, written in R, heavily utilizing the R:::shiny package intended to provide a graphical user interface (GUI) for creating TFL's in the typical pharmacometrics workflow.  The application allows point and click TFL generation, providing output as individual TFL's, a report ready RTF of the TFL's, and an accompanying R script to replicate the analysis.
+
+\section*{\tfl\ Qualification Requirements}
+
+MetrumRG intends to qualify the \tfl\ through a series of activities involving functional requirements development, test development, test documentation, testing, and reporting. The required elements and required documents associated with the project are described in Table \ref{TABLE}. These elements are generally intended to be followed in the order listed. 
+
+\begin{tabular}{|p{5cm}|p{5cm}|p{5cm}|}\hline
+\textbf{Element} & \textbf{Description} & \textbf{Output}\\\hline
+Qualification Plan & High-level background and outline of the steps to be taken to qualify \tfl, including a list of required documents & Qualification Plan document/section\\
+&&\\
+% Requirements Specification&A list summarizing the functional requirements&Requirements Specification document/section\\
+% &&\\
+Requirements Traceability Matrix&Document that maps Requirements to test and documentation references &Requirements Matrix\\
+&&\\
+
+
+Qualification Protocols&Planned stepwise testing sequences to demonstrate that the system capabilities meet the stated requirements&Test protocols\\
+&&\\
+Qualification Report&Documented results of the qualification testing and a narrative summary of the results including an acceptability assessment&Final report describing outcome qualification testing, problems encountered, and resolution.\\
+&&\\
+%Training&Documented results of user and organizational administrator training&Training records and training collateral\\
+%&&\\
+Quality Assurance Release&Official declaration of acceptance and level of release (for training or use in production)&Release document issued upon satisfactory completion of qualification activities\\
+&&\\\hline
+\end{tabular}\\
+
+
+\section*{\tfl\ Release and Training}
+
+This qualification plan intends to provide assurance that the application meets its functional requirements and to release \tfl\ for post-qualification training and deployment into a production environment. In order for release into a production environment, training is required for administrators and users.
+
+\section*{Management of \tfl\ Changes}
+Once the \tfl\ is qualified, all future \tfl\ modifications are managed through SOP M4 - Change Management.
+
+
+
+
+%%\subsection*{Sections}
+%
+%%(subsections if needed)
+%
+%
+%\section*{References}
+%
+%21 CFR Part 11
+%
+%\newpage
+%
+%\section*{History}
+\end{document}
