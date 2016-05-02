@@ -13,7 +13,7 @@ TFL_R_FILES := $(wildcard TFL/R/*.R)
 TFL_FILES := TFL/DESCRIPTION TFL/NAMESPACE $(R_FILES) $(SRC_FILES)
 TFL_DATA_FILES := $(wildcard TFL/data/*.rda)
 
-.PHONY: install check clean
+.PHONY: install check clean update_deliv
 
 check: script/pkg/$(GUI_NAME)_$(GUI_VERSION).tar.gz script/pkg/$(TFL_NAME)_$(TFL_VERSION).tar.gz
 	R CMD check script/pkg/$(GUI_NAME)_$(GUI_VERSION).tar.gz
@@ -45,3 +45,13 @@ clean:
 	-rm -f script/pkg/$(TFL_NAME)_*.tar.gz
 	-rm -fr script/lib/$(GUI_NAME)
 	-rm -fr script/lib/$(TFL_NAME)
+	
+update_deliv:
+	cp script/pkg/* deliv/script/pkg/
+	cp script/server.R script/ui.R deliv/script/
+	cp script/shiny-server.conf deliv/script/shiny-server.conf
+	cp -R deliv tflgenerator 
+	zip -r tflgenerator-$(GUI_VERSION).zip tflgenerator
+	rm -fr tflgenerator
+	
+
