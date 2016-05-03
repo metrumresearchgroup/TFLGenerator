@@ -876,8 +876,8 @@ shinyServer(function(input, output, session) {
       if(length(numbers)==0){numRange=0}
       numRange <- setdiff(numRange,0)
       for(n in numRange){
-        outList <- rbind(outList,data.frame(object=paste0(item,numRange), 
-                                            title=input[[paste0("LegendTitle",item,numRange)]],
+        outList <- rbind(outList,data.frame(object=paste0(item,n), 
+                                            title=input[[paste0("LegendTitle",item,n)]],
                                             type=plotList$sidebarType[plotList$type==item]))
       }
     }
@@ -940,6 +940,9 @@ shinyServer(function(input, output, session) {
         error=function(e) print("Unspecified")
     )
   })
+  
+
+
   
   ############
   #Generating Plots, internal and saving
@@ -1364,10 +1367,27 @@ shinyServer(function(input, output, session) {
                     # for(listName in names(argList)){
                     #   argListComplete[[listName]]=argList[[listName]]
                     # }
+                    getObj <- function(x){
+                      input_vals <- reactiveValuesToList(input)
+                      titles <- lapply(grep("LegendTitle",names(input_vals)), function(xx) input_vals[[xx]])
+                      names(titles) <- grep("LegendTitle",names(input_vals),value=T)
+                      str_split(names(which(x == titles)),"LegendTitle")[[1]][2]
+                    }
+                    
+                    figureOrder <- tryCatch(sapply(input[["figureOrder"]], getObj) ,
+                                                   error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","figureOrderError.rda")) )
+                    tableOrder <- tryCatch(sapply(input[["tableOrder"]], getObj) ,
+                                                  error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","tableOrderError.rda")))
+                    listingOrder <- tryCatch(sapply(input[["listingOrder"]], getObj),
+                                                    error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","ListingOrderError.rda")) )
+                    
+                    ordering <- c(tableOrder, figureOrder, listingOrder)
                     if(debug){
                       message="recordGUI"
                       input_vals <- reactiveValuesToList(input,all.names=T)
-                      save(message, argList, item, callType, useArgs, input_vals, n, argListManip, p1List=p1List, file=file.path(srcDir,"tmp","recordGUI.rda"))
+                      save(message, argList, item, callType, useArgs, input_vals, n,
+                           argListManip, p1List=p1List, ordering,
+                           file=file.path(srcDir,"tmp","recordGUI.rda"))
                     }
                     tryCatch(
                       recordGUI(doWhat=callType, 
@@ -1377,7 +1397,8 @@ shinyServer(function(input, output, session) {
                                 number=n,
                                 manipArgs=argListManip,
                                 currentWD=currentWD(),
-                                grob=p1List),
+                                grob=p1List,
+                                ordering=ordering),
                       error=function(e){
                         cat(file=stderr(), sprintf("Record GUI failed with %s %s\n",item,n))
                         if(debug){
@@ -1420,21 +1441,21 @@ shinyServer(function(input, output, session) {
             names(titles) <- grep("LegendTitle",names(input_vals),value=T)
             str_split(names(which(x == titles)),"LegendTitle")[[1]][2]
           }
-          
           figureOrder <- tryCatch(sapply(input[["figureOrder"]], getObj) ,
                                   error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","figureOrderError.rda")) )
           tableOrder <- tryCatch(sapply(input[["tableOrder"]], getObj) ,
                                  error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","tableOrderError.rda")))
-          listingOrder <- tryCatch(sapply(input[["listingOrder"]], getObj), 
+          listingOrder <- tryCatch(sapply(input[["listingOrder"]], getObj),
                                    error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","ListingOrderError.rda")) )
-          guiGrobs <- tryCatch(guiGrobs[c(tableOrder,figureOrder,listingOrder)],
-                               error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","guiGrobsOrderError.rda")))
+          ordering <- c(tableOrder, figureOrder, listingOrder)
+          guiGrobs <- tryCatch(guiGrobs[ordering],
+                               error=function(e) if(debug) save(e,ordering,file=file.path(srcDir,"tmp","guiGrobsOrderError.rda")))
           
-          tryCatch(writeRTF(grobFile, ordering=names(guiGrobs)),
+          tryCatch(writeRTF(grobFile, ordering=ordering),
                    error=function(e){
                      cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " failed to write RTF\n",e,"\n")))
                      if(debug){
-                       save(guiGrobs, grobFile, figureOrder, tableOrder, listingOrder, file=file.path(srcDir,"tmp","rtferror.rda"))
+                       save(guiGrobs, grobFile, ordering, file=file.path(srcDir,"tmp","rtferror.rda"))
                      }
                    })
           cat(file=stderr(), "LOG: Finished writing RTF\n")
