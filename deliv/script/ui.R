@@ -17,7 +17,9 @@ library(shinyFiles)
       	dashboardSidebar(
       	  sidebarMenu(
       	     
-      	      selectInput(inputId="templateSelection", label="Open Template", choices=c("New Analysis"="Template_New","Template_V8"="Template_V8", "Template_Other"="Template_Other")),
+      	      # selectInput(inputId="templateSelection", label="Open Template", choices=c("New Analysis"="Template_New","Template_V8"="Template_V8", "Template_Other"="Template_Other")),
+      	    selectInput(inputId="templateSelection", label="Open Template", choices=c("New Analysis"="Template_New")),
+      	    
       	      fileInput(inputId="templatePath", label="Select Personal Template", multiple=FALSE),
       	      h1(""),
       	      actionButton("templateGo", "Go"),
