@@ -1181,257 +1181,268 @@ shinyServer(function(input, output, session) {
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " outputGo clicked"))
     
     for (this_item in plotList$type){
-      
-      local({
-        item=this_item
-        #Observe if any plots of that type have been assigned inputs
-        if(length(grep(paste("reset", item, sep=""), names(input)))>0){
-          
-          numbers=as.numeric(unlist(str_extract_all(input[[paste(item, "Num", sep="")]], "\\d+")))
-          if(length(numbers)>1){numRange=numbers[which(numbers!=0)]}
-          if(length(numbers)==1){numRange=c(0:numbers)}
-          if(length(numbers)==0){numRange=0}
-          
-          for (this_n in numRange){
-            local({
-              n=this_n
-              if(n!=0){	
-                
-                if(input$saveAs!=""){
-                  cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " outputGo for", item, n, 
-                                           ", outputGo value:", input$outputGo, 
-                                           ", inputButton value:", input[[paste("button",item,n,sep="")]],"\n")))
+      isolate({
+        
+        local({
+          item=this_item
+          #Observe if any plots of that type have been assigned inputs
+          if(length(grep(paste("reset", item, sep=""), names(input)))>0){
+            
+            numbers=as.numeric(unlist(str_extract_all(input[[paste(item, "Num", sep="")]], "\\d+")))
+            if(length(numbers)>1){numRange=numbers[which(numbers!=0)]}
+            if(length(numbers)==1){numRange=c(0:numbers)}
+            if(length(numbers)==0){numRange=0}
+            
+            for (this_n in numRange){
+              local({
+                n=this_n
+                if(n!=0){	
                   
-                  if(debug){
-                    message <- "DEBUG OUTPUTGO"
-                    input_nms <- names(input)
-                    input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
-                    names(input_vals) <- input_nms
-                    save(message,item,n,input_vals,Defaults,file=file.path(debugDir,"message.rda"))
-                  }
-                  
-                  Dir=sprintf("%s/%s_%s/", currentWD(), 
-                              gsub("'","",
-                                   gsub("[[:space:]]|\\.", "_", input$projectTitle)
-                              ), 
-                              Sys.Date()
-                  )
-                  dir.create(file.path(Dir,"PNG"),recursive=T)
-                  
-                  argList=createArgList(input, item, n, dataFile=dataFile(), currentWD=currentWD())
-                  callType=argList$callType
-                  argList$callType=NULL
-                  
-                  # for(IDX in idx){
-                  #   Defaults[[IDX]]<<-input[[IDX]]
-                  # }
-                  # Defaults[[paste("priorExists", item, n, sep="")]]<<-TRUE
-                  
-                  
-                  if(item%in%"ConcvTimeMult"){
-                    argList$tmpDir <- file.path(Dir,"PNG")
-                    argList$regenPlots <- T
-                  }
-                  
-                  #insert an error block around the plotting
-                  p1 = tryCatch({
-                    if(debug) save(callType,argList,file=file.path(debugDir,"output.rda"))
-                    do.call(callType,args=argList)
-                  }, 
-                  error = function(e) {
-                    if(debug) save(callType,argList,file=file.path(debugDir,"error.rda"))
-                    arrangeGrob(textGrob(sprintf("You broke something\n%s", e)))
-                  })
-                  
-                  # if(item %nin% c("demogTabCont","demogTabCat","NMTab")){
-                  #   #Perform the actual plotting
-                  #   output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
-                  #     print(p1)
-                  #   })					
-                  # }else if(item=="ConcvTimeMult"){
-                  #   output[[paste("Plot",item,n,sep="")]] <<- renderImage({ p1 },deleteFile=F)
-                  # }else{
-                  #   output[[paste("Plot",item,n,sep="")]]<<-renderImage(
-                  #     renderTex(obj=p1,item=paste0(item,n),
-                  #               margin=c(left=input[[paste0("leftmargin",item,n)]],
-                  #                        top=input[[paste0("topmargin",item,n)]],
-                  #                        bottom=input[[paste0("bottommargin",item,n)]],
-                  #                        right=input[[paste0("rightmargin",item,n)]]))
-                  #     ,deleteFile=F)
-                  # }
-                  
-                  #Create the save directory
-                  
-
-                  
-                  
-                  fileHead=sprintf("%s%s_%s",Dir, input$saveAs, Sys.Date())
-                  # cat(Dir)
-                  
-                  if(debug){
-                    message="DEBUG G"
-                    input_nms <- names(input)
-                    input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
-                    names(input_vals) <- input_nms
-                    save(message,input_vals,item,Dir,fileHead,callType, argList, file=file.path(debugDir,"message.rda"))
-                  }  
-                  
-                  dir.create(Dir,showWarning=FALSE)
-                  ###############
-                  #			Save plots and grobs, record the script
-                  ################			
-                  
-                  
-                  p1csv=data.frame(1) # What is this?
-                  
-                  #What to do with TeX tables?
-                  # if(callType %in% c("demogTabCont","demogTabCat","NMTab")){
-                  #   # p1csv=p1
-                  #   # p1=renderTex(obj=p1,item,tmpDir=Dir)
-                  # }
-                  
-                  
-                  p1List=list(Facets=ifelse("facetBy" %in% names(argList), argList$facetBy, ""),
-                              Marks=ifelse("markBy" %in% names(argList), argList$markBy, ""),
-                              Groups=ifelse("groupBy" %in% names(argList), argList$groupBy, ""),
-                              Stratification="",
-                              LegendTitle=ifelse(paste("LegendTitle", item, n, sep="") %in% names(input), input[[paste("LegendTitle", item, n, sep="")]], ""),
-                              Legend=ifelse(paste("Legend", item, n, sep="") %in% names(input), input[[paste("Legend", item, n, sep="")]], ""),
-                              Footnote=ifelse(paste("Footnote",item,n,sep="") %in% names(input), input[[paste("Footnote",item,n,sep="")]], ""),
-                              Plot=p1,
-                              Type=plotList$sidebarType[plotList$type==item],
-                              CSV=p1csv
-                  )
-                  if(p1List$Footnote=="") p1List$Footnote <- NULL
-                  p1Name=paste(item,n, sep="")
-                  if(callType=="ConcvTimeMult") p1List$Plot <- p1$src
-
-                  if(grepl("Exclusion",item)){
-                    copy <- try(file.copy(from=p1$file,to=file.path(Dir,"PNG")))
-                    if(class(copy)=="try-error"){
+                  if(input$saveAs!=""){
+                    cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " outputGo for", item, n, 
+                                                    ", outputGo value:", input$outputGo, 
+                                                    ", inputButton value:", input[[paste("button",item,n,sep="")]]),"\n"))
+                    
+                    if(debug){
+                      message <- "DEBUG OUTPUTGO"
+                      input_nms <- names(input)
+                      input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
+                      names(input_vals) <- input_nms
+                      save(message,item,n,input_vals,Defaults,file=file.path(debugDir,"message.rda"))
+                    }
+                    
+                    Dir=sprintf("%s/%s_%s/", currentWD(), 
+                                gsub("'","",
+                                     gsub("[[:space:]]|\\.", "_", input$projectTitle)
+                                ), 
+                                Sys.Date()
+                    )
+                    dir.create(file.path(Dir,"PNG"),recursive=T)
+                    
+                    argList=createArgList(input, item, n, dataFile=dataFile(), currentWD=currentWD())
+                    callType=argList$callType
+                    argList$callType=NULL
+                    
+                    # for(IDX in idx){
+                    #   Defaults[[IDX]]<<-input[[IDX]]
+                    # }
+                    # Defaults[[paste("priorExists", item, n, sep="")]]<<-TRUE
+                    
+                    
+                    if(item%in%"ConcvTimeMult"){
                       argList$tmpDir <- file.path(Dir,"PNG")
-                      p1 <- do.call(callType,argList)
-                      p1List$Plot <- p1
-                    } 
-                  }else if(item %in% c("inputTable", "inputListing", "inputFigure", "inputListing_text")){
-                    if("src" %in% names(p1)){
-                      p1List$Plot <- p1$src 
-                      if(item=="inputTable") p1List$Footnote <- NULL
-                    }else{
-                      p1List$longText <- p1$preview
+                      argList$regenPlots <- T
                     }
-                  }else if(callType %nin% c("demogTabCont","demogTabCat","RNM","ConcvTimeMult")){
-                    savePlots(plotName=p1,  directory=Dir, saveName=paste(item,n, sep=""))
-                  }else if(item%nin%"ConcvTimeMult"){
-                    f <- renderTex(p1,item=item,footnote=p1List$Footnote,tmpDir=file.path(Dir,"PNG"),
-                                   margin=c(left=10,top=5,right=50,bottom=5))
-                    p1List$Plot <- f['src']
-                  }
-                  
-                  # This is massively inefficient!
-                  saveGrob(plot=p1List, Name=p1Name, file=sprintf("%s_Grobs.rda", fileHead))
-                  
-                  #Insert function recording into script	
-                  #Save only the non-default arguments unless the user asks for a verbose script
-                  
-                  useArgs=argList
-                  if(input$verbose){useArgs=createArgList(input,item,n,dataFile(),currentWD=currentWD(),complete=T)}
-                  
-                  #reduce argList to arguments used in the dataManip
-                  argListManip=useArgs[names(useArgs) %in% names(formals(manipDat))]
-                  
-                  #reduce argList to non-default arguments 
-                  for(this_name in names(argListManip)){
-                    if(this_name!="datFile"){
-                      if(is.null(argListManip[[this_name]]) & is.null(formals(manipDat)[[this_name]])){
-                        argListManip=argListManip[names(argListManip)[names(argListManip)!=this_name]]
+                    
+                    #insert an error block around the plotting
+                    p1 = tryCatch({
+                      if(debug) save(callType,argList,file=file.path(debugDir,"output.rda"))
+                      do.call(callType,args=argList)
+                    }, 
+                    error = function(e) {
+                      if(debug) save(callType,argList,file=file.path(debugDir,"error.rda"))
+                      arrangeGrob(textGrob(sprintf("You broke something\n%s", e)))
+                    })
+                    
+                    # if(item %nin% c("demogTabCont","demogTabCat","NMTab")){
+                    #   #Perform the actual plotting
+                    #   output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
+                    #     print(p1)
+                    #   })					
+                    # }else if(item=="ConcvTimeMult"){
+                    #   output[[paste("Plot",item,n,sep="")]] <<- renderImage({ p1 },deleteFile=F)
+                    # }else{
+                    #   output[[paste("Plot",item,n,sep="")]]<<-renderImage(
+                    #     renderTex(obj=p1,item=paste0(item,n),
+                    #               margin=c(left=input[[paste0("leftmargin",item,n)]],
+                    #                        top=input[[paste0("topmargin",item,n)]],
+                    #                        bottom=input[[paste0("bottommargin",item,n)]],
+                    #                        right=input[[paste0("rightmargin",item,n)]]))
+                    #     ,deleteFile=F)
+                    # }
+                    
+                    #Create the save directory
+                    
+                    
+                    
+                    
+                    fileHead=sprintf("%s%s_%s",Dir, input$saveAs, Sys.Date())
+                    # cat(Dir)
+                    
+                    if(debug){
+                      message="DEBUG G"
+                      input_nms <- names(input)
+                      input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
+                      names(input_vals) <- input_nms
+                      save(message,input_vals,item,Dir,fileHead,callType, argList, file=file.path(debugDir,"message.rda"))
+                    }  
+                    
+                    dir.create(Dir,showWarning=FALSE)
+                    ###############
+                    #			Save plots and grobs, record the script
+                    ################			
+                    
+                    
+                    p1csv=data.frame(1) # What is this?
+                    
+                    #What to do with TeX tables?
+                    # if(callType %in% c("demogTabCont","demogTabCat","NMTab")){
+                    #   # p1csv=p1
+                    #   # p1=renderTex(obj=p1,item,tmpDir=Dir)
+                    # }
+                    
+                    
+                    p1List=
+                      list(Facets=ifelse("facetBy" %in% names(argList), argList$facetBy, ""),
+                           Marks=ifelse("markBy" %in% names(argList), argList$markBy, ""),
+                           Groups=ifelse("groupBy" %in% names(argList), argList$groupBy, ""),
+                           Stratification="",
+                           LegendTitle=ifelse(paste("LegendTitle", item, n, sep="") %in% names(input), input[[paste("LegendTitle", item, n, sep="")]], ""),
+                           Legend=ifelse(paste("Legend", item, n, sep="") %in% names(input), input[[paste("Legend", item, n, sep="")]], ""),
+                           Footnote=ifelse(paste("Footnote",item,n,sep="") %in% names(input), input[[paste("Footnote",item,n,sep="")]], ""),
+                           Plot=p1,
+                           Type=plotList$sidebarType[plotList$type==item],
+                           CSV=p1csv
+                      )
+                    
+                    if(p1List$Footnote=="") p1List$Footnote <- NULL
+                    p1Name=paste(item,n, sep="")
+                    if(callType=="ConcvTimeMult") p1List$Plot <- p1$src
+                    
+                    if(grepl("Exclusion",item)){
+                      copy <- try(file.copy(from=p1$file,to=file.path(Dir,"PNG")))
+                      if(class(copy)=="try-error"){
+                        argList$tmpDir <- file.path(Dir,"PNG")
+                        p1 <- do.call(callType,argList)
+                        p1List$Plot <- p1
+                      } 
+                    }else if(item %in% c("inputTable", "inputListing", "inputFigure", "inputListing_text")){
+                      if("src" %in% names(p1)){
+                        p1List$Plot <- p1$src 
+                        if(item=="inputTable") p1List$Footnote <- NULL
+                      }else{
+                        p1List$longText <- p1$preview
                       }
-                      if(!is.null(argListManip[[this_name]]) & !is.null(formals(manipDat)[[this_name]]) ){
-                        if(all(argListManip[[this_name]]==formals(manipDat)[[this_name]])){	
-                          argListManip=argListManip[names(argListManip)[names(argListManip)!=this_name]]		
+                    }else if(callType %nin% c("demogTabCont","demogTabCat","RNM","ConcvTimeMult")){
+                      savePlots(plotName=p1,  directory=Dir, saveName=paste(item,n, sep=""))
+                    }else if(item%nin%"ConcvTimeMult"){
+                      f <- renderTex(p1,item=item,footnote=p1List$Footnote,tmpDir=file.path(Dir,"PNG"),
+                                     margin=c(left=10,top=5,right=50,bottom=5))
+                      p1List$Plot <- f['src']
+                    }
+                    
+                    # We only write the rda when using the TFL generated script
+                    saveGrob(plot=p1List, Name=p1Name, file=sprintf("%s_Grobs.rda", fileHead),
+                             writeRda=F)
+                    
+                    #Insert function recording into script	
+                    #Save only the non-default arguments unless the user asks for a verbose script
+                    
+                    useArgs=argList
+                    if(input$verbose){useArgs=createArgList(input,item,n,dataFile(),currentWD=currentWD(),complete=T)}
+                    
+                    #reduce argList to arguments used in the dataManip
+                    argListManip=useArgs[names(useArgs) %in% names(formals(manipDat))]
+                    
+                    #reduce argList to non-default arguments 
+                    for(this_name in names(argListManip)){
+                      if(this_name!="datFile"){
+                        if(is.null(argListManip[[this_name]]) & is.null(formals(manipDat)[[this_name]])){
+                          argListManip=argListManip[names(argListManip)[names(argListManip)!=this_name]]
                         }
-                      }	
-                    }
-                  }
-                  
-                  # #Keep a recording of the complete list <-this is only used to write out the complete argument list in the verbose script
-                  # argListComplete=formals(callType)
-                  # argListComplete$"..."=NULL
-                  # for(listName in names(argList)){
-                  #   argListComplete[[listName]]=argList[[listName]]
-                  # }
-                  if(debug){
-                    message="recordGUI"
-                    input_vals <- reactiveValuesToList(input,all.names=T)
-                    save(message, argList, item, callType, useArgs, input_vals, n, argListManip, file=file.path(srcDir,"tmp","message.rda"))
-                  }
-                  tryCatch(
-                    recordGUI(doWhat=callType, 
-                              toWhat=useArgs,
-                              input=input,
-                              number=n,
-                              manipArgs=argListManip,
-                              currentWD=currentWD()),
-                    error=function(e){
-                      cat(file=stderr(), sprintf("Record GUI failed with %s %s\n",item,n))
-                      if(debug){
-                        input_vals <- reactiveValuesToList(input,all.names=T)
-                        save(e,callType, useArgs, input_vals, n, argListManip, file=file.path(srcDir,"tmp","record_output.rda"))
+                        if(!is.null(argListManip[[this_name]]) & !is.null(formals(manipDat)[[this_name]]) ){
+                          if(all(argListManip[[this_name]]==formals(manipDat)[[this_name]])){	
+                            argListManip=argListManip[names(argListManip)[names(argListManip)!=this_name]]		
+                          }
+                        }	
                       }
                     }
-                  )
+                    
+                    # #Keep a recording of the complete list <-this is only used to write out the complete argument list in the verbose script
+                    # argListComplete=formals(callType)
+                    # argListComplete$"..."=NULL
+                    # for(listName in names(argList)){
+                    #   argListComplete[[listName]]=argList[[listName]]
+                    # }
+                    if(debug){
+                      message="recordGUI"
+                      input_vals <- reactiveValuesToList(input,all.names=T)
+                      save(message, argList, item, callType, useArgs, input_vals, n, argListManip, p1List=p1List, file=file.path(srcDir,"tmp","recordGUI.rda"))
+                    }
+                    tryCatch(
+                      recordGUI(doWhat=callType, 
+                                toWhat=useArgs,
+                                input=input,
+                                item=item,
+                                number=n,
+                                manipArgs=argListManip,
+                                currentWD=currentWD(),
+                                grob=p1List),
+                      error=function(e){
+                        cat(file=stderr(), sprintf("Record GUI failed with %s %s\n",item,n))
+                        if(debug){
+                          input_vals <- reactiveValuesToList(input,all.names=T)
+                          save(e,callType, useArgs, input_vals, n, argListManip, file=file.path(srcDir,"tmp","record_output.rda"))
+                        }
+                      }
+                    )
+                  }
                 }
-              }
-            })
-          }
-        } # End if any input
-      }) # End local
-    } # End for this item
-    
+              })
+            }
+          } # End if any input
+        }) # End local
+      }) # End for this item
+    }
+      
     observe(if(input$RTF & input$saveAs!="" ){
-      
-      cat(file=stderr(), paste0("LOG: ", Sys.time(), " writing RTF\n"))
-      if(debug){
-        message <- "writing RTF"
-        input_nms <- names(input)
-        input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
-        names(input_vals) <- input_nms
-        save(message,input_vals,guiGrobs,file=file.path(debugDir,"message.rda"))
-      }
-      ###############			
-      #			make a document
-      ###############	
-      Dir=sprintf("%s/%s_%s/", currentWD(), gsub("[[:space:]]|\\.", "_", input$projectTitle), Sys.Date())
-      dir.create(Dir,showWarning=FALSE)
-      fileHead=sprintf("%s%s_%s",Dir, input$saveAs, Sys.Date())
-      grobFile=sprintf("%s_Grobs.R", fileHead)
-      
-      getObj <- function(x){
-        input_vals <- reactiveValuesToList(input)
-        titles <- lapply(grep("LegendTitle",names(input_vals)), function(xx) input_vals[[xx]])
-        names(titles) <- grep("LegendTitle",names(input_vals),value=T)
-        str_split(names(which(x == titles)),"LegendTitle")[[1]][2]
-      }
-      
-      figureOrder <- tryCatch(sapply(input[["figureOrder"]], getObj) ,
-                              error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","figureOrderError.rda")) )
-      tableOrder <- tryCatch(sapply(input[["tableOrder"]], getObj) ,
-                             error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","tableOrderError.rda")))
-      listingOrder <- tryCatch(sapply(input[["listingOrder"]], getObj), 
-                               error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","ListingOrderError.rda")) )
-      guiGrobs <- tryCatch(guiGrobs[c(tableOrder,figureOrder,listingOrder)],
-                           error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","guiGrobsOrderError.rda")))
-      
-      tryCatch(writeRTF(grobFile, ordering=names(guiGrobs)),
-               error=function(e){
-                 cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " failed to write RTF\n",e,"\n")))
-                 if(debug){
-                   save(guiGrobs, grobFile, figureOrder, tableOrder, listingOrder, file=file.path(srcDir,"tmp","rtferror.rda"))
-                 }
-               })
-    })  
+      withProgress(message = "Writing", value=.5,{
+        isolate({
+          cat(file=stderr(), paste0("LOG: ", Sys.time(), " writing RTF\n"))
+          if(debug){
+            message <- "writing RTF"
+            input_nms <- isolate(names(input))
+            input_vals <- isolate(lapply(input_nms, function(inputi) try(input[[inputi]])))
+            names(input_vals) <- input_nms
+            save(message,input_vals,guiGrobs,file=file.path(debugDir,"message.rda"))
+          }
+          ###############			
+          #			make a document
+          ###############	
+          Dir=isolate(sprintf("%s/%s_%s/", currentWD(), gsub("[[:space:]]|\\.", "_", input$projectTitle), Sys.Date()))
+          dir.create(Dir,showWarning=FALSE)
+          fileHead=isolate(sprintf("%s%s_%s",Dir, input$saveAs, Sys.Date()))
+          grobFile=sprintf("%s_Grobs.rda", fileHead)
+          
+          getObj <- function(x){
+            input_vals <- reactiveValuesToList(input)
+            titles <- lapply(grep("LegendTitle",names(input_vals)), function(xx) input_vals[[xx]])
+            names(titles) <- grep("LegendTitle",names(input_vals),value=T)
+            str_split(names(which(x == titles)),"LegendTitle")[[1]][2]
+          }
+          
+          figureOrder <- tryCatch(sapply(input[["figureOrder"]], getObj) ,
+                                  error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","figureOrderError.rda")) )
+          tableOrder <- tryCatch(sapply(input[["tableOrder"]], getObj) ,
+                                 error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","tableOrderError.rda")))
+          listingOrder <- tryCatch(sapply(input[["listingOrder"]], getObj), 
+                                   error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","ListingOrderError.rda")) )
+          guiGrobs <- tryCatch(guiGrobs[c(tableOrder,figureOrder,listingOrder)],
+                               error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","guiGrobsOrderError.rda")))
+          
+          tryCatch(writeRTF(grobFile, ordering=names(guiGrobs)),
+                   error=function(e){
+                     cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " failed to write RTF\n",e,"\n")))
+                     if(debug){
+                       save(guiGrobs, grobFile, figureOrder, tableOrder, listingOrder, file=file.path(srcDir,"tmp","rtferror.rda"))
+                     }
+                   })
+          cat(file=stderr(), "LOG: Finished writing RTF\n")
+        })
+      })
+    }) # End RTF observer
   }) # End observer for outputGo
-                  
+  
 
   ##################################################
   
