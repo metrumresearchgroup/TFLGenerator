@@ -5,14 +5,18 @@ pkgs <- c('metrumrg','shinyFiles','animation','gdata','shinydashboard',
           'DT','rtf','lazyeval','dplyr','DBI','ggplot2','gridExtra','GUI','TFL')
 
 # Create the shiny path and touch some files there so the Makefile can run
-dir.create("/data/shiny-server/TFL generator")
-system("touch /data/shiny-server/TFL\\ generator/server.R")
-system("touch /data/shiny-server/TFL\\ generator/ui.R")
-system("touch /data/shiny-server/TFL\\ generator/restart.txt")
-od <- getwd()
-setwd("..")
-system("make update_server signal_restart")
-setwd(od)
+if(dir.exists("/data/shiny-server/TFL\ generator") & file.exists("../Makefile")){
+  # Then I'm assuming you're set up correctly.  If you are just setting up the packages and not installing
+  # the TFL generator, then this block should not run.
+    dir.create("/data/shiny-server/TFL generator")
+    system("touch /data/shiny-server/TFL\\ generator/server.R")
+    system("touch /data/shiny-server/TFL\\ generator/ui.R")
+    system("touch /data/shiny-server/TFL\\ generator/restart.txt")
+    od <- getwd()
+    setwd("..")
+    system("make update_server signal_restart")
+    setwd(od)
+}
 
 user <- Sys.info()["user"]
 parentScriptDir <- getwd()  ## You may need to mod this to be in the top level of scriptDir
