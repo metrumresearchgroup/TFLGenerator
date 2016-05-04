@@ -42,7 +42,7 @@ library(shinyFiles)
       	dashboardBody(
       	  tabItems(
       	    tabItem(tabName="tabIntro",
-      	            h2("Google drive user guide with demo instructions:",
+      	            h2("User guide:",
       	               a("Link",href="https://docs.google.com/document/d/1sGwrTt_rr2gX0X8Ifgaj1VcFWZkY4-Xo4FF4flzWkt8/edit?usp=sharing")),
       	            h1(""),
       	            tags$iframe(src="https://docs.google.com/document/d/1sGwrTt_rr2gX0X8Ifgaj1VcFWZkY4-Xo4FF4flzWkt8/pub?embedded=true",
