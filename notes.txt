@@ -1,5 +1,4 @@
--- GOF has issues with defaults checking
--- Check input box size with subjectExclusions table
+-- Write RTF in R script, test this out.  Added ordering code, does it work?
 -- Example for specifying exclusions:
 
 ObsExc <- "Keep"

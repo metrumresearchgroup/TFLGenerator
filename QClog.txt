@@ -29,6 +29,8 @@ QQplot, QQplot of two variables, TFL/R/QQplot.R
 QC'd by:  Jia Kang         Commit ID:  2407f07 
 Comments (date): Please check the MarkBy
 
+<danp@metrumrg.com> This has been addressed, markBy now works as expected.
+
 -------------------------
 
 paramDist, Parameter distributon plot, TFL/R/paramDist.R

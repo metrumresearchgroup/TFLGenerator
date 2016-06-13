@@ -5,7 +5,7 @@ pkgs <- c('metrumrg','shinyFiles','animation','gdata','shinydashboard',
           'DT','rtf','lazyeval','dplyr','DBI','ggplot2','gridExtra','GUI','TFL')
 
 # Create the shiny path and touch some files there so the Makefile can run
-if(dir.exists("/data/shiny-server/TFL\ generator") & file.exists("../Makefile")){
+if(dir.exists("/data/shiny-server") & file.exists("../Makefile")){
   # Then I'm assuming you're set up correctly.  If you are just setting up the packages and not installing
   # the TFL generator, then this block should not run.
     dir.create("/data/shiny-server/TFL generator")
