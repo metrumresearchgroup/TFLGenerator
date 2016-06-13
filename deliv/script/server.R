@@ -1,4 +1,4 @@
-debug <- F
+debug <- T
 
 #rm(list=ls(all=TRUE))
 Sys.setenv(PATH=paste0(Sys.getenv("PATH"),":/usr/bin"))
@@ -281,27 +281,26 @@ shinyServer(function(input, output, session) {
     
     if("srcData" %nin% names(input)) return()
     
-    if(input$srcData=="sourcedata.csv"){
+    if(input$srcData%in%c("sourcedata.csv",""," ","  ","   ")){
       return()
     }
     
     withProgress(message="Loading...", value=.25, {
       
-      if(input$srcData %nin% c("", " ", "sourcedata.csv")){
-        srcDatFile=sprintf("%s/%s", currentWD(), input$srcData)
-        if(!file.exists(srcDatFile)){
+      srcDatFile=sprintf("%s/%s", currentWD(), input$srcData)
+      if(!file.exists(srcDatFile)){
+        return()
+      }
+      if(!exists("originalSourceData",envir=.GlobalEnv)){
+        originalSourceData <<- try(as.best(read.csv(srcDatFile, stringsAsFactors=F, fill=TRUE)))
+        if(class(originalSourceData)=="try-error"){
+          rm("originalSourceData",envir = .GlobalEnv)
           return()
         }
-        if(!exists("originalSourceData",envir=.GlobalEnv)){
-          originalSourceData <<- try(as.best(read.csv(srcDatFile, stringsAsFactors=F, fill=TRUE)))
-          if(class(originalSourceData)=="try-error"){
-            rm("originalSourceData",envir = .GlobalEnv)
-            return()
-          }
-        }
-        dat <- get("originalSourceData",envir = .GlobalEnv) # Point to a copy here
-        dat=dat[rowSums(is.na(dat)) != ncol(dat),]
       }
+
+      dat <- get("originalSourceData",envir = .GlobalEnv) # Point to a copy here
+      dat=dat[rowSums(is.na(dat)) != ncol(dat),]
       incProgress(amount=.5)
       dat=data.frame(dat, stringsAsFactors=F)
       
@@ -489,28 +488,15 @@ shinyServer(function(input, output, session) {
   output$contentsHead_tabledata <- DT::renderDataTable({
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_tabledata called\n"))
     req(input$runno, tableFile())
-    # if("runno" %nin% names(input)){
-    #     return()
-    #   }
-    #   if(is.null(tableFile())){
-    #     return()
-    #   }
     return(datatable(tableFile(),filter="top"))
   })
   output$contentsHead_sourcedata <- DT::renderDataTable({
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_sourcedata called\n"))
     req(input$srcData,sourceFile())
-    # if("srcData" %nin% names(input)){
-    #   return()
-    # }
-    # if(is.null(sourceFile())){
-    #   return()
-    # }
     return(datatable(sourceFile(), filter="top"))
   })  
   output$contentsHead_analysisdata <- DT::renderDataTable({
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_analysisdata called\n"))
-    req(input$srcData,input$runno)
     return(datatable(dataFile(), filter="top"))
   })  
 
