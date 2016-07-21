@@ -186,20 +186,6 @@ shinyServer(function(input, output, session) {
   # nms <- load("tmp/message.rda")
   # input <- input_vals
   # currentWD <- function() input[["manualDataPath"]]
-
-  #  input <- list()
-  #  input$runno <- "0069"
-  #  # input$srcData <- "idx_tst_pool_pkf1_cw_mod28_3cwnh_pp_cw50z1b1_3.csv"
-  #  # input$srcData <- "0069/fakeSource.csv"
-  #  input$ext <- ".tab"
-  #  input$header <- TRUE
-  #  input$skipLines <- 1
-  #  input[["DVCol"]]="DV"
-  #  input[["TAFDCol"]]="TIME"
-  #  input[["STUDYCol"]]="STUDY"
-  #  input[["NMIDCol"]]="ID"
-  #  input[["dataLimits"]] = ""
-  #  input[["dataTrans"]] = ""
   
   #read data in a reactive format
   tableFile=reactive({
