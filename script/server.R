@@ -1478,7 +1478,7 @@ shinyServer(function(input, output, session) {
     wellPanel(
       #checkboxInput("PNG", "Record *.pngs", Defaults$PNG),
       checkboxInput("RTF", "Construct *.Doc", Defaults$RTF),
-      checkboxInput("verbose", "Reveal Function Text?", Defaults$verbose),
+      checkboxInput("verbose", "Reveal Function Text (verbose R script)?", Defaults$verbose),
       textInput("saveAs", "File Name", Defaults$saveAs),
       actionButton("outputGo", "Save"),
       h1(),
