@@ -186,7 +186,7 @@ shinyServer(function(input, output, session) {
   # nms <- load("tmp/message.rda")
   # input <- input_vals
   # currentWD <- function() input[["manualDataPath"]]
-  
+
   #read data in a reactive format
   tableFile=reactive({
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " tableFile called\n"))
@@ -679,17 +679,6 @@ shinyServer(function(input, output, session) {
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " creating data view tabset \n"))
     #The first PanelSet is what is loaded with the base defaults.  
     PanelSet=list(
-      tabPanel("Run Data",
-               fluidRow(
-                 column(width = 12,
-                        box(
-                          title = "", width = NULL, status = "primary",
-                          div(style = 'overflow-x: scroll', DT::dataTableOutput('contentsHead_tabledata'))
-                        )
-                 )
-               )
-      ),
-      tabPanel("Run Data Summary", verbatimTextOutput("contentsSummary_tabledata")),
       tabPanel("Source Data",
                fluidRow(
                  column(width = 12,
@@ -701,6 +690,18 @@ shinyServer(function(input, output, session) {
                )
       ),
       tabPanel("Source Data Summary", verbatimTextOutput("contentsSummary_sourcedata")),
+      tabPanel("Run Data",
+               fluidRow(
+                 column(width = 12,
+                        box(
+                          title = "", width = NULL, status = "primary",
+                          div(style = 'overflow-x: scroll', DT::dataTableOutput('contentsHead_tabledata'))
+                        )
+                 )
+               )
+      ),
+      tabPanel("Run Data Summary", verbatimTextOutput("contentsSummary_tabledata")),
+
       tabPanel("Analysis Data",
                fluidRow(
                  column(width = 12,
@@ -860,16 +861,19 @@ shinyServer(function(input, output, session) {
         selectizeInput(
           "figureOrder", label="Figures order", 
           choices=as.character(outList$Figures$title), 
+          selected=Defaults[["figureOrder"]],
           multiple=T, options=list(create=F)
         ),
         selectizeInput(
           "tableOrder", label="Tables order", 
           choices=as.character(outList$Tables$title), 
+          selected=Defaults[["tableOrder"]],
           multiple=T, options=list(create=F)
         ),
         selectizeInput(
           "listingOrder", label="Listings order", 
           choices=as.character(outList$Listings$title), 
+          selected=Defaults[["listingOrder"]],
           multiple=T, options=list(create=F)
         )
       ),

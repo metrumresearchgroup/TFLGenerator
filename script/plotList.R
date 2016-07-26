@@ -10,7 +10,9 @@ plotList <- list(
      "inputFigure",    "inputListing"  , "inputListing_text",
      "subjectExclusionsTab", "observationExclusionsTab",
      "subjectExclusionsSummaryTab",
-     "observationExclusionsSummaryTab"
+     "observationExclusionsSummaryTab",
+     "distMult",
+     "barchartMult"
   ),
   Ind = c(
     "ConcvTime" ,    "ConcvTimeInd"   ,   
@@ -21,7 +23,9 @@ plotList <- list(
     "inputFile"   ,  "inputFile"      , "inputFile",
     "subjectExclusionsTab", "observationExclusionsTab",
     "subjectExclusionsSummaryTab",
-    "observationExclusionsSummaryTab"
+    "observationExclusionsSummaryTab",
+    "distMult",
+    "barchartMult"
   ),
   Sum = c(
     "ConcvTime" ,    "ConcvTimeSum"   ,  
@@ -32,7 +36,9 @@ plotList <- list(
     "inputFile",     "inputFile"      , "inputFile",
     "subjectExclusionsTab", "observationExclusionsTab",
     "subjectExclusionsSummaryTab",
-    "observationExclusionsSummaryTab"
+    "observationExclusionsSummaryTab",
+    "distMult",
+    "barchartMult"
   ),
   Call = c(
     "panelTypeConcvTime"      ,  "panelTypeConcvTimeGroup" ,
@@ -43,7 +49,9 @@ plotList <- list(
   "panelTypeinputFile_image"  ,  "panelTypeinputFile_image", "panelTypeinputFile",
   "panelTypesubjectExclusionsTab", "panelTypeobservationExclusionsTab",
   "panelTypesubjectExclusionsSummaryTab",
-  "panelTypeobservationExclusionsSummaryTab"
+  "panelTypeobservationExclusionsSummaryTab",
+  "panelTypedistMult",
+  "panelTypebarchartMult"
   ),
   sidebarType = 
     c("Figures"               , "Figures"                 , 
@@ -54,7 +62,9 @@ plotList <- list(
       "Figures"               , "Listings"                , "Listings",
       "Listings"              , "Listings",
       "Tables"                ,
-      "Tables"
+      "Tables"                ,
+      "Figures"               ,
+      "Figures"
   )
 )
 
