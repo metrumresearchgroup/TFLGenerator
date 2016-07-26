@@ -14,6 +14,7 @@ DefaultsFirst <- list(
    demogTabContNum =                             0 ,
     demogTabCatNum =                             0 ,
             GOFNum =                             0 ,
+       distMultNum =                             0 ,
            saveAll =                         FALSE ,
             saveAs =                            "" ,
           saveParm =                         FALSE ,
@@ -66,7 +67,11 @@ observationExclusionsTabNum =                    0 ,
 subjectExclusion_col =                   "SUBJEXC" ,
 observationExclusion_col =                "OBSEXC" ,
 subjectExclusionsSummaryTabNum =                 0 ,
-observationExclusionsSummaryTabNum =             0
+observationExclusionsSummaryTabNum =             0 ,
+barchartMultNum =                                0 ,
+figureOrder =                                   "" ,
+tableOrder =                                    "" ,
+listingOrder =                                  ""
 )
 
 save(DefaultsFirst,file=file.path(getwd(),"GUI","data","DefaultsFirst.rda")) # Expects to run from top of repo

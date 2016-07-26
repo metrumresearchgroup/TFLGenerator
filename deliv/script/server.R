@@ -186,7 +186,7 @@ shinyServer(function(input, output, session) {
   # nms <- load("tmp/message.rda")
   # input <- input_vals
   # currentWD <- function() input[["manualDataPath"]]
-  
+
   #read data in a reactive format
   tableFile=reactive({
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " tableFile called\n"))
@@ -860,16 +860,19 @@ shinyServer(function(input, output, session) {
         selectizeInput(
           "figureOrder", label="Figures order", 
           choices=as.character(outList$Figures$title), 
+          selected=Defaults[["figureOrder"]],
           multiple=T, options=list(create=F)
         ),
         selectizeInput(
           "tableOrder", label="Tables order", 
           choices=as.character(outList$Tables$title), 
+          selected=Defaults[["tableOrder"]],
           multiple=T, options=list(create=F)
         ),
         selectizeInput(
           "listingOrder", label="Listings order", 
           choices=as.character(outList$Listings$title), 
+          selected=Defaults[["listingOrder"]],
           multiple=T, options=list(create=F)
         )
       ),
