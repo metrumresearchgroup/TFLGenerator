@@ -474,16 +474,16 @@ shinyServer(function(input, output, session) {
   output$contentsHead_tabledata <- DT::renderDataTable({
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_tabledata called\n"))
     req(input$runno, tableFile())
-    return(datatable(tableFile(),filter="top"))
+    return(DT::datatable(tableFile(),filter="top"))
   })
   output$contentsHead_sourcedata <- DT::renderDataTable({
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_sourcedata called\n"))
     req(input$srcData,sourceFile())
-    return(datatable(sourceFile(), filter="top"))
+    return(DT::datatable(sourceFile(), filter="top"))
   })  
   output$contentsHead_analysisdata <- DT::renderDataTable({
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_analysisdata called\n"))
-    return(datatable(dataFile(), filter="top"))
+    return(DT::datatable(dataFile(), filter="top"))
   })  
 
   output$contentsHead_subjectExclusions <- DT::renderDataTable({ NULL })
@@ -492,7 +492,7 @@ shinyServer(function(input, output, session) {
     cat(file=stderr(),paste0("LOG: ", Sys.time(), " contentsHead_subjectExclusions called\n"))
     foo <- isolate(dataFile())
     output$contentsHead_subjectExclusions <- 
-      DT::renderDataTable({datatable(subjectExclusions, filter="top")})
+      DT::renderDataTable({DT::datatable(subjectExclusions, filter="top")})
   })
         
   output$contentsHead_observationExclusions <- DT::renderDataTable({NULL})
@@ -500,7 +500,7 @@ shinyServer(function(input, output, session) {
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_observationExclusions called\n"))
     foo <- isolate(dataFile())
     output$contentsHead_observationExclusions <-
-      DT::renderDataTable({datatable(observationExclusions, filter="top")})
+      DT::renderDataTable({DT::datatable(observationExclusions, filter="top")})
   })
   
   #Raw Contents
@@ -630,28 +630,13 @@ shinyServer(function(input, output, session) {
                       wellPanel(
                         fluidRow( 
                           column( 12,
-                                  #h3("Table data:"),
-                                  # boxInputLarge(inputId="renameThese_table", "Rename Columns", value=Defaults$renameThese),
-                                  # boxInputLarge(inputId="factorThese_table", "Factor Columns", value=Defaults$factorThese),
-                                  # boxInputLarge(inputId="dataTrans_table", "Transform Data:", value=Defaults$dataTrans),
-                                  # boxInputLarge(inputId="dataLimits_table", "Limit Data by", value=Defaults$dataLimits),
-                                  boxInputLarge(inputId="dataParse_table", "Table data manipulation code:", value=Defaults[["dataParse_table"]]),
-
-                                  h1(""),
-                                  
-                                  #h3("Source data:"),
-                                  # boxInputLarge(inputId="renameThese_source", "Rename Columns", value=Defaults$renameThese),
-                                  # boxInputLarge(inputId="factorThese_source", "Factor Columns", value=Defaults$factorThese),
-                                  # boxInputLarge(inputId="dataLimits_source", "Limit Data by", value=Defaults$dataLimits),
-                                  # boxInputLarge(inputId="dataTrans_source", "Transform Data:", value=Defaults$dataTrans),
                                   boxInputLarge(inputId="dataParse_source", "Source data manipulation code:", value=Defaults[["dataParse_source"]]),
 
                                   h1(""),
-                                  #h3("Combined data:"),
-                                  # boxInputLarge(inputId="renameThese", "Rename Columns", value=Defaults$renameThese),
-                                  # boxInputLarge(inputId="factorThese", "Factor Columns", value=Defaults$factorThese),
-                                  # boxInputLarge(inputId="dataLimits", "Limit Data by", value=Defaults$dataLimits),
-                                  # boxInputLarge(inputId="dataTrans", "Transform Data:", value=Defaults$dataTrans),
+                                  
+                                  boxInputLarge(inputId="dataParse_table", "Table data manipulation code:", value=Defaults[["dataParse_table"]]),
+
+                                  h1(""),
                                   boxInputLarge(inputId="dataParse_analysis", "Analysis data manipulation code:", value=Defaults[["dataParse_analysis"]])
                           )
                         )
@@ -1094,6 +1079,7 @@ shinyServer(function(input, output, session) {
                       }
                       )
                       
+                      
                     }else p1 <- arrangeGrob(textGrob(sprintf("You broke something \n%s",as.character(attr(argList,"condition")))))
                     
                    
@@ -1101,6 +1087,8 @@ shinyServer(function(input, output, session) {
                       message <- "DEBUG D"
                       save(message,file=file.path(debugDir,"message.rda"))
                     } 
+                    
+                    output[[paste("generated",item,n,sep="")]] <<- renderPrint({ Sys.time() })
                     
                     if(item %in% c("inputTable", "inputListing", "inputFigure", "inputListing_text",
                                    "observationExclusionsTab","subjectExclusionsTab",
