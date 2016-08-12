@@ -27,8 +27,9 @@ library(shinyFiles)
       	      # shinyDirButton(id="dataPath", label='Set working directory', title='Please select a working directory'),
       	      h1(""),
       	      menuItem(text="Pharmacometrics TFL", tabName = "tabIntro", icon=icon("clock")),
-      	      menuItem(text="Data Input", tabName="tabDataInput", icon=icon("sliders")),
-      	      menuItem(text="Data", tabName="tabData", icon=icon("database")),
+         	    menuItem(text="Project info", tabName="tabProjectInfo", icon=icon("sliders")),
+      	      menuItem(text="Data input", tabName="tabDataInput", icon=icon("sliders")),
+      	      menuItem(text="Analysis data", tabName="atabData", icon=icon("database")),
       	      menuItem(text="Data Exclusions", tabName="tabDataExc", icon=icon("sliders")),
       	      menuItem(text="Analysis Selection", tabName="tabAnalysisSelection", icon=icon("check-square-o")),
       	      menuItem(text="Figures", tabName="tabFigures", icon=icon("bar-chart")),
@@ -46,11 +47,11 @@ library(shinyFiles)
       	               a("Link",href="https://docs.google.com/document/d/1sGwrTt_rr2gX0X8Ifgaj1VcFWZkY4-Xo4FF4flzWkt8/edit?usp=sharing")),
       	            h1(""),
       	            tags$iframe(src="https://docs.google.com/document/d/1sGwrTt_rr2gX0X8Ifgaj1VcFWZkY4-Xo4FF4flzWkt8/pub?embedded=true",
-      	                        height="700px", width="100%")
+      	                        height="600px", width="100%")
       	            # ,
       	            # h1(""),
-      	            # h2("Working directory:"),
-      	            # code(textOutput("dataPath"))
+      	            # h2("Source code:"),
+      	            # verbatimTextOutput("sourceParseCode")
       	            # ,
       	            # h1(""),
       	            # h2("Input names:"),
@@ -64,10 +65,18 @@ library(shinyFiles)
       	            # h2("Here's a table rendering:"),
       	            # imageOutput("texTable")
       	    ),
+      	    tabItem(tabName="tabProjectInfo", 
+      	            h3("Project info"), 
+      	            uiOutput("projectInfoTabset")
+      	    ),
       	    tabItem(tabName="tabDataInput",
-      	            h3("Data Input"),
+      	            h3("Data input and manipulation"),
       	            uiOutput("DataTabset")
       	     ),
+      	    tabItem(tabName="atabData",
+      	            h3("Analysis data merge specification and manipulation"),
+      	            uiOutput("aDataTabset")
+      	    ),      	    
       	    tabItem(tabName="tabDataExc",
       	            h3("Data exclusions"),
       	            uiOutput("DataExcTabset")

@@ -24,13 +24,10 @@ NeedsCompilation: no
 Package: devtools
 Version: 1.11.0
 Depends: R (>= 3.0.2)
-Imports: httr (>= 0.4), utils, tools, methods, memoise (>= 1.0.0),
-        whisker, digest, rstudioapi (>= 0.2.0), jsonlite, stats, git2r
-        (>= 0.11.0), withr
-Suggests: curl (>= 0.9), crayon, testthat (>= 0.7), BiocInstaller, Rcpp
-        (>= 0.10.0), MASS, rmarkdown, knitr, hunspell (>= 1.2), lintr
-        (>= 0.2.1), bitops, roxygen2 (>= 5.0.0), evaluate, rversions,
-        covr, gmailr (> 0.7.0)
+Imports: httr (>= 0.4), utils, tools, methods, memoise (>= 1.0.0), whisker, digest, rstudioapi (>= 0.2.0), jsonlite, stats,
+              git2r (>= 0.11.0), withr
+Suggests: curl (>= 0.9), crayon, testthat (>= 0.7), BiocInstaller, Rcpp (>= 0.10.0), MASS, rmarkdown, knitr, hunspell (>= 1.2),
+              lintr (>= 0.2.1), bitops, roxygen2 (>= 5.0.0), evaluate, rversions, covr, gmailr (> 0.7.0)
 License: GPL (>= 2)
 MD5sum: 2f8ba27b4a3e9fbf7ce164fddb40a3d9
 NeedsCompilation: yes
@@ -38,12 +35,10 @@ NeedsCompilation: yes
 Package: dplyr
 Version: 0.4.3
 Depends: R (>= 3.1.2)
-Imports: assertthat, utils, R6, Rcpp, magrittr, lazyeval (>= 0.1.10),
-        DBI (>= 0.3)
+Imports: assertthat, utils, R6, Rcpp, magrittr, lazyeval (>= 0.1.10), DBI (>= 0.3)
 LinkingTo: Rcpp (>= 0.12.0), BH (>= 1.58.0-1)
-Suggests: RSQLite (>= 1.0.0), RMySQL, RPostgreSQL, data.table,
-        testthat, knitr, microbenchmark, ggplot2, mgcv, Lahman (>=
-        3.0-1), nycflights13, methods
+Suggests: RSQLite (>= 1.0.0), RMySQL, RPostgreSQL, data.table, testthat, knitr, microbenchmark, ggplot2, mgcv, Lahman (>=
+              3.0-1), nycflights13, methods
 License: MIT + file LICENSE
 MD5sum: 19d4ee8b0a196073c390fa6ecb73eb11
 NeedsCompilation: yes
@@ -68,10 +63,8 @@ NeedsCompilation: no
 Package: ggplot2
 Version: 1.0.1
 Depends: R (>= 2.14), stats, methods
-Imports: plyr (>= 1.7.1), digest, grid, gtable (>= 0.1.1), reshape2,
-        scales (>= 0.2.3), proto, MASS
-Suggests: quantreg, Hmisc, mapproj, maps, hexbin, maptools, multcomp,
-        nlme, testthat, knitr, mgcv
+Imports: plyr (>= 1.7.1), digest, grid, gtable (>= 0.1.1), reshape2, scales (>= 0.2.3), proto, MASS
+Suggests: quantreg, Hmisc, mapproj, maps, hexbin, maptools, multcomp, nlme, testthat, knitr, mgcv
 Enhances: sp
 License: GPL-2
 MD5sum: e287a45fee45b0cc22c8d4c1c0318d97
@@ -93,23 +86,28 @@ MD5sum: 45f8800c0336d35046641fbacc56bdbb
 NeedsCompilation: yes
 
 Package: GUI
-Version: 1.0.0
-Depends: R (>= 2.3.0), grid, gridExtra (<= 0.9), ggplot2 (<= 1.0.1),
-        gdata, boot, plyr, stringr, scales, Hmisc, shinydashboard,
-        shinyFiles, DT, dplyr, reshape2, rtf, metrumrg, gtools,
-        animation
-MD5sum: 138e72e25fe020638c38d55072bf452e
+Version: 1.0.2
+Depends: R (>= 2.3.0), grid, gridExtra (<= 0.9), ggplot2 (<= 1.0.1), gdata, boot, plyr, stringr, scales, Hmisc, shinydashboard,
+              shinyFiles, DT, dplyr, reshape2, rtf, metrumrg, gtools, animation
+MD5sum: 2c47bba47ab6e43ac4b889ac323a0cac
 NeedsCompilation: no
 
 Package: Hmisc
 Version: 3.17-0
 Depends: grid, lattice, survival (>= 2.37-6), Formula, ggplot2
-Imports: methods, proto, scales, latticeExtra, cluster, rpart, nnet,
-        acepack, foreign, gtable, gridExtra
+Imports: methods, proto, scales, latticeExtra, cluster, rpart, nnet, acepack, foreign, gtable, gridExtra
 Suggests: chron, rms, mice, tables, knitr, ff, ffbase, htmltools
 License: GPL (>= 2)
 MD5sum: 43a5b16627e1dcd7ebe23fb352198b5f
 NeedsCompilation: yes
+
+Package: hms
+Version: 0.2
+Imports: methods
+Suggests: testthat, lubridate
+License: GPL-3
+MD5sum: fec1f417999695a76ada2f65076703d9
+NeedsCompilation: no
 
 Package: htmlwidgets
 Version: 0.5
@@ -142,6 +140,16 @@ Suggests: graph, Rgraphviz
 License: GPL-2
 MD5sum: d5523943a5be6ca2f0ab557c900f8212
 NeedsCompilation: no
+
+Package: readr
+Version: 1.0.0
+Depends: R (>= 3.0.2)
+Imports: Rcpp (>= 0.11.5), curl, tibble, hms, R6
+LinkingTo: Rcpp, BH
+Suggests: testthat, knitr, rmarkdown, stringi, covr
+License: GPL (>= 2) | file LICENSE
+MD5sum: 0391355f18629b1282075d6c867c9c5a
+NeedsCompilation: yes
 
 Package: reshape
 Version: 0.8.5
@@ -184,6 +192,15 @@ License: GPL (>= 2)
 MD5sum: b7055a0888b9a0aafe7b684cdbdbca83
 NeedsCompilation: no
 
+Package: shinyAce
+Version: 0.2.1
+Depends: R (>= 2.15.0)
+Imports: shiny (>= 0.7.0)
+Suggests: testthat, dplyr (>= 0.3.0)
+License: MIT + file LICENSE
+MD5sum: fda355f71cf4270341f538d7d05f9757
+NeedsCompilation: no
+
 Package: shinydashboard
 Version: 0.5.1
 Depends: R (>= 3.0)
@@ -200,11 +217,19 @@ MD5sum: 98dabc2ee70ac32a12e180dd227c01d3
 NeedsCompilation: no
 
 Package: TFL
-Version: 1.0.0
-Depends: R (>= 2.3.0), grid, gridExtra (<= 0.9), ggplot2 (<= 1.0.1),
-        gdata, boot, plyr, stringr, scales, Hmisc, shinydashboard,
-        shinyFiles, DT, dplyr, reshape2, rtf, metrumrg, gtools,
-        animation
-MD5sum: 3f4b10f9a3991c58c762e476a8ced63a
+Version: 1.0.2
+Depends: R (>= 2.3.0), grid, gridExtra (<= 0.9), ggplot2 (<= 1.0.1), gdata, boot, plyr, stringr, scales, Hmisc, shinydashboard,
+              shinyFiles, DT, dplyr, reshape2, rtf, metrumrg, gtools, animation
+MD5sum: 82747c8d08a5b73bd496e31b6614255e
 NeedsCompilation: no
+
+Package: tibble
+Version: 1.1
+Depends: R (>= 3.1.2)
+Imports: methods, assertthat, utils, lazyeval (>= 0.1.10), Rcpp
+LinkingTo: Rcpp
+Suggests: testthat, withr, knitr (>= 1.5.32), rmarkdown, Lahman (>= 3.0.1), microbenchmark
+License: MIT + file LICENSE
+MD5sum: 2fe9f806109d0b7fadafb1ffafea4cb8
+NeedsCompilation: yes
 

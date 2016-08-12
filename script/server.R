@@ -27,6 +27,8 @@ library(animation)
 library(lazyeval)
 library(dplyr)
 library(gtools)
+library(readr)
+library(shinyAce)
 
 cat(file=stderr(), paste0("LOG: ", Sys.time(), " Finished preamble\n"))
 
@@ -218,7 +220,10 @@ shinyServer(function(input, output, session) {
               if(!file.exists(fileName)){
                 return()
               }			
-              foo=try(read.table(fileName, header=input$header, skip=input$skipLines, stringsAsFactors=F, fill=TRUE))
+              #foo=try(read.table(fileName, header=input$header, skip=input$skipLines, stringsAsFactors=F, fill=TRUE, comment.char="",check.names=F))
+              
+              foonm=try(names(read.table(fileName, skip=input$skipLines,nrows=1,header=T)))
+              foo=try(read_delim(fileName, col_names=foonm, skip=input$skipLines+1,delim=" ",comment=""))
               if(class(foo)=="try-error") return()
               if(nrow(foo)==0) return()
               foo$Run=irun
@@ -236,14 +241,21 @@ shinyServer(function(input, output, session) {
     dat=try(data.frame(get("originalTableData",envir=.GlobalEnv), stringsAsFactors=F))
     if(class(dat)=="try-error") return()
     
+    if("tableSubset" %in% names(input)){
+      if(length(input[["tableSubset"]] > 0)){
+        if(any(input[["tableSubset"]] != "")) dat <- dat[, setdiff(names(dat),input[["tableSubset"]])]
+      }
+    }
     
-    parsecommands <- cleanparse(input[["dataParse_table"]],"dat")
-    if(!is.null(parsecommands)){
-      for(i in 1:length(parsecommands$commands)){
-        if(parsecommands$within[i]) tryCatch(eval(parse(text=paste0("dat <- within(dat, {", parsecommands$commands[i], "})"))),
-                                             error=function(e) cat(file=stderr(),paste("Parsing command broken:\n",parsecommands$commands[i],"\n", e)))
-        if(!parsecommands$within[i]) tryCatch(eval(parse(text=paste0("dat <- ", parsecommands$commands[i]))),
-                                              error=function(e) cat(file=stderr(),print(paste("Parsing command broken:\n",parsecommands$commands[i],"\n", e))))
+    if("dataParse_table" %in% names(input)){
+      parsecommands <- cleanparse(input[["dataParse_table"]],"dat")
+      if(!is.null(parsecommands)){
+        for(i in 1:length(parsecommands$commands)){
+          if(parsecommands$within[i]) tryCatch(eval(parse(text=paste0("dat <- within(dat, {", parsecommands$commands[i], "})"))),
+                                               error=function(e) cat(file=stderr(),paste("Parsing command broken:\n",parsecommands$commands[i],"\n", e)))
+          if(!parsecommands$within[i]) tryCatch(eval(parse(text=paste0("dat <- ", parsecommands$commands[i]))),
+                                                error=function(e) cat(file=stderr(),print(paste("Parsing command broken:\n",parsecommands$commands[i],"\n", e))))
+        }
       }
     }
     
@@ -253,6 +265,7 @@ shinyServer(function(input, output, session) {
       tabList <- get("tabList",envir=.GlobalEnv)
       save(tabdat,file=file.path(debugDir,"tabdat.rda"))
     }
+    revals$nms_tab <- isolate(names(dat))
     # End debugging
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " tableFile finished successfully\n"))
     return(dat)
@@ -278,8 +291,8 @@ shinyServer(function(input, output, session) {
         return()
       }
       if(!exists("originalSourceData",envir=.GlobalEnv)){
-        originalSourceData <<- try(as.best(read.csv(srcDatFile, stringsAsFactors=F, fill=TRUE)))
-        if(class(originalSourceData)=="try-error"){
+        originalSourceData <<- try(as.best(read_csv(srcDatFile)))
+        if(any(class(originalSourceData)=="try-error")){
           rm("originalSourceData",envir = .GlobalEnv)
           return()
         }
@@ -290,13 +303,21 @@ shinyServer(function(input, output, session) {
       incProgress(amount=.5)
       dat=data.frame(dat, stringsAsFactors=F)
       
-      parsecommands <- cleanparse(input[["dataParse_source"]],"dat")
-      if(!is.null(parsecommands)){
-        for(i in 1:length(parsecommands$commands)){
-          if(parsecommands$within[i]) tryCatch(eval(parse(text=paste0("dat <- within(dat, {", parsecommands$commands[i], "})"))),
-                                               error=function(e) cat(file=stderr(),paste("Parsing command broken:\n",parsecommands$commands[i],"\n", e)))
-          if(!parsecommands$within[i]) tryCatch(eval(parse(text=paste0("dat <- ", parsecommands$commands[i]))),
-                                                error=function(e) cat(file=stderr(),print(paste("Parsing command broken:\n",parsecommands$commands[i],"\n", e))))
+      if("sourceSubset" %in% names(input)){
+        if(length(input[["sourceSubset"]] > 0)){
+          if(any(input[["sourceSubset"]] != "")) dat <- dat[,setdiff(names(dat),input[["sourceSubset"]])]
+        }
+      }
+      
+      if("dataParse_source" %in% names(input)){
+        parsecommands <- cleanparse(input[["dataParse_source"]],"dat")
+        if(!is.null(parsecommands)){
+          for(i in 1:length(parsecommands$commands)){
+            if(parsecommands$within[i]) tryCatch(eval(parse(text=paste0("dat <- within(dat, {", parsecommands$commands[i], "})"))),
+                                                 error=function(e) cat(file=stderr(),paste("Parsing command broken:\n",parsecommands$commands[i],"\n", e)))
+            if(!parsecommands$within[i]) tryCatch(eval(parse(text=paste0("dat <- ", parsecommands$commands[i]))),
+                                                  error=function(e) cat(file=stderr(),print(paste("Parsing command broken:\n",parsecommands$commands[i],"\n", e))))
+          }
         }
       }
     })
@@ -308,6 +329,7 @@ shinyServer(function(input, output, session) {
       global <- ls(envir = .GlobalEnv)
       save(sourcedat,tabList,global,file=file.path(debugDir,"sourcedat.rda"))
     }
+    revals$nms_source <- isolate(names(dat))
     # End debugging
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " sourceFile finished successfully\n"))
     return(dat)
@@ -315,10 +337,15 @@ shinyServer(function(input, output, session) {
   
   cat(file=stderr(), paste0("LOG: ", Sys.time(), " End sourceFile definition\n"))
   
+  # observeEvent(input$updateSourceFile,{
+  #   sourceFile <<- makesourceFile()
+  # })
+    
+
 
   
   #############################################################################
-  revals <- reactiveValues(nms_subj="",nms_obs="",nms_df="")
+  revals <- reactiveValues(nms_source="",nms_tab="",nms_subj="",nms_obs="",nms_df="")
   
 
   #read data in a reactive format
@@ -330,7 +357,11 @@ shinyServer(function(input, output, session) {
     }
     
     if(!is.null(tableFile()) & !is.null(sourceFile())){
-      dat <- merge(sourceFile(), tableFile(), all=TRUE) 
+      dat <- merge(sourceFile(), tableFile(), 
+                   by=input[["mergeKey"]],
+                   all.x=input[["keepAllSource"]],
+                   all.y=input[["keepAllRun"]]
+                   ) 
     }else {
       if(!is.null(tableFile())) dat <- tableFile() else dat <- sourceFile()
     }
@@ -348,20 +379,28 @@ shinyServer(function(input, output, session) {
       if("STUDY" %in% names(dat)) dat <- dat[order(dat$STUDY,dat$NMID,dat$TAFD),] else dat <- dat[order(dat$NMID,dat$TAFD),]
     }
     
-    parsecommands <- cleanparse(input[["dataParse_analysis"]],"dat")
-    if(!is.null(parsecommands)){
-      for(i in 1:length(parsecommands$commands)){
-        if(parsecommands$within[i]) tryCatch(eval(parse(text=paste0("dat <- within(dat, {", parsecommands$commands[i], "})"))),
-                                             error=function(e) cat(file=stderr(),paste("Parsing command broken:\n",parsecommands$commands[i],"\n", e)))
-        if(!parsecommands$within[i]) tryCatch(eval(parse(text=paste0("dat <- ", parsecommands$commands[i]))), 
-                                              error=function(e) cat(file=stderr(),print(paste("Parsing command broken:\n",parsecommands$commands[i],"\n", e))))
+    if("dataParse_analysis" %in% names(input)){
+      parsecommands <- cleanparse(input[["dataParse_analysis"]],"dat")
+      if(!is.null(parsecommands)){
+        for(i in 1:length(parsecommands$commands)){
+          if(parsecommands$within[i]) tryCatch(eval(parse(text=paste0("dat <- within(dat, {", parsecommands$commands[i], "})"))),
+                                               error=function(e) cat(file=stderr(),paste("Parsing command broken:\n",parsecommands$commands[i],"\n", e)))
+          if(!parsecommands$within[i]) tryCatch(eval(parse(text=paste0("dat <- ", parsecommands$commands[i]))), 
+                                                error=function(e) cat(file=stderr(),print(paste("Parsing command broken:\n",parsecommands$commands[i],"\n", e))))
+        }
       }
     }
     
     dat0 <- dat
-    if(input[["subjectExclusion_col"]]%in%names(dat)) revals$nms_subj <- isolate(unique(dat[,input$subjectExclusion_col]))
-    if(input[["observationExclusion_col"]]%in%names(dat)) revals$nms_obs <- isolate(unique(dat[,input$observationExclusion_col]))
-    # Can we calculate whole subject exclusions yet?
+    
+    if("subjectExclusion_col" %in% names(input)){
+      if(input[["subjectExclusion_col"]]%in%names(dat)) revals$nms_subj <- isolate(unique(dat[,input$subjectExclusion_col]))
+    }
+    if("observationExclusion_col" %in% names(input)){
+      if(input[["observationExclusion_col"]]%in%names(dat)) revals$nms_obs <- isolate(unique(dat[,input$observationExclusion_col]))
+    }
+
+        # Can we calculate whole subject exclusions yet?
     defs <- grep("subjectExclusion[[:digit:]]",names(Defaults),value=T)
     if(length(defs)>0){
       
@@ -468,32 +507,32 @@ shinyServer(function(input, output, session) {
   # Output Renders - Just the data set overview and plot title
   ##############
  
-
    
   #Raw Contents
-  output$contentsHead_tabledata <- DT::renderDataTable({
-    cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_tabledata called\n"))
-    req(input$runno, tableFile())
-    return(DT::datatable(tableFile(),filter="top"))
+  observeEvent(input[["updateRunView"]],{
+    output$contentsHead_tabledata <- DT::renderDataTable({
+      cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_tabledata called\n"))
+      req(input$runno, isolate(tableFile()))
+      return(DT::datatable(isolate(tableFile()),filter="top"))
+    })
   })
-  output$contentsHead_sourcedata <- DT::renderDataTable({
-    cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_sourcedata called\n"))
-    req(input$srcData,sourceFile())
-    return(DT::datatable(sourceFile(), filter="top"))
-  })  
-  output$contentsHead_analysisdata <- DT::renderDataTable({
-    cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_analysisdata called\n"))
-    return(DT::datatable(dataFile(), filter="top"))
-  })  
+  observeEvent(input[["updateSourceView"]],{
+    output$contentsHead_sourcedata <- DT::renderDataTable({
+      cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_sourcedata called\n"))
+      req(input$srcData,isolate(sourceFile()))
+      return(DT::datatable(isolate(sourceFile()), filter="top"))
+    })  
+  })
+  observeEvent(input[["performMerge"]],{
+    output$contentsHead_analysisdata <- DT::renderDataTable({
+      cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_analysisdata called\n"))
+      return(DT::datatable(isolate(dataFile()), filter="top"))
+    })  
+  })
 
   output$contentsHead_subjectExclusions <- DT::renderDataTable({ NULL })
   
-  observeEvent(input$generatesubjectExclusions,{
-    cat(file=stderr(),paste0("LOG: ", Sys.time(), " contentsHead_subjectExclusions called\n"))
-    foo <- isolate(dataFile())
-    output$contentsHead_subjectExclusions <- 
-      DT::renderDataTable({DT::datatable(subjectExclusions, filter="top")})
-  })
+
         
   output$contentsHead_observationExclusions <- DT::renderDataTable({NULL})
   observeEvent(input$generateobservationExclusions,{
@@ -520,6 +559,12 @@ shinyServer(function(input, output, session) {
   output$contentsSummary_sourcedata <- renderPrint({summarizeContents(sourceFile())})
   output$contentsSummary_analysisdata <- renderPrint({summarizeContents(dataFile())})
 
+    observeEvent(input$generatesubjectExclusions,{
+    cat(file=stderr(),paste0("LOG: ", Sys.time(), " contentsHead_subjectExclusions called\n"))
+    foo <- isolate(dataFile())
+    output$contentsHead_subjectExclusions <- 
+      DT::renderDataTable({DT::datatable(subjectExclusions, filter="top")})
+  })
   # output$contentsSummary_subjectExclusions <- renderPrint(NULL)
   # observeEvent(exists("subjectExclusions"),{
   #   output$contentsSummary_subjectExclusions <- renderPrint({summarizeContents(subjectExclusions)})
@@ -602,7 +647,7 @@ shinyServer(function(input, output, session) {
     Defaults <<- DefaultsFirst
     })
 
-  output$DataTabset <- renderUI({
+  output$projectInfoTabset <- renderUI({
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " creating data input tabset\n"))
     tabsetPanel(
              tabPanel(title="Project Information",
@@ -624,43 +669,27 @@ shinyServer(function(input, output, session) {
                         #,
                         #textInput(inputId="baseModel", label="Base Model #", value="")
                       )
-              ),
-             tabPanel(title="Modify Data",
-                    fluidPage(
-                      wellPanel(
-                        fluidRow( 
-                          column( 12,
-                                  boxInputLarge(inputId="dataParse_source", "Source data manipulation code:", value=Defaults[["dataParse_source"]]),
-
-                                  h1(""),
-                                  
-                                  boxInputLarge(inputId="dataParse_table", "Table data manipulation code:", value=Defaults[["dataParse_table"]]),
-
-                                  h1(""),
-                                  boxInputLarge(inputId="dataParse_analysis", "Analysis data manipulation code:", value=Defaults[["dataParse_analysis"]])
-                          )
-                        )
-                      )  
-                    )
-             ),
-             tabPanel(title="Change E-R SSAP Defaults",
-                      wellPanel( 
-                        textInput("DVCol", "DV Column", Defaults$DVCol),
-                        textInput("TAFDCol", "TAFD Column", Defaults$TAFDCol),
-                        textInput("STUDYCol", "STUDY Column", Defaults$STUDYCol),
-                        textInput("NMIDCol", "NMID Column", Defaults$NMIDCol),
-                        textInput("IPREDCol", "IPRED Column", Defaults$IPREDCol),
-                        textInput("PREDCol", "PRED Columns", Defaults$PREDCol),
-                        textInput("subjectExclusion_col", "Subject exclusion column\n(analysis dataset)",Defaults$subjectExclusion_col),
-                        textInput("observationExclusion_col", "Observation exclusion column\n(analysis dataset)",Defaults$observationExclusion_col)
-                      )
-             )
+              )
+             # ,
+             # tabPanel(title="Change E-R SSAP Defaults",
+             #          wellPanel( 
+             #            textInput("DVCol", "DV Column", Defaults$DVCol),
+             #            textInput("TAFDCol", "TAFD Column", Defaults$TAFDCol),
+             #            textInput("STUDYCol", "STUDY Column", Defaults$STUDYCol),
+             #            textInput("NMIDCol", "NMID Column", Defaults$NMIDCol),
+             #            textInput("IPREDCol", "IPRED Column", Defaults$IPREDCol),
+             #            textInput("PREDCol", "PRED Columns", Defaults$PREDCol),
+             #            textInput("subjectExclusion_col", "Subject exclusion column\n(analysis dataset)",Defaults$subjectExclusion_col),
+             #            textInput("observationExclusion_col", "Observation exclusion column\n(analysis dataset)",Defaults$observationExclusion_col)
+             #          )
+             # )
 
     )
   })
 
+  
   #Data Tabset  
-  output$outputTabset <- renderUI({		
+  output$DataTabset <- renderUI({		
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " creating data view tabset \n"))
     #The first PanelSet is what is loaded with the base defaults.  
     PanelSet=list(
@@ -672,6 +701,27 @@ shinyServer(function(input, output, session) {
                           div(style = 'overflow-x: scroll', DT::dataTableOutput('contentsHead_sourcedata'))
                         )
                  )
+               ),
+               fluidRow(
+                 column(width = 6, title="Code parser", 
+                        h4("Manipulation code"),
+                        aceEditor("dataParse_source", value=Defaults[["dataParse_source"]], mode="r", theme="chrome", wordWrap=T)
+                 ),
+                 column(width = 6, title="Subsetting",
+                        h2(""),
+                        actionButton("updateSourceView", "Refresh data view"),
+                        selectizeInput("sourceSubset", "Choose source columns to drop",
+                                       choices= isolate(names(sourceFile())),
+                                       selected=Defaults[["sourceSubset"]],
+                                       multiple=T),
+                        h1(""),
+                        h4("Tips:"),
+                        p("You can use the code parser to subset on values.  Use the variable $DATA to refer to the internal source dataset when doing so."),
+                        p("For example:"),
+                        code("subset($DATA, STUDY==1 & CMT==4)"),
+                        p("You can also create factor labels with the parser:"),
+                        code('SEXF <- factor(SEX, levels=c(0,1), labels=c("F","M"))')
+                        )
                )
       ),
       tabPanel("Source Data Summary", verbatimTextOutput("contentsSummary_sourcedata")),
@@ -683,10 +733,47 @@ shinyServer(function(input, output, session) {
                           div(style = 'overflow-x: scroll', DT::dataTableOutput('contentsHead_tabledata'))
                         )
                  )
+               ),
+               fluidRow(
+                 column(width = 6, title="Code parser (table)", 
+                        h3("Manipulation code"),
+                        aceEditor("dataParse_table", value=Defaults[["dataParse_table"]], mode="r", theme="chrome", wordWrap=T)
+                 ),
+                 column(width = 6, title="Subsetting (table)",
+                        h2(""),
+                        actionButton("updateRunView", "Refresh data view"),
+                        selectizeInput("tableSubset", "Choose run columns to drop",
+                                       choices= isolate(names(tableFile())),
+                                       selected=Defaults[["tableSubset"]],
+                                       multiple=T),
+                        h1(""),
+                        h4("Tips:"),
+                        p("You can use the code parser to subset on values.  Use the variable $DATA to refer to the internal source dataset when doing so."),
+                        p("For example:"),
+                        code("subset($DATA, STUDY==1 & CMT==4)"),
+                        p("You can also create factor labels with the parser:"),
+                        code('SEXF <- factor(SEX, levels=c(0,1), labels=c("F","M"))')
+                        # selectizeInput("sourceMergeKey", "Choose merge key", 
+                        #                choices= isolate(names(sourceFile())), 
+                        #                selected=Defaults[["sourceMergeKey"]],
+                        #                multiple=T),
+                        #actionButton("updateSourceFile", "Update")
+                 )
                )
-      ),
-      tabPanel("Run Data Summary", verbatimTextOutput("contentsSummary_tabledata")),
+      ),      
+      tabPanel("Run Data Summary", verbatimTextOutput("contentsSummary_tabledata"))
 
+    )
+    dummy=(do.call(tabsetPanel, PanelSet))
+    return(dummy)
+    
+  })
+
+  #Data Tabset  
+  output$aDataTabset <- renderUI({		
+    cat(file=stderr(), paste0("LOG: ", Sys.time(), " creating analysis data view tabset \n"))
+    #The first PanelSet is what is loaded with the base defaults.  
+    PanelSet=list(
       tabPanel("Analysis Data",
                fluidRow(
                  column(width = 12,
@@ -695,14 +782,62 @@ shinyServer(function(input, output, session) {
                           div(style = 'overflow-x: scroll', DT::dataTableOutput('contentsHead_analysisdata'))
                         )
                  )
-               )
+               ),
+               fluidRow(
+                 column(width = 6, title="Code parser (analysis)", 
+                        h4("Manipulation code"),
+                        aceEditor("dataParse_analysis", value=Defaults[["dataParse_analysis"]], mode="r", theme="chrome", wordWrap=T)
+                 ),
+                 column(width=6, title="Other side",
+                   fluidRow(column(width=12, title="Action button",
+                                   actionButton("performMerge", "Perform merge, update data view")
+                   )),
+                   fluidRow(
+                     column(width = 6, title="Merge specification",
+                            selectizeInput("mergeKey", "Choose merge key",
+                                           choices= intersect(revals$nms_source,revals$nms_tab),
+                                           selected=Defaults[["mergeKey"]],
+                                           multiple=T)
+                     ),
+                     column(width = 6, title="Merge specification (2)",
+                            checkboxInput("keepAllSource", "Retain all source rows?",Defaults[["keepAllSource"]]),
+                            checkboxInput("keepAllRun", "Retain all run rows?", Defaults[["keepAllRun"]])
+                     )
+                   ),
+                   fluidRow(
+                     hr(),
+                     column(width=6,title="Change defaults (1)",
+                            textInput("DVCol","DV Column",Defaults[["DVCol"]]),
+                            textInput("TAFDCol","TAFD Column",Defaults[["TAFDCol"]]),
+                            textInput("STUDYCol","STUDY Column",Defaults[["STUDYCol"]]),
+                            textInput("NMIDCol","NMID Column",Defaults[["NMIDCol"]])
+                     ),
+                     column(width=6,title="Change defaults (2)",
+                            textInput("IPREDCol","IPRED Column",Defaults[["IPREDCol"]]),
+                            textInput("PREDCol","PRED Column",Defaults[["PREDCol"]]),
+                            textInput("subjectExclusion_col","Subject exclusion column",Defaults[["subjectExclusion_col"]]),
+                            textInput("observationExclusion_col","Observation exclusion column",Defaults[["observationExclusion_col"]])
+                     )
+                   )
+                 )
+               )       
+               
       ),
       tabPanel("Analysis Data Summary", verbatimTextOutput("contentsSummary_analysisdata"))
+      
     )
     dummy=(do.call(tabsetPanel, PanelSet))
     return(dummy)
     
-  })
+  })  
+  
+  # observeEvent(input$evalsourceParse,{
+  #   output$sourceParseCode <- renderPrint({
+  #     input$evalsourceParse
+  #     return(isolate(input[["dataParse_source"]]))
+  #   })
+  # })
+  
   
   
   output$DataExcTabset <- renderUI({
