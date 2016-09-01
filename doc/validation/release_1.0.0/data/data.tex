@@ -1,0 +1,147 @@
+\documentclass{article}
+\usepackage[parfill]{parskip}
+\usepackage[absolute]{textpos}
+\usepackage{graphicx}
+\usepackage[T1]{fontenc}
+\usepackage[scaled]{helvet}
+\usepackage[final]{pdfpages}
+%\usepackage[scaled]{helvet}
+
+\usepackage{lscape}
+\usepackage{courier}
+\renewcommand*\familydefault{\sfdefault}
+\usepackage[left=1in,top=1in,bottom=1.25in,right=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyhdr,lastpage}
+\pagestyle{fancy}
+\rhead{\scriptsize \opnum:  \optitle}
+%\chead{Middle top}
+\newenvironment{changemargin}[2]{%
+\begin{list}{}{%
+\setlength{\topsep}{0pt}%
+\setlength{\leftmargin}{#1}%
+\setlength{\rightmargin}{#2}%
+\setlength{\listparindent}{\parindent}%
+\setlength{\itemindent}{\parindent}%
+\setlength{\parsep}{\parskip}%
+}%
+\item[]}{\end{list}}
+\lhead{\includegraphics[scale=.6]{logonew.pdf}\\\smallskip\scriptsize Qualification}
+\setlength{\headsep}{.75in}
+\fancyfoot[C]{Page \thepage\ of \pageref{LastPage}}
+\usepackage[colorlinks=true,linkcolor=black,urlcolor=blue]{hyperref}
+
+%\newcommand{\opnum}{Release 2} 
+\newcommand{\optitle}{Pharmacometrics TFL Generator Requirements}
+\newcommand{\opnum}{Release 1.0.0} 
+\newcommand{\tfl}{Pharmacometrics TFL Generator}
+\newcommand{\topic}{Data}
+\newcommand{\testinglog}{data-testing-log.pdf}
+
+\begin{document}
+
+\begin{center}
+{\large CONFIDENTIAL} 
+
+
+\vspace*{1cm}
+
+
+\vspace*{1cm}
+
+{\huge Testing protocol: \topic}
+\vspace{3.0cm}
+
+\begin{tabular}{|l|l|}\hline
+Submitted to: & Author:\\\hline
+Jeff Hane, PhD & Daniel G. Polhamus, PhD \\
+&Senior Scientist\\
+Metrum Research Group LLC & Metrum Research Group LLC\\
+ & 2 Tunxis Road, Suite 112\\
+  & Tariffville, CT\\
+  & Phone: 860-372-7988 \\
+ & Fax: 860-760-6014 \\
+  & Email: danp@metrumrg.com \\\hline
+
+  Initiator Submitted to QA  / Date & \\
+  
+ (Sign and print name) & \\
+  & \\
+  & \\\hline
+  
+QA Approval to Proceed / Date & \\
+
+ (Sign and print name) & \\
+  & \\
+ & \\\hline
+
+\end{tabular}
+
+\end{center}
+
+\newpage
+\vspace{3in}
+\section*{Definitions}
+
+
+\section*{Purpose}
+To validate \topic\ requirement of the \tfl\ app.
+
+{\bf NONMEM run data (tab and partab files) can be read, displayed, and summarized}
+
+The application creates summary objects based on NONMEM output and source data.  This step ensures that NONMEM output can be read into the app and displayed.  Additionally, a quick summary of the loaded data object assists the scientist in examining the data; that functionality is tested here as well.  NONMEM output (0069.tab) is read in and recorded for this step. 
+
+{\bf Run data can be manipulated using the code parser}
+
+A code parser is included so that the scientist can run R code against loaded data objects. The code parser can be run against the NONMEM output data.  This step tests creating a factor and subsetting using the application against the NONMEM output data.
+
+{\bf Source data can be read, displayed, and summarized}
+
+This step ensures that source data can be read into the app and displayed.  Additionally, a quick summary of the loaded data object assists the scientist in examining the data; that functionality is tested here as well.  A fake source file was created to test the merge with the 0069.tab output data.  This data (source.csv) has a longitudinal covariate added to it (WGT) that is missing for a single study. The merge is intended to be a full merge, so no data loss should occur because of the absence of the variable for a subset of the patients. 
+
+This step verifies that source.csv can be read, displayed, and summarized in the application.
+
+{\bf Source data can be manipulated using the code parser}
+
+The code parser specific for the source data is tested here, and may be used for data wrangling to enable the merge between the NONMEM output and source data.  The same test is run here as in the NONMEM output data step.  Data is subset down to just one subject, and that is verified in the data summary.
+
+{\bf Analysis data can be created by merging run data and source data}
+
+Once the scientist is satisfied with the NONMEM output data and source data, a merge occurs between the two to create the analysis data.  The analysis data is carried forward and used with all subsequent steps in the app.  This step firsts reverts back to the full datasets for each of the NONMEM output and source data, then merges the data.  Study 183 (missing the WGT variable) is then checked for presence in the merged dataset.  If present, the merge is considered successful.
+
+{\bf Analysis data can be manipulated using the code parser}
+
+Oftentimes it is easier for the analyst to manipulate the merged data (e.g., creating factors, new variables that are transformations of others).   This is tested similarly to the other parsers, but a new variable for patient gender is created.
+
+{\bf Analysis data can be viewed and summarized}
+
+After the merge, the analysis data should be viewable as should its summary.  Both are shown here as screen captures.
+
+{\bf Subject level exclusions can be specified and viewed}
+
+The application allows the user to specify subjects to be excluded from the analysis dataset, as well as including exclusion reasons.  The tester defines a variable here that marks all patients with missing race information for exclusion at the subject level.  Those patients are viewed and presented as verification.
+
+{\bf Observation level exclusions can be specified and viewed}
+
+The application allows the user to specify observations to be excluded from the analysis dataset, as well as including exclusion reasons.  The tester defines a variable here that marks all observations with concentration below 0.05 as BQL exclusion at the subject level.  Those patients are viewed and presented as verification.
+
+{\bf Data cache can be cleared from the app}
+
+Data caching is used to provide a more pleasant user experience, but the downside is that the cached data must be manually reset if the user wishes to load a different dataset.  In this step, the user clears the cache and verfies no data is present via the data viewing tabs.
+
+\section*{Testing procedures}
+
+Testing procedures are outlined in the attached testing document.
+
+
+\section*{References and supporting documents}
+
+\begin{itemize}
+ \item Requirements document and overview: \verb=tflgenerator_Requirements_R2.pdf=
+\end{itemize}
+
+\section*{Testing log}
+
+\includepdf[pages=-]{\testinglog}
+
+\end{document}

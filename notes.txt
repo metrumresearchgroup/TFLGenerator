@@ -1,0 +1,12 @@
+-- Write RTF in R script, test this out.  Added ordering code, does it work?
+-- Example for specifying exclusions:
+
+ObsExc <- "Keep"
+ObsExc[ DV < 0.05 ] <- "BQL"
+ObsExc[ TAFD > 100 ] <- "EOS"
+
+SubjExc <- "Keep"
+SubjExc[ RACE=="88" | RACE==88 ] <- "Missing race"
+
+
+-- Commit ID cbff82970 works with 434source.csv

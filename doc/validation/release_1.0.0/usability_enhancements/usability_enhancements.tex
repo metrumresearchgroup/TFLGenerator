@@ -1,0 +1,115 @@
+\documentclass{article}
+\usepackage[parfill]{parskip}
+\usepackage[absolute]{textpos}
+\usepackage{graphicx}
+\usepackage[T1]{fontenc}
+\usepackage[scaled]{helvet}
+\usepackage[final]{pdfpages}
+%\usepackage[scaled]{helvet}
+
+\usepackage{lscape}
+\usepackage{courier}
+\renewcommand*\familydefault{\sfdefault}
+\usepackage[left=1in,top=1in,bottom=1.25in,right=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyhdr,lastpage}
+\pagestyle{fancy}
+\rhead{\scriptsize \opnum:  \optitle}
+%\chead{Middle top}
+\newenvironment{changemargin}[2]{%
+\begin{list}{}{%
+\setlength{\topsep}{0pt}%
+\setlength{\leftmargin}{#1}%
+\setlength{\rightmargin}{#2}%
+\setlength{\listparindent}{\parindent}%
+\setlength{\itemindent}{\parindent}%
+\setlength{\parsep}{\parskip}%
+}%
+\item[]}{\end{list}}
+\lhead{\includegraphics[scale=.6]{logonew.pdf}\\\smallskip\scriptsize Qualification}
+\setlength{\headsep}{.75in}
+\fancyfoot[C]{Page \thepage\ of \pageref{LastPage}}
+\usepackage[colorlinks=true,linkcolor=black,urlcolor=blue]{hyperref}
+
+%\newcommand{\opnum}{Release 2} 
+\newcommand{\optitle}{Pharmacometrics TFL Generator Requirements}
+\newcommand{\opnum}{Release 1.0.0} 
+\newcommand{\tfl}{Pharmacometrics TFL Generator}
+\newcommand{\topic}{Usability enhancements}
+\newcommand{\testinglog}{usability-enhancements-testing-log.pdf}
+
+\begin{document}
+
+\begin{center}
+{\large CONFIDENTIAL} 
+
+
+\vspace*{1cm}
+
+
+\vspace*{1cm}
+
+{\huge Testing protocol: \topic}
+\vspace{3.0cm}
+
+\begin{tabular}{|l|l|}\hline
+Submitted to: & Author:\\\hline
+Jeff Hane, PhD & Daniel G. Polhamus, PhD \\
+&Senior Scientist\\
+Metrum Research Group LLC & Metrum Research Group LLC\\
+ & 2 Tunxis Road, Suite 112\\
+  & Tariffville, CT\\
+  & Phone: 860-372-7988 \\
+ & Fax: 860-760-6014 \\
+  & Email: danp@metrumrg.com \\\hline
+
+  Initiator Submitted to QA  / Date & \\
+  
+ (Sign and print name) & \\
+  & \\
+  & \\\hline
+  
+QA Approval to Proceed / Date & \\
+
+ (Sign and print name) & \\
+  & \\
+ & \\\hline
+
+\end{tabular}
+
+\end{center}
+
+\newpage
+\vspace{3in}
+\section*{Definitions}
+
+
+\section*{Purpose}
+To validate \topic\ requirement of the \tfl\ app.
+
+{\bf The app can load from a set of defaults}
+
+One feature of the app is the ability for users to share templates (essentially saved states of the app) with one another.  This also allows for a company to define a set of templates to serve as defaults for specific analysis types.  From these templates, the app is expected to be immediately configured to generate TFL's with the specified parameters.
+
+This functionality is utilized earlier in the QC testing process by loading a template into the app and writing the RTF, so this test just verifies that templates are able to be loaded without error.
+
+{\bf The app writes autosave files that are usable for recovering sessions}
+
+An unfortunate nuisance with shiny applications, and particularly those that require a substantial time investment from the end user to complete a task from beginning to end is that shiny does not handle disconnections from the server gracefully.  To assist in recovery from session disconnects, an autosave routine has been developed.  Upon each creation of a new object, an autosave template is created that allows a user to recover to the last recorded input in the case of a session disconnect.  The validity of the autosave is checked here by visual inspection of the autosave and then loading the autosave and verifying that the correct defaults have been loaded.
+
+\section*{Testing procedures}
+
+Testing procedures are outlined in the attached testing document.
+
+
+\section*{References and supporting documents}
+
+\begin{itemize}
+ \item Requirements document and overview: \verb=tflgenerator_Requirements_R2.pdf=
+\end{itemize}
+
+\section*{Testing log}
+
+\includepdf[pages=-]{\testinglog}
+
+\end{document}

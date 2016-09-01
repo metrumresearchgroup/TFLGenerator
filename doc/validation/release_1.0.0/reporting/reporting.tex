@@ -1,0 +1,113 @@
+\documentclass{article}
+\usepackage[parfill]{parskip}
+\usepackage[absolute]{textpos}
+\usepackage{graphicx}
+\usepackage[T1]{fontenc}
+\usepackage[scaled]{helvet}
+\usepackage[final]{pdfpages}
+%\usepackage[scaled]{helvet}
+
+\usepackage{lscape}
+\usepackage{courier}
+\renewcommand*\familydefault{\sfdefault}
+\usepackage[left=1in,top=1in,bottom=1.25in,right=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyhdr,lastpage}
+\pagestyle{fancy}
+\rhead{\scriptsize \opnum:  \optitle}
+%\chead{Middle top}
+\newenvironment{changemargin}[2]{%
+\begin{list}{}{%
+\setlength{\topsep}{0pt}%
+\setlength{\leftmargin}{#1}%
+\setlength{\rightmargin}{#2}%
+\setlength{\listparindent}{\parindent}%
+\setlength{\itemindent}{\parindent}%
+\setlength{\parsep}{\parskip}%
+}%
+\item[]}{\end{list}}
+\lhead{\includegraphics[scale=.6]{logonew.pdf}\\\smallskip\scriptsize Qualification}
+\setlength{\headsep}{.75in}
+\fancyfoot[C]{Page \thepage\ of \pageref{LastPage}}
+\usepackage[colorlinks=true,linkcolor=black,urlcolor=blue]{hyperref}
+
+%\newcommand{\opnum}{Release 2} 
+\newcommand{\optitle}{Pharmacometrics TFL Generator Requirements}
+\newcommand{\opnum}{Release 1.0.0} 
+\newcommand{\tfl}{Pharmacometrics TFL Generator}
+\newcommand{\topic}{Reporting}
+\newcommand{\testinglog}{reporting-testing-log.pdf}
+
+\begin{document}
+
+\begin{center}
+{\large CONFIDENTIAL} 
+
+
+\vspace*{1cm}
+
+
+\vspace*{1cm}
+
+{\huge Testing protocol: \topic}
+\vspace{3.0cm}
+
+\begin{tabular}{|l|l|}\hline
+Submitted to: & Author:\\\hline
+Jeff Hane, PhD & Daniel G. Polhamus, PhD \\
+&Senior Scientist\\
+Metrum Research Group LLC & Metrum Research Group LLC\\
+ & 2 Tunxis Road, Suite 112\\
+  & Tariffville, CT\\
+  & Phone: 860-372-7988 \\
+ & Fax: 860-760-6014 \\
+  & Email: danp@metrumrg.com \\\hline
+
+  Initiator Submitted to QA  / Date & \\
+  
+ (Sign and print name) & \\
+  & \\
+  & \\\hline
+  
+QA Approval to Proceed / Date & \\
+
+ (Sign and print name) & \\
+  & \\
+ & \\\hline
+
+\end{tabular}
+
+\end{center}
+
+\newpage
+\vspace{3in}
+\section*{Definitions}
+
+
+\section*{Purpose}
+To validate \topic\ requirement of the \tfl\ app.
+
+{\bf The app creates RTF output for all specified figures, tables, and listings}
+
+A prominent feature of the \tfl\ is the ability to create a report consisting of objects (TFL's) that have already undergone QC.  A report consisting of one of each type of object will be created and will be checked to validate completeness as well as responsiveness to user defined ordering of TFL's.
+
+{\bf The app creates an R script that can reproduce the analysis outside of the app}
+
+In addition to a report ready document, the \tfl\ generates an R script that allows the user complete reproducibility of the analysis, including the R packages used to developed the TFL.  This step compares the output from the R script to the doc file generated in the previous step.
+
+\section*{Testing procedures}
+
+Testing procedures are outlined in the attached testing document.
+
+
+\section*{References and supporting documents}
+
+\begin{itemize}
+ \item Requirements document and overview: \verb=tflgenerator_Requirements_R2.pdf=
+\end{itemize}
+
+\section*{Testing log}
+
+\includepdf[pages=-]{\testinglog}
+
+\end{document}

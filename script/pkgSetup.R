@@ -1,5 +1,8 @@
-author <- c("danp")
-pkgs <- c('TFL','GUI','metrumrg','gridExtra')
+# Expects to be run from script
+author <- c("danp","polhamus")
+pkgs <- c('metrumrg','shinyFiles','animation','gdata','shinydashboard',
+          'DT','rtf','lazyeval','dplyr','DBI','ggplot2','gridExtra',
+          'readr','shinyAce')
 
 user <- Sys.info()["user"]
 parentScriptDir <- getwd()  ## You may need to mod this to be in the top level of scriptDir
@@ -24,6 +27,11 @@ fromCRAN <- user %in% author
 if(fromCRAN){
     newpkgs <- setdiff(pkgs, available)
     write_PACKAGES(pkgDir)
+   # We want the old version of gridExtra
+   if("gridExtra" %in% newpkgs){
+     download.file("https://cran.r-project.org/src/contrib/Archive/gridExtra/gridExtra_0.9.tar.gz",destfile=file.path(pkgDir,"gridExtra_0.9.tar.gz"))
+     write_PACKAGES(pkgDir)   		  
+   }
    if("audited" %in% newpkgs){
       download.file("https://metrumrg-soft.s3.amazonaws.com/audited/audited_1.9.tar.gz",destfile=file.path(pkgDir,"audited_1.9.tar.gz"))
       write_PACKAGES(pkgDir)
@@ -78,4 +86,6 @@ if(!fromCRAN){
                      INSTALL_opts="--no-multiarch")
   }
 }
+
+
 
