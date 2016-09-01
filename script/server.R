@@ -91,7 +91,7 @@ shinyServer(function(input, output, session) {
     inFile <- input$templatePath
     if (is.null(inFile))
       return(NULL)
-    source(inFile$datapath)        
+    source(inFile$datapath)
   }) 
   
   observe(if(TRUE){  	
@@ -655,8 +655,7 @@ shinyServer(function(input, output, session) {
                         textInput(inputId="projectTitle", label="Project Title:", value=Defaults$projectTitle),
                         boxInputLarge(inputId="projectInfo", label="Project Information:", value=Defaults$projectInfo)
                         )
-                      )
-             ,
+                      ),
              tabPanel(title="Model Info",
                       wellPanel(
                         textInput(inputId="manualDataPath", label="Parent working directory:", value=""),	
@@ -801,8 +800,8 @@ shinyServer(function(input, output, session) {
                                            multiple=T)
                      ),
                      column(width = 6, title="Merge specification (2)",
-                            checkboxInput("keepAllSource", "Retain all source rows?",Defaults[["keepAllSource"]]),
-                            checkboxInput("keepAllRun", "Retain all run rows?", Defaults[["keepAllRun"]])
+                            checkboxInput("keepAllSource", "Retain all source values?",Defaults[["keepAllSource"]]),
+                            checkboxInput("keepAllRun", "Retain all run values?", Defaults[["keepAllRun"]])
                      )
                    ),
                    fluidRow(
@@ -900,7 +899,6 @@ shinyServer(function(input, output, session) {
       testList=list()
       for(i in c(1:length(tabList$label[which(tabList$tabType==item)]))){
         
-        # Take the tabList and create an input for each tab of tabList$tabType
         testList[[i]]=do.call(what=textInput, args=list(inputId=tabList$inputId[which(tabList$tabType==item)][[i]],
                                                       label=tabList$label[which(tabList$tabType==item)][[i]],
                                                       value=Defaults[[tabList$inputId[which(tabList$tabType==item)][[i]]]])
@@ -911,7 +909,7 @@ shinyServer(function(input, output, session) {
       j=j+1
     }
     stuff=do.call(what=tabsetPanel, panelList)
-    
+
     return(do.call(what=tabPanel, args=list("Figures", stuff)) )
   })
 
@@ -1599,6 +1597,7 @@ shinyServer(function(input, output, session) {
   })
   
   
+  
   #Output and Saving Tabset  
   
   output$SaveTabset<-renderUI({
@@ -1615,6 +1614,7 @@ shinyServer(function(input, output, session) {
       
     )
     
+  
   })
   #End Shiny Server
 })
