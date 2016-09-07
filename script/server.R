@@ -1,4 +1,4 @@
-debug <- T
+debug <- F
 
 #rm(list=ls(all=TRUE))
 Sys.setenv(PATH=paste0(Sys.getenv("PATH"),":/usr/bin"))
@@ -1145,11 +1145,45 @@ shinyServer(function(input, output, session) {
   })
   
 
+  # Autosave routine -------------------------
+
+  autosave <- function(){
+    local({
+      
+      # Autosave routine
+      if(dir.exists(currentWD()) & input[["projectTitle"]]!=""){
+        
+        cat(file=stderr(),paste0("LOG: ", Sys.time(), " Running autosave routine"))
+        Defaults.autosave <- get("Defaults",envir = .GlobalEnv)
+        for(item in names(DefaultsFirst)){
+          #put in the non-plot related Defaults
+          if (item %nin% c(
+            "saveAll",
+            "saveAs",
+            "saveParm",
+            "saveAsParm",
+            "PNG",
+            "RTF",
+            "dataPath", 
+            "recall"))
+          { Defaults.autosave[[item]]<-input[[item]] }
+        }
+        if(debug){
+          input_vals <- reactiveValuesToList(input)
+          save(Defaults.autosave, Defaults, input_vals, file=file.path(srcDir,"tmp","autosave-debug.rda"))
+        }
+        tryCatch(recordInput(input=reactiveValuesToList(input),Defaults=Defaults.autosave,currentWD=currentWD(),autosave=T),
+                 warning=function(w) cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " autosave warning\n",w))),
+                 error=function(e)  cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " autosave error\n",e)))
+        )  
+        cat(file=stderr(), paste0("LOG: ", Sys.time(), " Exiting autosave routine"))
+        
+      }
+    })
+  }
 
   
-  ############
-  #Generating Plots, internal and saving
-  ############
+  # Generating Plots, internal and saving ---------------
 
   cat(file=stderr(), paste0("LOG: ", Sys.time(), " Begin generating plots\n"))
   for (this_item in plotList$type){
@@ -1170,40 +1204,7 @@ shinyServer(function(input, output, session) {
             if(n!=0){	
               observeEvent(input[[paste("button",item,n,sep="")]],{ 
                 
-                local({
-                  
-                  # Autosave routine
-                  if(dir.exists(currentWD()) & input[["projectTitle"]]!=""){
-                    if(currentWD()!=DefaultsFirst["dataPath"]){
-                      
-                        cat(file=stderr(),paste0("LOG: ", Sys.time(), " Running autosave routine"))
-                        Defaults.autosave <- get("Defaults",envir = .GlobalEnv)
-                        for(item in names(DefaultsFirst)){
-                          #put in the non-plot related Defaults
-                          if (item %nin% c(
-                            "saveAll",
-                            "saveAs",
-                            "saveParm",
-                            "saveAsParm",
-                            "PNG",
-                            "RTF",
-                            "dataPath", 
-                            "recall"))
-                          { Defaults.autosave[[item]]<-input[[item]] }
-                        }
-                        if(debug){
-                          input_vals <- reactiveValuesToList(input)
-                          save(Defaults.autosave, Defaults, input_vals, file=file.path(srcDir,"tmp","autosave-debug.rda"))
-                        }
-                        tryCatch(recordInput(input=reactiveValuesToList(input),Defaults=Defaults.autosave,currentWD=currentWD(),autosave=T),
-                                 warning=function(w) cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " autosave warning\n",w))),
-                                 error=function(e)  cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " autosave error\n",e)))
-                        )  
-                        cat(file=stderr(), paste0("LOG: ", Sys.time(), " Exiting autosave routine"))
-                      
-                    }
-                  }
-                })
+                autosave()                
 
                 if(debug){
                   message <- "DEBUG A"
