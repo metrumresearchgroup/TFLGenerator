@@ -21,3 +21,4 @@ install.packages(c("ggplot2","gridExtra","Hmisc"),
                  INSTALL_opts="--no-multiarch")
 
 system("restart shiny-server")
+

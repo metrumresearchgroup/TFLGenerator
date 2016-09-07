@@ -5,6 +5,10 @@ library(TFL) # the Amgen Internal TFL package
 library(shiny)
 library(shinydashboard)
 library(shinyFiles)
+library(shinyjs)
+
+
+
 
 # Defaults are used to keep the current entries in dynamic memory, 
 #   defaults first are the pre-defined defaults
@@ -12,7 +16,7 @@ library(shinyFiles)
 # Define UI fordataset viewer application
 
 	dashboardPage(
-      	# Application title
+	  # Application title
       	dashboardHeader(title="Pharmacometrics TFL"),
       	dashboardSidebar(
       	  sidebarMenu(

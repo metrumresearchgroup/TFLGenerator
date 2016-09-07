@@ -29,6 +29,8 @@ library(dplyr)
 library(gtools)
 library(readr)
 library(shinyAce)
+library(shinyjs)
+#library(shinyBS)
 
 cat(file=stderr(), paste0("LOG: ", Sys.time(), " Finished preamble\n"))
 
@@ -99,7 +101,13 @@ shinyServer(function(input, output, session) {
     if (is.null(inFile))
       return(NULL)
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " loading template file\n"))
-    source(inFile$datapath)
+    source(inFile$datapath, local=T)
+    # For backward compatibility, impute Default values that are new
+    missingvars <- pool(names(Defaults),names(DefaultsFirst))$y
+    for(nm in missingvars) Defaults[[nm]] <- DefaultsFirst[[nm]]
+    Defaults <<- Defaults
+    # Now we need to reset all input, force a refresh
+    session$reload()
   })
   
   ############
@@ -133,21 +141,48 @@ shinyServer(function(input, output, session) {
   # output$dataPath <- currentWD()
   output$dataPath <- renderText({currentWD()})
 
+  # currentWD <- reactive(
+  #   if("dataPath" %nin% names(input)){
+  #     if(("manualDataPath" %in% names(input)) & ("manualDataPath" != Defaults["manualDataPath"])){
+  #         workingDirectory <- input[["manualDataPath"]]
+  #         cat(file=stderr(), paste0("LOG: ", Sys.time(), " setting working directory to manualDataPath\n"))
+  #         return(workingDirectory)
+  #       }else{
+  #         cat(file=stderr(), paste0("LOG: ", Sys.time(), " Using default dataPath\n"))
+  #         return(Defaults$dataPath)
+  #       }
+  #   }else{
+  #     # The user elected to use the shinyfiles widget
+  #     cat(file=stderr(), paste0("LOG: ", Sys.time(), " using shinyFiles widget for working directory\n"))
+  #     workingDirectory <- parseDirPath(roots=c(NMStorage=root),input$dataPath)
+  #     return(workingDirectory)
+  #   }
+  # )
   currentWD <- reactive(
-    if("dataPath" %nin% names(input)){
-      if(("manualDataPath" %in% names(input)) & ("manualDataPath" != Defaults["manualDataPath"])){
-          workingDirectory <- input[["manualDataPath"]]
-          cat(file=stderr(), paste0("LOG: ", Sys.time(), " setting working directory to manualDataPath\n"))
-          return(workingDirectory)
-        }else{
+    if("manualDataPath" %in% names(input)){
+      if(input$manualDataPath!=""){
+        workingDirectory <- input[["manualDataPath"]]
+        cat(file=stderr(), paste0("LOG: ", Sys.time(), " setting working directory to manualDataPath\n"))
+        return(workingDirectory)
+      }else{
+        if(dir.exists(Defaults$manualDataPath)){
           cat(file=stderr(), paste0("LOG: ", Sys.time(), " Using default dataPath\n"))
-          return(Defaults$dataPath)
+          return(Defaults$manualDataPath)
+        }else{
+          Defaults$manualDataPath <- Sys.getenv("HOME")
+          cat(file=stderr(), paste0("LOG: ", Sys.time(), " Using home directory for wd\n"))
+          return(Defaults$manualDataPath)
         }
+      }
     }else{
-      # The user elected to use the shinyfiles widget
-      cat(file=stderr(), paste0("LOG: ", Sys.time(), " using shinyFiles widget for working directory\n"))
-      workingDirectory <- parseDirPath(roots=c(NMStorage=root),input$dataPath)
-      return(workingDirectory)
+      if(dir.exists(Defaults$manualDataPath)){
+        cat(file=stderr(), paste0("LOG: ", Sys.time(), " Using default dataPath\n"))
+        return(Defaults$manualDataPath)
+      }else{
+        Defaults$manualDataPath <- Sys.getenv("HOME")
+        cat(file=stderr(), paste0("LOG: ", Sys.time(), " Using home directory for wd\n"))
+        return(Defaults$manualDataPath)
+      }
     }
   )
   
@@ -247,6 +282,21 @@ shinyServer(function(input, output, session) {
       }
     }
     
+    if("tableNA" %in% names(input)){
+      tableNA <- unlist(strsplit(input$tableNA,","))
+      tableNAnum <- as.numeric(tableNA)
+      tableNA <- tableNA[ !is.na(tableNA) ]
+      tableNAnum <- tableNAnum[ !is.na(tableNAnum) ]
+      for(j in 1:ncol(dat)){
+        if(class(dat[,j])=="numeric"){
+          dat[dat[,j]%in%tableNAnum,j] <- NA
+        }else{
+          dat[dat[,j]%in%tableNA,j] <- NA            
+        }
+      }
+    }
+    
+    
     if("dataParse_table" %in% names(input)){
       parsecommands <- cleanparse(input[["dataParse_table"]],"dat")
       if(!is.null(parsecommands)){
@@ -261,7 +311,7 @@ shinyServer(function(input, output, session) {
     
     # For debugging, save a copy of input
     if(debug){
-      tabdat <- dat
+      if(!exists("dat")) return(NULL) else tabdat <- dat
       tabList <- get("tabList",envir=.GlobalEnv)
       save(tabdat,file=file.path(debugDir,"tabdat.rda"))
     }
@@ -299,6 +349,7 @@ shinyServer(function(input, output, session) {
       }
 
       dat <- get("originalSourceData",envir = .GlobalEnv) # Point to a copy here
+      
       dat=dat[rowSums(is.na(dat)) != ncol(dat),]
       incProgress(amount=.5)
       dat=data.frame(dat, stringsAsFactors=F)
@@ -306,6 +357,20 @@ shinyServer(function(input, output, session) {
       if("sourceSubset" %in% names(input)){
         if(length(input[["sourceSubset"]] > 0)){
           if(any(input[["sourceSubset"]] != "")) dat <- dat[,setdiff(names(dat),input[["sourceSubset"]])]
+        }
+      }
+      
+      if("sourceNA" %in% names(input)){
+        sourceNA <- unlist(strsplit(input$sourceNA,","))
+        sourceNAnum <- as.numeric(sourceNA)
+        sourceNA <- sourceNA[ !is.na(sourceNA) ]
+        sourceNAnum <- sourceNAnum[ !is.na(sourceNAnum) ]
+        for(j in 1:ncol(dat)){
+          if(class(dat[,j])=="numeric"){
+            dat[dat[,j]%in%sourceNAnum,j] <- NA
+          }else{
+            dat[dat[,j]%in%sourceNA,j] <- NA            
+          }
         }
       }
       
@@ -324,7 +389,7 @@ shinyServer(function(input, output, session) {
     
     # For debugging, save a copy of input
     if(debug){
-      sourcedat <- dat
+      if(exists("dat")) sourcedat <- dat else return(NULL)
       tabList <- get("tabList",envir=.GlobalEnv)
       global <- ls(envir = .GlobalEnv)
       save(sourcedat,tabList,global,file=file.path(debugDir,"sourcedat.rda"))
@@ -360,7 +425,8 @@ shinyServer(function(input, output, session) {
       dat <- merge(sourceFile(), tableFile(), 
                    by=input[["mergeKey"]],
                    all.x=input[["keepAllSource"]],
-                   all.y=input[["keepAllRun"]]
+                   all.y=input[["keepAllRun"]],
+                   sort=F,suffixes=c(".source",".table")
                    ) 
     }else {
       if(!is.null(tableFile())) dat <- tableFile() else dat <- sourceFile()
@@ -375,9 +441,11 @@ shinyServer(function(input, output, session) {
     if("IPREDCol" %in% names(input)) names(dat)[which(names(dat)==input[["IPREDCol"]])]="IPRED"
     if("PREDCol" %in% names(input)) names(dat)[which(names(dat)==input[["PREDCol"]])]="PRED"
     
-    if(all(c("DV","TAFD","NMID")%in%names(dat))){
-      if("STUDY" %in% names(dat)) dat <- dat[order(dat$STUDY,dat$NMID,dat$TAFD),] else dat <- dat[order(dat$NMID,dat$TAFD),]
-    }
+    if(input$sortBy){
+      if(all(c("DV","TAFD","NMID")%in%names(dat))){
+        if("STUDY" %in% names(dat)) dat <- dat[order(dat$STUDY,dat$NMID,dat$TAFD),] else dat <- dat[order(dat$NMID,dat$TAFD),]
+      }
+    }# else we assume the user has done so
     
     if("dataParse_analysis" %in% names(input)){
       parsecommands <- cleanparse(input[["dataParse_analysis"]],"dat")
@@ -510,22 +578,25 @@ shinyServer(function(input, output, session) {
    
   #Raw Contents
   observeEvent(input[["updateRunView"]],{
+    cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_tabledata called\n"))
+    autosave()
     output$contentsHead_tabledata <- DT::renderDataTable({
-      cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_tabledata called\n"))
       req(input$runno, isolate(tableFile()))
       return(DT::datatable(isolate(tableFile()),filter="top"))
     })
   })
   observeEvent(input[["updateSourceView"]],{
+    cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_sourcedata called\n"))
+    autosave()
     output$contentsHead_sourcedata <- DT::renderDataTable({
-      cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_sourcedata called\n"))
       req(input$srcData,isolate(sourceFile()))
       return(DT::datatable(isolate(sourceFile()), filter="top"))
     })  
   })
   observeEvent(input[["performMerge"]],{
+    cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_analysisdata called\n"))
+    autosave()
     output$contentsHead_analysisdata <- DT::renderDataTable({
-      cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_analysisdata called\n"))
       return(DT::datatable(isolate(dataFile()), filter="top"))
     })  
   })
@@ -695,45 +766,33 @@ shinyServer(function(input, output, session) {
     PanelSet=list(
       tabPanel("Source Data",
                fluidRow(
-                 column(width = 12,
-                        box(
-                          title = "", width = NULL, status = "primary",
-                          div(style = 'overflow-x: scroll', DT::dataTableOutput('contentsHead_sourcedata'))
-                        )
-                 )
-               ),
-               fluidRow(
                  column(width = 6, title="Code parser", 
                         h4("Manipulation code"),
                         aceEditor("dataParse_source", value=Defaults[["dataParse_source"]], mode="r", theme="chrome", wordWrap=T)
                  ),
                  column(width = 6, title="Subsetting",
                         h2(""),
-                        actionButton("updateSourceView", "Refresh data view"),
+                        actionButton("updateSourceView", "View/refresh data"),
                         selectizeInput("sourceSubset", "Choose source columns to drop",
                                        choices= isolate(names(sourceFile())),
                                        selected=Defaults[["sourceSubset"]],
                                        multiple=T),
-                        h1(""),
-                        h4("Tips:"),
-                        p("You can use the code parser to subset on values.  Use the variable $DATA to refer to the internal source dataset when doing so."),
-                        p("For example:"),
-                        code("subset($DATA, STUDY==1 & CMT==4)"),
-                        p("You can also create factor labels with the parser:"),
-                        code('SEXF <- factor(SEX, levels=c(0,1), labels=c("F","M"))')
-                        )
-               )
-      ),
-      tabPanel("Source Data Summary", verbatimTextOutput("contentsSummary_sourcedata")),
-      tabPanel("Run Data",
+                        h2(""),
+                        textInput("sourceNA",label="Comma separated list of missingness identifiers",
+                                  value=Defaults$sourceNA)
+                 )
+               ),
                fluidRow(
                  column(width = 12,
                         box(
                           title = "", width = NULL, status = "primary",
-                          div(style = 'overflow-x: scroll', DT::dataTableOutput('contentsHead_tabledata'))
+                          div(style = 'overflow-x: scroll', DT::dataTableOutput('contentsHead_sourcedata'))
                         )
                  )
-               ),
+               )
+      ),
+      tabPanel("Source Data Summary", verbatimTextOutput("contentsSummary_sourcedata")),
+      tabPanel("Run Data",
                fluidRow(
                  column(width = 6, title="Code parser (table)", 
                         h3("Manipulation code"),
@@ -741,27 +800,45 @@ shinyServer(function(input, output, session) {
                  ),
                  column(width = 6, title="Subsetting (table)",
                         h2(""),
-                        actionButton("updateRunView", "Refresh data view"),
+                        actionButton("updateRunView", "View / refresh data"),
                         selectizeInput("tableSubset", "Choose run columns to drop",
                                        choices= isolate(names(tableFile())),
                                        selected=Defaults[["tableSubset"]],
                                        multiple=T),
-                        h1(""),
-                        h4("Tips:"),
-                        p("You can use the code parser to subset on values.  Use the variable $DATA to refer to the internal source dataset when doing so."),
-                        p("For example:"),
-                        code("subset($DATA, STUDY==1 & CMT==4)"),
-                        p("You can also create factor labels with the parser:"),
-                        code('SEXF <- factor(SEX, levels=c(0,1), labels=c("F","M"))')
-                        # selectizeInput("sourceMergeKey", "Choose merge key", 
-                        #                choices= isolate(names(sourceFile())), 
-                        #                selected=Defaults[["sourceMergeKey"]],
-                        #                multiple=T),
-                        #actionButton("updateSourceFile", "Update")
+                        h2(""),
+                        textInput("tableNA",label="Comma separated list of quoted missingness identifiers",
+                                  value=Defaults$tableNA)
+                 )
+               ),
+               fluidRow(
+                 column(width = 12,
+                        box(
+                          title = "", width = NULL, status = "primary",
+                          div(style = 'overflow-x: scroll', DT::dataTableOutput('contentsHead_tabledata'))
+                        )
                  )
                )
       ),      
-      tabPanel("Run Data Summary", verbatimTextOutput("contentsSummary_tabledata"))
+      tabPanel("Run Data Summary", verbatimTextOutput("contentsSummary_tabledata")),
+      tabPanel("Manipulation code examples",
+               fluidPage(
+                 h1(""),
+                 h4("Tips:"),
+                 p("You can use the code parser to subset on values.  Use the variable $DATA to refer to the internal source dataset when doing so."),
+                 p(""),
+                 p("For example:"),
+                 code("subset($DATA, STUDY==1 & CMT==4)"),
+                 p(""),
+                 p("You can also create factor labels with the parser:"),
+                 code('SEXF <- factor(SEX, levels=c(0,1), labels=c("F","M"))'),
+                 p(""),
+                 p("You can also use it to calculate within keys of the data.  Use dplyr conventions for this:"),
+                 code('group_by($DATA, NMID, cycle) %>% mutate(Cmin=min(DV[EVID==0]),Cmax=max(DV[EVID==0]))'),
+                 p(""),
+                 p("Use the dplyr format for fast sorting as well (use desc() to denote descending sorts):"),
+                 code("group_by($DATA, STUDY, NMID) %>% arrange(STUDY, desc(NMID), TIME)")
+               )
+      )
 
     )
     dummy=(do.call(tabsetPanel, PanelSet))
@@ -776,51 +853,81 @@ shinyServer(function(input, output, session) {
     PanelSet=list(
       tabPanel("Analysis Data",
                fluidRow(
+                 column(width = 6, title="Code parser (analysis)", 
+                        h4("Manipulation code"),
+                        aceEditor("dataParse_analysis", value=Defaults[["dataParse_analysis"]], mode="r", theme="chrome", wordWrap=T)
+                        # bsPopover("dataParse_analysis", "manipHelpPop", 
+                        #           content = paste0(
+                        #             c(
+                        #               "Tips:\n",
+                        #               "Subset on values:\n",
+                        #               "subset($DATA, STUDY==1 & CMT==4)\n",
+                        #               "Factor labels:\n",
+                        #               'SEXF <- factor(SEX, levels=c(0,1), labels=c("F","M"))'
+                        #             )
+                        #           ),
+                        #           
+                        #           trigger = 'hover',
+                        #           placement="bottom")
+                 ),
+                 column(width=6, title="Analysis data specification",
+                        fluidRow(column(width=12, title="Action button",
+                                        actionButton("performMerge", "Perform merge, update data view")
+                        )),
+                        wellPanel(
+                          fluidRow(
+                            column(width = 6, title="Merge specification",
+                                   selectizeInput("mergeKey", "Choose merge key",
+                                                  choices= intersect(revals$nms_source,revals$nms_tab),
+                                                  selected=Defaults[["mergeKey"]],
+                                                  multiple=T)
+                                   # selectizeInput("sortBy", "Sort analysis data by:",
+                                   #                choices=c(revals$nms_source,revals$nms_tab),
+                                   #                selected=Defaults[["sortBy"]],
+                                   #                multiple=T
+                                   #                )
+                            ),
+                            column(width = 6, title="Merge specification (2)",
+                                   checkboxInput("keepAllSource", "Retain all source values?",Defaults[["keepAllSource"]]),
+                                   checkboxInput("keepAllRun", "Retain all table file values?", Defaults[["keepAllRun"]]),
+                                   checkboxInput("sortBy", "Sort by study, patient, and time?",value=T)
+                            )
+                          ),
+                          fluidRow(
+                            column(12,
+                                   p("If not sorting, you MUST specify sorting order in the data manipulator")
+                            )
+                          )
+                        ),
+                        fluidRow(
+                          column(width=6,title="Change defaults",
+                                 wellPanel(
+                                   textInput("DVCol","DV Column",Defaults[["DVCol"]]),
+                                   textInput("TAFDCol","TAFD Column",Defaults[["TAFDCol"]]),
+                                   textInput("STUDYCol","STUDY Column",Defaults[["STUDYCol"]]),
+                                   textInput("NMIDCol","NMID Column",Defaults[["NMIDCol"]])
+                                 )
+                          ),
+                          column(width=6,title="Change defaults",
+                                 wellPanel(
+                                   textInput("IPREDCol","IPRED Column",Defaults[["IPREDCol"]]),
+                                   textInput("PREDCol","PRED Column",Defaults[["PREDCol"]]),
+                                   textInput("subjectExclusion_col","Subject exclusion column",Defaults[["subjectExclusion_col"]]),
+                                   textInput("observationExclusion_col","Observation exclusion column",Defaults[["observationExclusion_col"]])
+                                 )
+                          )
+                        )
+                 )
+               )       ,
+               fluidRow(
                  column(width = 12,
                         box(
                           title = "", width = NULL, status = "primary",
                           div(style = 'overflow-x: scroll', DT::dataTableOutput('contentsHead_analysisdata'))
                         )
                  )
-               ),
-               fluidRow(
-                 column(width = 6, title="Code parser (analysis)", 
-                        h4("Manipulation code"),
-                        aceEditor("dataParse_analysis", value=Defaults[["dataParse_analysis"]], mode="r", theme="chrome", wordWrap=T)
-                 ),
-                 column(width=6, title="Other side",
-                   fluidRow(column(width=12, title="Action button",
-                                   actionButton("performMerge", "Perform merge, update data view")
-                   )),
-                   fluidRow(
-                     column(width = 6, title="Merge specification",
-                            selectizeInput("mergeKey", "Choose merge key",
-                                           choices= intersect(revals$nms_source,revals$nms_tab),
-                                           selected=Defaults[["mergeKey"]],
-                                           multiple=T)
-                     ),
-                     column(width = 6, title="Merge specification (2)",
-                            checkboxInput("keepAllSource", "Retain all source values?",Defaults[["keepAllSource"]]),
-                            checkboxInput("keepAllRun", "Retain all run values?", Defaults[["keepAllRun"]])
-                     )
-                   ),
-                   fluidRow(
-                     hr(),
-                     column(width=6,title="Change defaults (1)",
-                            textInput("DVCol","DV Column",Defaults[["DVCol"]]),
-                            textInput("TAFDCol","TAFD Column",Defaults[["TAFDCol"]]),
-                            textInput("STUDYCol","STUDY Column",Defaults[["STUDYCol"]]),
-                            textInput("NMIDCol","NMID Column",Defaults[["NMIDCol"]])
-                     ),
-                     column(width=6,title="Change defaults (2)",
-                            textInput("IPREDCol","IPRED Column",Defaults[["IPREDCol"]]),
-                            textInput("PREDCol","PRED Column",Defaults[["PREDCol"]]),
-                            textInput("subjectExclusion_col","Subject exclusion column",Defaults[["subjectExclusion_col"]]),
-                            textInput("observationExclusion_col","Observation exclusion column",Defaults[["observationExclusion_col"]])
-                     )
-                   )
-                 )
-               )       
+               )
+               
                
       ),
       tabPanel("Analysis Data Summary", verbatimTextOutput("contentsSummary_analysisdata"))

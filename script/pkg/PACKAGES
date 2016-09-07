@@ -24,10 +24,13 @@ NeedsCompilation: no
 Package: devtools
 Version: 1.11.0
 Depends: R (>= 3.0.2)
-Imports: httr (>= 0.4), utils, tools, methods, memoise (>= 1.0.0), whisker, digest, rstudioapi (>= 0.2.0), jsonlite, stats,
-              git2r (>= 0.11.0), withr
-Suggests: curl (>= 0.9), crayon, testthat (>= 0.7), BiocInstaller, Rcpp (>= 0.10.0), MASS, rmarkdown, knitr, hunspell (>= 1.2),
-              lintr (>= 0.2.1), bitops, roxygen2 (>= 5.0.0), evaluate, rversions, covr, gmailr (> 0.7.0)
+Imports: httr (>= 0.4), utils, tools, methods, memoise (>= 1.0.0),
+        whisker, digest, rstudioapi (>= 0.2.0), jsonlite, stats, git2r
+        (>= 0.11.0), withr
+Suggests: curl (>= 0.9), crayon, testthat (>= 0.7), BiocInstaller, Rcpp
+        (>= 0.10.0), MASS, rmarkdown, knitr, hunspell (>= 1.2), lintr
+        (>= 0.2.1), bitops, roxygen2 (>= 5.0.0), evaluate, rversions,
+        covr, gmailr (> 0.7.0)
 License: GPL (>= 2)
 MD5sum: 2f8ba27b4a3e9fbf7ce164fddb40a3d9
 NeedsCompilation: yes
@@ -35,10 +38,12 @@ NeedsCompilation: yes
 Package: dplyr
 Version: 0.4.3
 Depends: R (>= 3.1.2)
-Imports: assertthat, utils, R6, Rcpp, magrittr, lazyeval (>= 0.1.10), DBI (>= 0.3)
+Imports: assertthat, utils, R6, Rcpp, magrittr, lazyeval (>= 0.1.10),
+        DBI (>= 0.3)
 LinkingTo: Rcpp (>= 0.12.0), BH (>= 1.58.0-1)
-Suggests: RSQLite (>= 1.0.0), RMySQL, RPostgreSQL, data.table, testthat, knitr, microbenchmark, ggplot2, mgcv, Lahman (>=
-              3.0-1), nycflights13, methods
+Suggests: RSQLite (>= 1.0.0), RMySQL, RPostgreSQL, data.table,
+        testthat, knitr, microbenchmark, ggplot2, mgcv, Lahman (>=
+        3.0-1), nycflights13, methods
 License: MIT + file LICENSE
 MD5sum: 19d4ee8b0a196073c390fa6ecb73eb11
 NeedsCompilation: yes

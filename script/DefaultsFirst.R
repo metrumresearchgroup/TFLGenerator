@@ -24,7 +24,7 @@ DefaultsFirst <- list(
             recall =                         FALSE ,
       projectTitle =                      "AMG NO" ,
        projectInfo =                            "" ,
-          dataPath =          "/opt/NMStorage_uslv",
+#          dataPath =          "/opt/NMStorage_uslv",
     manualDataPath ="/data/tflgenerator/NMStorage" ,
           srcData =                "sourcedata.csv",
              runno =                           "#" ,
@@ -76,7 +76,10 @@ observationExclusionsSummaryTabNum =             0 ,
 barchartMultNum =                                0 ,
 figureOrder =                                   "" ,
 tableOrder =                                    "" ,
-listingOrder =                                  ""
+listingOrder =                                  "" ,
+sortBy =                                       TRUE,
+sourceNA =                                       "",
+tableNA =                                        ""
 )
 
 save(DefaultsFirst,file=file.path(getwd(),"GUI","data","DefaultsFirst.rda")) # Expects to run from top of repo
