@@ -29,7 +29,7 @@ library(dplyr)
 library(gtools)
 library(readr)
 library(shinyAce)
-library(shinyjs)
+#library(shinyjs)
 #library(shinyBS)
 
 cat(file=stderr(), paste0("LOG: ", Sys.time(), " Finished preamble\n"))
@@ -189,19 +189,20 @@ shinyServer(function(input, output, session) {
   
   readThis <- reactive({
     list(
-      user=Sys.getenv("USER"),
-      home=Sys.getenv("HOME"),
-      runno=input$runno,
-      srcData=input$srcData,
-      ext=input$ext,
-      currentWD=currentWD(),
-      manualDataPath=input$manualDataPath,
-      templatePath_name=input$templatePath$name,
-      templatePath_datapath=input$templatePath$datapath,
-      header=input$header,
-      skipLines=input$skipLines,
-      dataLimits=input[["dataLimits"]],
-      dataTrans=input[["dataTrans"]]
+      # user=Sys.getenv("USER"),
+      # home=Sys.getenv("HOME"),
+      # runno=input$runno,
+      # srcData=input$srcData,
+      # ext=input$ext,
+      # currentWD=currentWD(),
+      # manualDataPath=input$manualDataPath,
+      # templatePath_name=input$templatePath$name,
+      # templatePath_datapath=input$templatePath$datapath,
+      # header=input$header,
+      # skipLines=input$skipLines,
+      # dataLimits=input[["dataLimits"]],
+      # dataTrans=input[["dataTrans"]],
+      sessionInfo=sessionInfo()
     )
     })
   

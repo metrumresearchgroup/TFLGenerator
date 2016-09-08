@@ -5,7 +5,7 @@ library(TFL) # the Amgen Internal TFL package
 library(shiny)
 library(shinydashboard)
 library(shinyFiles)
-library(shinyjs)
+#library(shinyjs)
 
 
 
@@ -52,14 +52,14 @@ library(shinyjs)
       	            h1(""),
       	            tags$iframe(src="https://docs.google.com/document/d/1sGwrTt_rr2gX0X8Ifgaj1VcFWZkY4-Xo4FF4flzWkt8/pub?embedded=true",
       	                        height="600px", width="100%")
-      	            # ,
+      	            ,
       	            # h1(""),
       	            # h2("Source code:"),
       	            # verbatimTextOutput("sourceParseCode")
       	            # ,
-      	            # h1(""),
-      	            # h2("Input names:"),
-      	            # code(verbatimTextOutput("readThis"))
+      	            h1(""),
+      	            h2("Debug:"),
+      	            code(verbatimTextOutput("readThis"))
       	            # ,
       	            # h1(""),
       	            # h2("Client data:"),
