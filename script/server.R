@@ -326,6 +326,7 @@ shinyServer(function(input, output, session) {
       save(tabdat,file=file.path(debugDir,"tabdat.rda"))
     }
     revals$nms_tab <- isolate(names(dat))
+    updateSelectizeInput(session,"mergeKey",choices=intersect(revals$nms_tab,revals$nms_source),selected=Defaults[["mergeKey"]],server=T)
     # End debugging
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " tableFile finished successfully\n"))
     return(dat)
@@ -414,6 +415,9 @@ shinyServer(function(input, output, session) {
       save(sourcedat,tabList,global,Defaults,file=file.path(debugDir,"sourcedat.rda"))
     }
     revals$nms_source <- isolate(names(dat))
+    updateSelectizeInput(session,"mergeKey",
+                         choices=intersect(revals$nms_tab,revals$nms_source),
+                         selected=Defaults[["mergeKey"]],server=T)
     # End debugging
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " sourceFile finished successfully\n"))
     return(dat)
@@ -448,7 +452,13 @@ shinyServer(function(input, output, session) {
       if(!is.null(tableFile())) dat <- tableFile() else dat <- sourceFile()
     }
     
-
+    updateSelectizeInput(session,"DVCol",choices=names(dat),selected=Defaults[["DVCol"]],server=T)
+    updateSelectizeInput(session,"TAFDCol",choices=names(dat),selected=Defaults[["TAFDCol"]],server=T)
+    updateSelectizeInput(session,"STUDYCol",choices=names(dat),selected=Defaults[["STUDYCol"]],server=T)
+    updateSelectizeInput(session,"NMIDCol",choices=names(dat),selected=Defaults[["NMIDCol"]],server=T)
+    updateSelectizeInput(session,"IPREDCol",choices=names(dat),selected=Defaults[["IPREDCol"]],server=T)
+    updateSelectizeInput(session,"PREDCol",choices=names(dat),selected=Defaults[["PREDCol"]],server=T)
+    
     # dat=data.frame(dat, stringsAsFactors=TRUE)
     if("DVCol" %in% names(input)) names(dat)[which(names(dat)==input[["DVCol"]])] = "DV"
     if("TAFDCol" %in% names(input)) names(dat)[which(names(dat)==input[["TAFDCol"]])]="TAFD"
@@ -476,6 +486,10 @@ shinyServer(function(input, output, session) {
     }
     
     dat0 <- dat
+    
+    updateSelectizeInput(session,"subjectExclusion_col",choices=names(dat),selected=Defaults[["subjectExclusion_col"]],server=T)
+    updateSelectizeInput(session,"observationExclusion_col",choices=names(dat),selected=Defaults[["observationExclusion_col"]],server=T)
+    
     
     if("subjectExclusion_col" %in% names(input)){
       if(input[["subjectExclusion_col"]]%in%names(dat)) revals$nms_subj <- isolate(unique(dat[,input$subjectExclusion_col]))
@@ -569,6 +583,9 @@ shinyServer(function(input, output, session) {
     }
 
     revals$nms_df <- isolate(names(dat))
+    
+
+    
     # For debugging, save a copy of input
     if(debug){
       dati <- dat
@@ -896,7 +913,7 @@ shinyServer(function(input, output, session) {
                           fluidRow(
                             column(width = 6, title="Merge specification",
                                    selectizeInput("mergeKey", "Choose merge key", 
-                                                  choices=Defaults[["mergeKey"]],
+                                                  choices=intersect(revals$nms_source,revals$nms_tab),
                                                   multiple=T,
                                                   selected=Defaults[["mergeKey"]])
                                    # selectizeInput("mergeKey", "Choose merge key",
@@ -924,18 +941,18 @@ shinyServer(function(input, output, session) {
                         fluidRow(
                           column(width=6,title="Change defaults",
                                  wellPanel(
-                                   textInput("DVCol","DV Column",Defaults[["DVCol"]]),
-                                   textInput("TAFDCol","TAFD Column",Defaults[["TAFDCol"]]),
-                                   textInput("STUDYCol","STUDY Column",Defaults[["STUDYCol"]]),
-                                   textInput("NMIDCol","NMID Column",Defaults[["NMIDCol"]])
+                                   selectizeInput("DVCol","DV Column",choices=Defaults[["DVCol"]],selected=Defaults[["DVCol"]]),
+                                   selectizeInput("TAFDCol","TAFD Column",choices=Defaults[["TAFDCol"]],selected=Defaults[["TAFDCol"]]),
+                                   selectizeInput("STUDYCol","STUDY Column",choices=Defaults[["STUDYCol"]],selected=Defaults[["STUDYCol"]]),
+                                   selectizeInput("NMIDCol","NMID Column",choices=Defaults[["NMIDCol"]],selected=Defaults[["NMIDCol"]])
                                  )
                           ),
                           column(width=6,title="Change defaults",
                                  wellPanel(
-                                   textInput("IPREDCol","IPRED Column",Defaults[["IPREDCol"]]),
-                                   textInput("PREDCol","PRED Column",Defaults[["PREDCol"]]),
-                                   textInput("subjectExclusion_col","Subject exclusion column",Defaults[["subjectExclusion_col"]]),
-                                   textInput("observationExclusion_col","Observation exclusion column",Defaults[["observationExclusion_col"]])
+                                   selectizeInput("IPREDCol","IPRED Column",choices=Defaults[["IPREDCol"]],selected=Defaults[["IPREDCol"]]),
+                                   selectizeInput("PREDCol","PRED Column",choices=Defaults[["PREDCol"]],selected=Defaults[["PREDCol"]]),
+                                   selectizeInput("subjectExclusion_col","Subject exclusion column",choices=Defaults[["subjectExclusion_col"]],selected=Defaults[["subjectExclusion_col"]]),
+                                   selectizeInput("observationExclusion_col","Observation exclusion column",choices=Defaults[["observationExclusion_col"]],selected=Defaults[["observationExclusion_col"]])
                                  )
                           )
                         )
