@@ -281,6 +281,9 @@ shinyServer(function(input, output, session) {
       if(length(input[["tableSubset"]] > 0)){
         if(any(input[["tableSubset"]] != "")) dat <- dat[, setdiff(names(dat),input[["tableSubset"]])]
       }
+      if(length(Defaults[["tableSubset"]] > 0)){
+        if(any(Defaults[["tableSubset"]] != "")) dat <- dat[,setdiff(names(dat),Defaults[["tableSubset"]])]
+      }
     }
     
     if("tableNA" %in% names(input)){
@@ -309,6 +312,12 @@ shinyServer(function(input, output, session) {
         }
       }
     }
+    
+    # Update selectizeInputs
+    updateSelectizeInput(session,"tableSubset",
+                         choices= unique(c(Defaults[["tableSubset"]],names(dat))),
+                         selected=Defaults[["tableSubset"]],
+                         server=T)
     
     # For debugging, save a copy of input
     if(debug){
@@ -359,6 +368,9 @@ shinyServer(function(input, output, session) {
         if(length(input[["sourceSubset"]] > 0)){
           if(any(input[["sourceSubset"]] != "")) dat <- dat[,setdiff(names(dat),input[["sourceSubset"]])]
         }
+        if(length(Defaults[["sourceSubset"]] > 0)){
+          if(any(Defaults[["sourceSubset"]] != "")) dat <- dat[,setdiff(names(dat),Defaults[["sourceSubset"]])]
+        }
       }
       
       if("sourceNA" %in% names(input)){
@@ -388,12 +400,18 @@ shinyServer(function(input, output, session) {
       }
     })
     
+    # Update selectizeInputs
+    updateSelectizeInput(session,"sourceSubset",
+                   choices= unique(c(Defaults[["sourceSubset"]],names(dat))),
+                   selected=Defaults[["sourceSubset"]],
+                   server=T)
+
     # For debugging, save a copy of input
     if(debug){
       if(exists("dat")) sourcedat <- dat else return(NULL)
       tabList <- get("tabList",envir=.GlobalEnv)
       global <- ls(envir = .GlobalEnv)
-      save(sourcedat,tabList,global,file=file.path(debugDir,"sourcedat.rda"))
+      save(sourcedat,tabList,global,Defaults,file=file.path(debugDir,"sourcedat.rda"))
     }
     revals$nms_source <- isolate(names(dat))
     # End debugging
@@ -403,9 +421,6 @@ shinyServer(function(input, output, session) {
   
   cat(file=stderr(), paste0("LOG: ", Sys.time(), " End sourceFile definition\n"))
   
-  # observeEvent(input$updateSourceFile,{
-  #   sourceFile <<- makesourceFile()
-  # })
     
 
 
@@ -774,10 +789,11 @@ shinyServer(function(input, output, session) {
                  column(width = 6, title="Subsetting",
                         h2(""),
                         actionButton("updateSourceView", "View/refresh data"),
-                        selectizeInput("sourceSubset", "Choose source columns to drop",
-                                       choices= isolate(names(sourceFile())),
-                                       selected=Defaults[["sourceSubset"]],
-                                       multiple=T),
+                        # selectizeInput("sourceSubset", "Choose source columns to drop",
+                        #                choices= isolate(names(sourceFile())),
+                        #                selected=Defaults[["sourceSubset"]],
+                        #                multiple=T),
+                        selectizeInput("sourceSubset", "Columns to drop", choices=Defaults[["sourceSubset"]], selected=Defaults[["sourceSubset"]], multiple=T),
                         h2(""),
                         textInput("sourceNA",label="Comma separated list of missingness identifiers",
                                   value=Defaults$sourceNA)
@@ -802,10 +818,11 @@ shinyServer(function(input, output, session) {
                  column(width = 6, title="Subsetting (table)",
                         h2(""),
                         actionButton("updateRunView", "View / refresh data"),
-                        selectizeInput("tableSubset", "Choose run columns to drop",
-                                       choices= isolate(names(tableFile())),
-                                       selected=Defaults[["tableSubset"]],
-                                       multiple=T),
+                        # selectizeInput("tableSubset", "Choose run columns to drop",
+                        #                choices= isolate(names(tableFile())),
+                        #                selected=Defaults[["tableSubset"]],
+                        #                multiple=T),
+                        selectizeInput("tableSubset", "Columns to drop", choices=Defaults[["tableSubset"]], selected=Defaults[["tableSubset"]], multiple=T),
                         h2(""),
                         textInput("tableNA",label="Comma separated list of quoted missingness identifiers",
                                   value=Defaults$tableNA)
@@ -1166,8 +1183,12 @@ shinyServer(function(input, output, session) {
             "PNG",
             "RTF",
             "dataPath", 
-            "recall"))
-          { Defaults.autosave[[item]]<-input[[item]] }
+            "recall"
+            ))
+          {
+            Defaults.autosave[[item]]<-input[[item]]
+            Defaults[[item]]<<-input[[item]]
+          }
         }
         if(debug){
           input_vals <- reactiveValuesToList(input)
