@@ -895,10 +895,14 @@ shinyServer(function(input, output, session) {
                         wellPanel(
                           fluidRow(
                             column(width = 6, title="Merge specification",
-                                   selectizeInput("mergeKey", "Choose merge key",
-                                                  choices= intersect(revals$nms_source,revals$nms_tab),
-                                                  selected=Defaults[["mergeKey"]],
-                                                  multiple=T)
+                                   selectizeInput("mergeKey", "Choose merge key", 
+                                                  choices=Defaults[["mergeKey"]],
+                                                  multiple=T,
+                                                  selected=Defaults[["mergeKey"]])
+                                   # selectizeInput("mergeKey", "Choose merge key",
+                                   #                choices= intersect(names(sourceFile()),names(tableFile())),
+                                   #                selected=Defaults[["mergeKey"]],
+                                   #                multiple=T)
                                    # selectizeInput("sortBy", "Sort analysis data by:",
                                    #                choices=c(revals$nms_source,revals$nms_tab),
                                    #                selected=Defaults[["sortBy"]],
@@ -1186,8 +1190,10 @@ shinyServer(function(input, output, session) {
             "recall"
             ))
           {
-            Defaults.autosave[[item]]<-input[[item]]
-            Defaults[[item]]<<-input[[item]]
+            if(!is.null(input[[item]])){
+              Defaults.autosave[[item]]<-input[[item]]
+              Defaults[[item]]<<-input[[item]]
+            }
           }
         }
         if(debug){
