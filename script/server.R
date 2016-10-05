@@ -752,6 +752,8 @@ shinyServer(function(input, output, session) {
     })
 
   output$projectInfoTabset <- renderUI({
+    auto.path=list(wd='',srcData=Defaults$srcData,runno=Defaults$runno)
+    if(debug) auto.path=list(wd='/data/co/tflgenerator/NMStorage',srcData='0069/fakeSource.csv',runno='0069')
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " creating data input tabset\n"))
     tabsetPanel(
              tabPanel(title="Project Information",
@@ -762,9 +764,9 @@ shinyServer(function(input, output, session) {
                       ),
              tabPanel(title="Model Info",
                       wellPanel(
-                        textInput(inputId="manualDataPath", label="Parent working directory:", value=""),	
-                        textInput(inputId="srcData", label='NONMEM source data:',value=Defaults$srcData),
-                        textInput(inputId="runno", label="Run Number:", value=Defaults$runno),
+                        textInput(inputId="manualDataPath", label="Parent working directory:", value=auto.path$wd),	
+                        textInput(inputId="srcData", label='NONMEM source data:',value=auto.path$srcData),
+                        textInput(inputId="runno", label="Run Number:", value=auto.path$runno),
                         #textInput(inputId="numModel", label="Number of Models", value="1"),
                         textInput(inputId="ext", label="File Extensions:", value=Defaults$ext),
                         checkboxInput('header', 'Header?', value=Defaults$header),
@@ -1243,6 +1245,9 @@ shinyServer(function(input, output, session) {
         if(length(numbers)==1){numRange=c(0:numbers)}
         if(length(numbers)==0){numRange=0}
         
+        testClick=which(sapply(names(input)[grepl(paste0('button',item),names(input))],function(x) input[[x]]>0))
+        if(length(testClick)>0) numRange=numRange[testClick]
+
         for (this_n in numRange){
           local({
             n=this_n
@@ -1297,7 +1302,8 @@ shinyServer(function(input, output, session) {
                          file=file.path(srcDir,"tmp","message.rda"))
                   }
                   
-                  if(sameAsDefault!=1){
+                  #if(sameAsDefault!=1){
+                  if(T){
                     cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " creating", item, n, "\n")))
                     argList=try(createArgList(input, item, n, dataFile=dataFile(), currentWD=currentWD()))
                     
