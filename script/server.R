@@ -1,7 +1,7 @@
 debug <- F
 
 #rm(list=ls(all=TRUE))
-Sys.setenv(PATH=paste0(Sys.getenv("PATH"),":/usr/bin"))
+Sys.setenv(PATH=paste0(Sys.getenv("PATH"),":/usr/bin:/usr/lib/rstudio-server/bin")) # Get pandoc and imagemagick
 srcDir <- "/data/tflgenerator"
 root <- ifelse(
   dir.exists("/opt/NMStorage_uslv"),
@@ -1390,13 +1390,14 @@ shinyServer(function(input, output, session) {
                           renderPrint({ print(head(p1$preview,n=input[[paste0("previewhead",item,n)]]),row.names=F)})
                       }
                     }else if(item %nin% c("demogTabCont","demogTabCat","NMTab","ConcvTimeMult")){
-                      #Perform the actual plotting
+                      #Perform the actual plotting for most figures (ggplots)
                       output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
                         print(p1)
                       })
                     }else if(item=="ConcvTimeMult"){
                       output[[paste("Plot",item,n,sep="")]] <<- renderImage({ p1 },deleteFile=F)
                     }else{
+                      # Probably one of demogTabCont, demogTabCat, NMTab, ConcvTimeMult
                       output[[paste("Plot",item,n,sep="")]]<<-renderImage(
                         renderTex(obj=p1,item=paste0(item,n),
                                   margin=c(left=input[[paste0("leftmargin",item,n)]],
@@ -1473,6 +1474,7 @@ shinyServer(function(input, output, session) {
                                 Sys.Date()
                     )
                     dir.create(file.path(Dir,"PNG"),recursive=T)
+
                     
                     argList=createArgList(input, item, n, dataFile=dataFile(), currentWD=currentWD())
                     callType=argList$callType
@@ -1560,7 +1562,12 @@ shinyServer(function(input, output, session) {
                            CSV=p1csv
                       )
                     
-                    if(p1List$Footnote=="") p1List$Footnote <- NULL
+
+                    # Make a docx version of the caption and footnote
+                    p1List$docxCaption = renderTex(list(caption=p1List$Legend,
+                                                        footnote=p1List$Footnote),
+                                                   paste0(item,n), pandoc=T)
+
                     p1Name=paste(item,n, sep="")
                     if(callType=="ConcvTimeMult") p1List$Plot <- p1$src
                     
@@ -1586,9 +1593,22 @@ shinyServer(function(input, output, session) {
                       p1List$Plot <- f['src']
                     }
                     
-                    # We only write the rda when using the TFL generated script
+                    
+                    
+                    # We only write the rda when using the TFL generated script.  
+                    # guiGrobs object created here and stored in global env.
                     saveGrob(plot=p1List, Name=p1Name, file=sprintf("%s_Grobs.rda", fileHead),
                              writeRda=F)
+
+                    # Dump the captions and footnotes into the working directory
+                    dir.create(file.path(Dir,"Captions"),recursive=T)
+
+                    for(nms in names(guiGrobs)){
+                      if("docxCaption" %in% names(guiGrobs[[nms]])){
+                        file.copy(guiGrobs[[nms]]$docxCaption,
+                                  file.path(Dir,"Captions",basename(guiGrobs[[nms]]$docxCaption)))
+                      }
+                    }
                     
                     #Insert function recording into script	
                     #Save only the non-default arguments unless the user asks for a verbose script
@@ -1703,12 +1723,15 @@ shinyServer(function(input, output, session) {
           guiGrobs <- tryCatch(guiGrobs[ordering],
                                error=function(e) if(debug) save(e,ordering,file=file.path(srcDir,"tmp","guiGrobsOrderError.rda")))
           
+          if(debug){
+            save(guiGrobs,grobFile,ordering,file=file.path(srcDir,"tmp","rtferror.rda"))
+          }
           tryCatch(writeRTF(grobFile, ordering=ordering),
                    error=function(e){
                      cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " failed to write RTF\n",e,"\n")))
-                     if(debug){
-                       save(guiGrobs, grobFile, ordering, file=file.path(srcDir,"tmp","rtferror.rda"))
-                     }
+                     # if(debug){
+                     #   save(guiGrobs, grobFile, ordering, file=file.path(srcDir,"tmp","rtferror.rda"))
+                     # }
                    })
           cat(file=stderr(), "LOG: Finished writing RTF\n")
         })
