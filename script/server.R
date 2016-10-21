@@ -897,8 +897,6 @@ shinyServer(function(input, output, session) {
     })
 
   output$projectInfoTabset <- renderUI({
-    auto.path=list(wd='',srcData=Defaults$srcData,runno=Defaults$runno)
-    if(debug) auto.path=list(wd='/data/co/tflgenerator/NMStorage',srcData='0069/fakeSource.csv',runno='0069')
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " creating data input tabset\n"))
     tabsetPanel(
              tabPanel(title="Project Information",
@@ -909,9 +907,9 @@ shinyServer(function(input, output, session) {
                       ),
              tabPanel(title="Model Info",
                       wellPanel(
-                        textInput(inputId="manualDataPath", label="Parent working directory:", value=auto.path$wd),	
-                        textInput(inputId="srcData", label='NONMEM source data:',value=auto.path$srcData),
-                        textInput(inputId="runno", label="Run Number:", value=auto.path$runno),
+                        textInput(inputId="manualDataPath", label="Parent working directory:", value=Defaults$manualDataPath),	
+                        textInput(inputId="srcData", label='NONMEM source data:',value=Defaults$srcData),
+                        textInput(inputId="runno", label="Run Number:", value=Defaults$runno),
                         #textInput(inputId="numModel", label="Number of Models", value="1"),
                         textInput(inputId="ext", label="File Extensions:", value=Defaults$ext),
                         checkboxInput('header', 'Header?', value=Defaults$header),
