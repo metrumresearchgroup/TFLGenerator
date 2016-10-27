@@ -1,14 +1,11 @@
 #rm(list=ls(all=TRUE))
-.libPaths("/data/tflgenerator/script/lib")
+.libPaths("/data/co/tflgenerator/script/lib")
 library(GUI)
 library(TFL) # the Amgen Internal TFL package
 library(shiny)
 library(shinydashboard)
 library(shinyFiles)
 #library(shinyjs)
-
-
-
 
 # Defaults are used to keep the current entries in dynamic memory, 
 #   defaults first are the pre-defined defaults
@@ -26,6 +23,7 @@ library(shinyFiles)
       	    
       	      fileInput(inputId="templatePath", label="Select Personal Template", multiple=FALSE),
       	      h1(""),
+      	      
       	      actionButton("templateGo", "Go"),
       	      h1(""),
       	      # shinyDirButton(id="dataPath", label='Set working directory', title='Please select a working directory'),

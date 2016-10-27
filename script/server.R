@@ -1,4 +1,4 @@
-debug <- F
+debug <- T
 
 #rm(list=ls(all=TRUE))
 Sys.setenv(PATH=paste0(Sys.getenv("PATH"),":/usr/bin:/usr/lib/rstudio-server/bin")) # Get pandoc and imagemagick
@@ -17,21 +17,26 @@ cat(file=stderr(), paste0("LOG: ", Sys.time(), " Start loading packages"))
 
 .libPaths(file.path(srcDir,"script/lib"))
 
-library(ggplot2,lib="/usr/local/lib/R/site-library")
-library(gridExtra,lib="/usr/local/lib/R/site-library")
+
 library(grid)
 library(GUI)
 library(TFL) # the Amgen Internal TFL package
 library(shiny)
 library(shinydashboard)
 library(shinyFiles)
+library(shinyBS)
 library(DT)
 library(animation)
 library(lazyeval)
-library(dplyr)
 library(gtools)
 library(readr)
 library(shinyAce)
+library(Hmisc)
+library(ggplot2)
+library(gridExtra)
+library(colourpicker)
+library(plyr)
+library(dplyr)
 #library(shinyjs)
 #library(shinyBS)
 
@@ -119,7 +124,7 @@ shinyServer(function(input, output, session) {
   cat(file=stderr(), paste0("LOG: ", Sys.time(), " Setting the color schemes\n"))
   unlockBinding("cleanScales", as.environment("package:TFL"))
   # Set color scale.  In the future, remove this and activate checkbox on frontpage to enable grayscale
-  cleanScales<<-setColorScale()
+  cleanScales<<-setColorScale(shapeList = shape_pal()(6))
   
   observe(
     if("Color" %in% names(input)){
@@ -1398,13 +1403,13 @@ shinyServer(function(input, output, session) {
                         output[[paste("Plot",item,n,sep="")]] <<- 
                           renderPrint({ print(head(p1$preview,n=input[[paste0("previewhead",item,n)]]),row.names=F)})
                       }
-                    }else if(item %nin% c("demogTabCont","demogTabCat","NMTab","ConcvTimeMult")){
+                    }else if(item %nin% c("demogTabCont","demogTabCat","NMTab")){
                       #Perform the actual plotting for most figures (ggplots)
                       output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
-                        print(p1)
+                        do.call(pListPrint,do.call(callType,argList))
                       })
-                    }else if(item=="ConcvTimeMult"){
-                      output[[paste("Plot",item,n,sep="")]] <<- renderImage({ p1 },deleteFile=F)
+                    # }else if(item=="ConcvTimeMult"){
+                    #   output[[paste("Plot",item,n,sep="")]] <<- renderImage({ p1 },deleteFile=F)
                     }else{
                       # Probably one of demogTabCont, demogTabCat, NMTab, ConcvTimeMult
                       output[[paste("Plot",item,n,sep="")]]<<-renderImage(
@@ -1578,7 +1583,7 @@ shinyServer(function(input, output, session) {
                                                    paste0(item,n), pandoc=T)
 
                     p1Name=paste(item,n, sep="")
-                    if(callType=="ConcvTimeMult") p1List$Plot <- p1$src
+                    #if(callType=="ConcvTimeMult") p1List$Plot <- p1$src
                     
                     if(grepl("Exclusion",item)){
                       copy <- try(file.copy(from=p1$file,to=file.path(Dir,"PNG")))
@@ -1594,9 +1599,15 @@ shinyServer(function(input, output, session) {
                       }else{
                         p1List$longText <- p1$preview
                       }
-                    }else if(callType %nin% c("demogTabCont","demogTabCat","RNM","ConcvTimeMult")){
-                      savePlots(plotName=p1,  directory=Dir, saveName=paste(item,n, sep=""))
+                    }else if(callType %nin% c("demogTabCont","demogTabCat","RNM")){
+                      #savePlots(plotName=p1,  directory=Dir, saveName=paste(item,n, sep=""))
+                      p1=do.call(callType,argList)
+                      p1$fname=file.path(Dir,paste0(item,n))
+                      do.call(pListSave,p1)
                     }else if(item%nin%"ConcvTimeMult"){
+                      #argList$page=0
+                      #p1=do.call(callType,argList)
+                      #for(i in 1:length(p1)) pListSave(p1[[i]]$pList,plotCols = 1,plotRows = 1,fname = file.path(Dir,paste0(item,i)))
                       f <- renderTex(p1,item=item,footnote=p1List$Footnote,tmpDir=file.path(Dir,"PNG"),
                                      margin=c(left=10,top=5,right=50,bottom=5))
                       p1List$Plot <- f['src']
