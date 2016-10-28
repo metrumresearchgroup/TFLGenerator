@@ -32,8 +32,8 @@ library(dplyr)
 library(gtools)
 library(readr)
 library(shinyAce)
-library(doParallel)
-library(foreach)
+# library(doParallel)
+# library(foreach)
 #library(shinyjs)
 #library(shinyBS)
 
@@ -628,7 +628,7 @@ shinyServer(function(input, output, session) {
     
     if(debug){
       input_vals <- reactiveValuesToList(input)
-      save(n,item,title,vpcRun,input_vals,file=file.path(srcDir,"tmp","vpcFile.rda"))
+      try(save(n,item,title,vpcRun,input_vals,subjectExclusions,observationExclusions,file=file.path(srcDir,"tmp","vpcFile.rda")))
     }
     
     vpcctl <- try(read.nmctl(file.path(currentWD(),vpcRun,paste0(vpcRun,".ctl"))))
@@ -703,6 +703,13 @@ shinyServer(function(input, output, session) {
                          selected=Defaults[[paste0("dataSubset",title)]],
                          server=T)
     
+    if("DVCol" %in% names(input)) names(dat)[which(names(dat)==input[["DVCol"]])] = "DV"
+    if("TAFDCol" %in% names(input)) names(dat)[which(names(dat)==input[["TAFDCol"]])]="TAFD"
+    if("NMIDCol" %in% names(input)) names(dat)[which(names(dat)==input[["NMIDCol"]])]="NMID"
+    if("STUDYCol" %in% names(input)) names(dat)[which(names(dat)==input[["STUDYCol"]])]="STUDY"
+    if("IPREDCol" %in% names(input)) names(dat)[which(names(dat)==input[["IPREDCol"]])]="IPRED"
+    if("PREDCol" %in% names(input)) names(dat)[which(names(dat)==input[["PREDCol"]])]="PRED"
+    
     # Run parser on merged data
     if(paste0("dataParse_vpc",title) %in% names(input)){
       parsecommands <- cleanparse(input[[paste0("dataParse_vpc",title)]],"dat")
@@ -715,7 +722,16 @@ shinyServer(function(input, output, session) {
         }
       }
     }
-    
+
+    if(exists("subjectExclusions")){
+      if(("NMID" %in% names(dat)) & ("NMID" %in% names(subjectExclusions))){
+        dat <- filter(dat, NMID %nin% subjectExclusions$NMID)
+      }
+    }
+    if(exists("observationExclusions")){
+      commoncols <- intersect(names(dat), names(observationExclusions))
+      dat <- dat[paste(dat[,commoncols]) %nin%  paste(observationExclusions[,commoncols]),]
+    }
     if(debug){
       save(n,input_vals,dat,vpcRun,file=file.path(srcDir,"tmp","vpcFile.rda"))
     }
