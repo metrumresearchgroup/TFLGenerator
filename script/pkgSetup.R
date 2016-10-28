@@ -1,6 +1,6 @@
 # Expects to be run from script
 author <- c("danp","polhamus")
-pkgs <- c('metrumrg','shinyFiles','animation','gdata','shinydashboard',
+pkgs <- c('fork','metrumrg','shinyFiles','animation','gdata','shinydashboard',
           'DT','rtf','lazyeval','dplyr','DBI','ggplot2','gridExtra',
           'readr','shinyAce','shinyBS','TFL','GUI')
 

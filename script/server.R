@@ -32,8 +32,16 @@ library(dplyr)
 library(gtools)
 library(readr)
 library(shinyAce)
+# library(doParallel)
+# library(foreach)
 #library(shinyjs)
 #library(shinyBS)
+
+# Set up parallel backend
+# cl <- makeCluster(8)
+# registerDoParallel(8)
+# clusterCall(cl, fun=function(x) .libPaths()[1])
+# on.exit(stopCluster(cl))
 
 cat(file=stderr(), paste0("LOG: ", Sys.time(), " Finished preamble\n"))
 
@@ -261,8 +269,8 @@ shinyServer(function(input, output, session) {
               }			
               #foo=try(read.table(fileName, header=input$header, skip=input$skipLines, stringsAsFactors=F, fill=TRUE, comment.char="",check.names=F))
               
-              foonm=try(names(read.table(fileName, skip=input$skipLines,nrows=1,header=T)))
-              foo=try(read_delim(fileName, col_names=foonm, skip=input$skipLines+1,delim=" ",comment=""))
+              foo=try(read.table(fileName, skip=input$skipLines, header=input$header))
+              
               if(class(foo)=="try-error") return()
               if(nrow(foo)==0) return()
               foo$Run=irun
@@ -608,6 +616,130 @@ shinyServer(function(input, output, session) {
   
   
   ##############	
+  
+  # vpc data
+  vpcDataList <- list()
+
+  vpcFile <- function(n,item="VPC") {
+    cat(file=stderr(), paste0("LOG: ", Sys.time(), " vpcFile called\n"))
+    title <- paste0(item,n)
+    # req(input[[paste0("vpcRun",title)]])
+    vpcRun <- input[[paste0("vpcRun",title)]]
+    
+    if(debug){
+      input_vals <- reactiveValuesToList(input)
+      try(save(n,item,title,vpcRun,input_vals,subjectExclusions,observationExclusions,file=file.path(srcDir,"tmp","vpcFile.rda")))
+    }
+    
+    vpcctl <- try(read.nmctl(file.path(currentWD(),vpcRun,paste0(vpcRun,".ctl"))))
+    vpctab <- vpcctl[grep("^[$]DATA",vpcctl)]
+    vpctab <- strsplit(as.character(vpctab),split=" ",fixed=T)
+    vpctab <- unlist(vpctab)[unlist(sapply(vpctab, function(x) grepl("*.csv|CSV",x),simplify = F))]
+    vpctab <- try(read_csv(file.path(currentWD(),vpcRun,vpctab)))
+    
+    vpcloc <- list.files(file.path(currentWD(),vpcRun))
+    vpcloc <- grep(paste0(vpcRun,".tab|TAB"),vpcloc,value=T)
+    if(length(vpcloc)==0){
+      cat(file=stderr(), paste0("LOG: ", Sys.time(), " VPC file not found\n"))
+      return()
+    }
+    if(length(vpcloc)>1){
+      cat(file=stderr(), paste0("LOG: ", Sys.time(), " More than one vpc tab found, using ", vocloc[1],"\n"))
+    }
+    req(input[[paste0("vpcColnames",title)]])
+    vpcColnames <- sapply(unlist(strsplit(input[[paste0("vpcColnames",title)]],",")), stringr:::str_trim)
+    dat <- try(read.table(file.path(currentWD(),vpcRun,vpcloc),header=F,nrows=1))
+    if(dat[1]=="TABLE"){
+      cat(file=stderr(), paste0("LOG: ", Sys.time(), " VPC simulations need to be run with NOHEADER\n"))
+      return()
+    }
+
+    dat <- try(read_table(file.path(currentWD(),vpcRun,vpcloc),col_names=F))
+    if(length(vpcColnames)!=ncol(dat)){
+      cat(file=stderr(), paste0("LOG: ", Sys.time(), " Number of vpc column names not equal to number of columns in simulation table\n"))
+      return()
+    }
+    
+    colnames(dat) <- vpcColnames
+    req(input[[paste0("vpcRep",title)]])
+    dat$IREP <- rep(1:input[[paste0("vpcRep",title)]],each=nrow(dat)/input[[paste0("vpcRep",title)]])
+    
+    # Tack on the source data
+    
+    ## Load it first
+    vpcsrc <- try(read_csv(file=file.path(currentWD(),input[[paste0("vpcSource",title)]])))
+
+    if(class(vpcsrc) != "try-error"){
+      # Rename observed DV
+      if(!is.null(input[[paste0("vpcSourceDV",title)]])){
+        if(input[[paste0("vpcSourceDV",title)]]!=""){
+          vpcsrc[,paste0(input[[paste0("vpcSourceDV",title)]],"obs")] <- 
+            vpcsrc[,input[[paste0("vpcSourceDV",title)]]]
+          vpcsrc[,input[[paste0("vpcSourceDV",title)]]] <- NULL
+        }
+      }
+
+      vpcsrcnms <- names(vpcsrc)
+      # Subset to the requested columns
+      if(paste0("dataSubset",title) %in% names(input)){
+        if(any(input[[paste0("dataSubset",title)]]!="")){
+          vpcsrc <- subset(vpcsrc, select=input[[paste0("dataSubset",title)]])
+          vpcsrc <- vpcsrc[!duplicated(vpcsrc),]
+        }
+      }
+      
+      # Merge
+      if(any(colnames(dat)%in%colnames(vpcsrc))){
+       dat <- try(dplyr::left_join(dat, vpcsrc) )
+      }else if(nrow(dat)==nrow(vpcsrc)) dat <- cbind(vpcsrc,dat)
+    }else vpcsrcnms <- ""
+      
+
+    # Update selectize for data subsetting
+
+    
+    updateSelectizeInput(session,paste0("dataSubset",title),
+                         choices= unique(c(Defaults[[paste0("dataSubset",title)]],vpcsrcnms)),
+                         selected=Defaults[[paste0("dataSubset",title)]],
+                         server=T)
+    
+    if("DVCol" %in% names(input)) names(dat)[which(names(dat)==input[["DVCol"]])] = "DV"
+    if("TAFDCol" %in% names(input)) names(dat)[which(names(dat)==input[["TAFDCol"]])]="TAFD"
+    if("NMIDCol" %in% names(input)) names(dat)[which(names(dat)==input[["NMIDCol"]])]="NMID"
+    if("STUDYCol" %in% names(input)) names(dat)[which(names(dat)==input[["STUDYCol"]])]="STUDY"
+    if("IPREDCol" %in% names(input)) names(dat)[which(names(dat)==input[["IPREDCol"]])]="IPRED"
+    if("PREDCol" %in% names(input)) names(dat)[which(names(dat)==input[["PREDCol"]])]="PRED"
+    
+    # Run parser on merged data
+    if(paste0("dataParse_vpc",title) %in% names(input)){
+      parsecommands <- cleanparse(input[[paste0("dataParse_vpc",title)]],"dat")
+      if(!is.null(parsecommands)){
+        for(i in 1:length(parsecommands$commands)){
+          if(parsecommands$within[i]) tryCatch(eval(parse(text=paste0("dat <- within(dat, {", parsecommands$commands[i], "})"))),
+                                               error=function(e) cat(file=stderr(),paste("Parsing command broken:\n",parsecommands$commands[i],"\n", e)))
+          if(!parsecommands$within[i]) tryCatch(eval(parse(text=paste0("dat <- ", parsecommands$commands[i]))),
+                                                error=function(e) cat(file=stderr(),print(paste("Parsing command broken:\n",parsecommands$commands[i],"\n", e))))
+        }
+      }
+    }
+
+    if(exists("subjectExclusions")){
+      if(("NMID" %in% names(dat)) & ("NMID" %in% names(subjectExclusions))){
+        dat <- filter(dat, NMID %nin% subjectExclusions$NMID)
+      }
+    }
+    if(exists("observationExclusions")){
+      commoncols <- intersect(names(dat), names(observationExclusions))
+      dat <- dat[paste(dat[,commoncols]) %nin%  paste(observationExclusions[,commoncols]),]
+    }
+    if(debug){
+      save(n,input_vals,dat,vpcRun,file=file.path(srcDir,"tmp","vpcFile.rda"))
+    }
+   vpcDataList[[as.character(vpcRun)]] <<- isolate(dat)
+   return(dat)
+
+  }
+  
   # Output Renders - Just the data set overview and plot title
   ##############
  
@@ -635,6 +767,32 @@ shinyServer(function(input, output, session) {
     output$contentsHead_analysisdata <- DT::renderDataTable({
       return(DT::datatable(isolate(dataFile()), filter="top"))
     })  
+  })
+  observeEvent(input[["updateVPCView"]],{
+      cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_vpcdata called\n"))
+      autosave()
+      # output$contentsHead_vpcdata <- DT::renderDataTable({
+      #   return(DT::datatable(isolate(vpcFile()), filter="top"))
+      # })  
+      withProgress(message="Loading VPC data", value=0, {
+        for(nm in grep("vpcRun",names(isolate(input)),value=T)){
+          if(isolate(input[[nm]])!=""){
+            n <- gsub("vpcRunVPC","",nm)
+            vpcRun <- as.character(isolate(input[[nm]]))
+            dat <- isolate(vpcFile(n)) # Populate the vpcDataList
+            if(debug){
+              input_vals <- isolate(reactiveValuesToList(input))
+              vpcDataList_vals <- isolate(vpcDataList)
+              save(input_vals, vpcDataList_vals, file=file.path(srcDir,"tmp","updateVPCview.rda"))
+            }
+            output[[paste0("contentsHead_vpcdata",n)]] <-  
+              # renderPrint({summarizeContents(vpcDataList[[vpcRun]])})
+              # DT::renderDataTable({ DT::datatable(vpcDataList[[vpcRun]], filter="top") })
+              renderTable({head(vpcDataList[[vpcRun]], n=input[[paste0("nheadVPC",n)]])})
+          }
+        incProgress(1/length(grep("vpcRun",names(isolate(input)))))  
+        }
+      })
   })
 
   output$contentsHead_subjectExclusions <- DT::renderDataTable({ NULL })
@@ -755,8 +913,6 @@ shinyServer(function(input, output, session) {
     })
 
   output$projectInfoTabset <- renderUI({
-    auto.path=list(wd='',srcData=Defaults$srcData,runno=Defaults$runno)
-    if(debug) auto.path=list(wd='/data/co/tflgenerator/NMStorage',srcData='0069/fakeSource.csv',runno='0069')
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " creating data input tabset\n"))
     tabsetPanel(
              tabPanel(title="Project Information",
@@ -767,9 +923,9 @@ shinyServer(function(input, output, session) {
                       ),
              tabPanel(title="Model Info",
                       wellPanel(
-                        textInput(inputId="manualDataPath", label="Parent working directory:", value=auto.path$wd),	
-                        textInput(inputId="srcData", label='NONMEM source data:',value=auto.path$srcData),
-                        textInput(inputId="runno", label="Run Number:", value=auto.path$runno),
+                        textInput(inputId="manualDataPath", label="Parent working directory:", value=Defaults$manualDataPath),	
+                        textInput(inputId="srcData", label='NONMEM source data:',value=Defaults$srcData),
+                        textInput(inputId="runno", label="Run Number:", value=Defaults$runno),
                         #textInput(inputId="numModel", label="Number of Models", value="1"),
                         textInput(inputId="ext", label="File Extensions:", value=Defaults$ext),
                         checkboxInput('header', 'Header?', value=Defaults$header),
@@ -1199,8 +1355,8 @@ shinyServer(function(input, output, session) {
         
         cat(file=stderr(),paste0("LOG: ", Sys.time(), " Running autosave routine"))
         Defaults.autosave <- get("Defaults",envir = .GlobalEnv)
-        for(item in names(DefaultsFirst)){
-          #put in the non-plot related Defaults
+        for(item in names(Defaults.autosave)){
+          #take out some of these
           if (item %nin% c(
             "saveAll",
             "saveAs",
@@ -1215,6 +1371,12 @@ shinyServer(function(input, output, session) {
             if(!is.null(input[[item]])){
               Defaults.autosave[[item]]<-input[[item]]
               Defaults[[item]]<<-input[[item]]
+            }else{
+              # The subset selectize items may be removed to NULL
+              if(grepl("Subset",item)){
+                Defaults.autosave[[item]]<-""
+                Defaults[[item]]<<-""
+              }
             }
           }
         }
@@ -1254,6 +1416,7 @@ shinyServer(function(input, output, session) {
         for (this_n in numRange){
           local({
             n=this_n
+            if(is.na(n) | (length(n)==0)) n<-0
             if(n!=0){	
               observeEvent(input[[paste("button",item,n,sep="")]],{ 
                 
@@ -1296,19 +1459,26 @@ shinyServer(function(input, output, session) {
                   }
                   
                   if(debug){
-                    message <- "DEBUG AAAA"
                     input_nms <- names(input)
                     input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
                     names(input_vals) <- input_nms
-                    
-                    save(message,idx,idn,input_vals,item,n,Defaults,sameAsDefault,
-                         file=file.path(srcDir,"tmp","message.rda"))
+                    dataFile_vals <- isolate(dataFile())
+
+                    save(idx,idn,input_vals,item,n,Defaults,sameAsDefault,vpcDataList,dataFile_vals,
+                         file=file.path(srcDir,"tmp","preplot.rda"))
                   }
                   
                   #if(sameAsDefault!=1){
                   if(T){
                     cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " creating", item, n, "\n")))
-                    argList=try(createArgList(input, item, n, dataFile=dataFile(), currentWD=currentWD()))
+
+                    if(item=="VPC"){
+                      dati <- vpcDataList[[input[[paste0("vpcRun",item,n)]]]]
+                    }else{
+                      dati <- dataFile()
+                    }
+
+                    argList=try(createArgList(input, item, n, dataFile=dati, currentWD=currentWD()))
                     
                     # Special routine for multipage
                     if(item == "ConcvTimeMult"){
@@ -1316,7 +1486,7 @@ shinyServer(function(input, output, session) {
                       idtest <- setdiff(idtest,paste0("page",item,n))
                       sameAsDefault <- sum(sapply(idtest, function(X){input[[X]]==Defaults[X]}))/length(idtest)
                       # If page is the only thing that changed, don't regen all plots
-                      if(sameAsDefault==1) argList$regenPlots <- F else argList$regenPlots <- T
+                      if(sameAsDefault==1 & input[[paste0("button",item,n)]]>1) argList$regenPlots <- F else argList$regenPlots <- T
                       # if(debug){
                       #   message="ConcvTime sameAsDefault"
                       #   input_nms <- names(input)
@@ -1422,7 +1592,7 @@ shinyServer(function(input, output, session) {
                       input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
                       names(input_vals) <- input_nms
                       message <- "DEBUG E"
-                      save(message,argList,input_vals,item,n,p1,file=file.path(srcDir,"tmp","message.rda"))
+                      save(message,argList,input_vals,item,n,p1,vpcDataList,file=file.path(srcDir,"tmp","message.rda"))
                     } 
                     
                     
@@ -1485,7 +1655,13 @@ shinyServer(function(input, output, session) {
                     dir.create(file.path(Dir,"PNG"),recursive=T)
 
                     
-                    argList=createArgList(input, item, n, dataFile=dataFile(), currentWD=currentWD())
+                    if(item=="VPC"){
+                      dati <- vpcDataList[[input[[paste0("vpcRun",item,n)]]]]
+                    }else{
+                      dati <- dataFile()
+                    }
+                    
+                    argList=createArgList(input, item, n, dataFile=dati, currentWD=currentWD())
                     callType=argList$callType
                     argList$callType=NULL
                     
@@ -1621,9 +1797,9 @@ shinyServer(function(input, output, session) {
                     
                     #Insert function recording into script	
                     #Save only the non-default arguments unless the user asks for a verbose script
-                    
+
                     useArgs=argList
-                    if(input$verbose){useArgs=createArgList(input,item,n,dataFile(),currentWD=currentWD(),complete=T)}
+                    if(input$verbose){useArgs=createArgList(input,item,n,dati,currentWD=currentWD(),complete=T)}
                     
                     #reduce argList to arguments used in the dataManip
                     argListManip=useArgs[names(useArgs) %in% names(formals(manipDat))]
