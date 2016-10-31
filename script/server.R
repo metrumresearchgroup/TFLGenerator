@@ -1,5 +1,5 @@
 debug <- T
-
+# Intro ----
 #rm(list=ls(all=TRUE))
 Sys.setenv(PATH=paste0(Sys.getenv("PATH"),":/usr/bin:/usr/lib/rstudio-server/bin")) # Get pandoc and imagemagick
 srcDir <- "/data/tflgenerator"
@@ -41,6 +41,7 @@ library(dplyr)
 #library(shinyBS)
 
 cat(file=stderr(), paste0("LOG: ", Sys.time(), " Finished preamble\n"))
+pListGlobal=list()
 
 # Define server logic required to summarize and view the selected dataset
 shinyServer(function(input, output, session) {
@@ -93,9 +94,7 @@ shinyServer(function(input, output, session) {
   #   paste(allvalues, collapse = "\n")
   # })
   
-  #Open Template
-  
-  
+# Open Template ----
   observeEvent(input$templateGo,{
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " templateGo\n"))
     inFile <- input$templatePath
@@ -118,9 +117,9 @@ shinyServer(function(input, output, session) {
     session$reload()
   })
   
-  ############
-  #Setting Color Schemes
-  ############
+  
+# Setting Color Schemes ----
+  
   cat(file=stderr(), paste0("LOG: ", Sys.time(), " Setting the color schemes\n"))
   unlockBinding("cleanScales", as.environment("package:TFL"))
   # Set color scale.  In the future, remove this and activate checkbox on frontpage to enable grayscale
@@ -217,10 +216,8 @@ shinyServer(function(input, output, session) {
   output$readThis <- renderPrint({readThis()})
   
   cat(file=stderr(), paste0("LOG: ", Sys.time(), " Entering initial/external interactions\n"))
+# Initial/external interactions ----
 
-  ##############	
-  #Initial/external interactions
-  ##############
 
   # Debugging input
   # load("tmp/shinytmpdat.rda")
@@ -342,8 +339,7 @@ shinyServer(function(input, output, session) {
   
   cat(file=stderr(), paste0("LOG: ", Sys.time(), " End dataFile definition\n"))
   
-  ##################################################################################################
-  #read data in a reactive format
+# Read data in a reactive format ----
   sourceFile=reactive({
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " sourceFile called\n"))
     
@@ -612,11 +608,8 @@ shinyServer(function(input, output, session) {
   cat(file=stderr(), paste0("LOG: ", Sys.time(), " End dataFile definition\n"))
   
   
-  ##############	
-  # Output Renders - Just the data set overview and plot title
-  ##############
- 
-   
+# Output Renders - Just the data set overview and plot title----
+
   #Raw Contents
   observeEvent(input[["updateRunView"]],{
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_tabledata called\n"))
@@ -1045,8 +1038,7 @@ shinyServer(function(input, output, session) {
     )
   })
   
-
-# Analysis Selection
+# Analysis Selection ----
   output$PlotTabset<-renderUI({
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " creating analysis selection tabset\n"))
     panelList=list()
@@ -1193,8 +1185,7 @@ shinyServer(function(input, output, session) {
     )
   })
   
-
-  # Autosave routine -------------------------
+# Autosave routine -------------------------
 
   autosave <- function(){
     local({
@@ -1238,7 +1229,7 @@ shinyServer(function(input, output, session) {
   }
 
   
-  # Generating Plots, internal and saving ---------------
+# Generating Plots, internal and saving ---------------
 
   cat(file=stderr(), paste0("LOG: ", Sys.time(), " Begin generating plots\n"))
   for (this_item in plotList$type){
@@ -1366,7 +1357,7 @@ shinyServer(function(input, output, session) {
                       
                       
                       #insert an error block around the plotting
-                      p1 = tryCatch({
+                      pListGlobal[[paste0('Plot',item,n)]]<<- tryCatch({
                         if(debug) save(callType,argList,file=file.path(debugDir,"output.rda"))
                         do.call(callType,args=argList)
                       }, 
@@ -1382,7 +1373,7 @@ shinyServer(function(input, output, session) {
                       )
                       
                       
-                    }else p1 <- arrangeGrob(textGrob(sprintf("You broke something \n%s",as.character(attr(argList,"condition")))))
+                    }else pListGlobal[[paste0('Plot',item,n)]]<<- arrangeGrob(textGrob(sprintf("You broke something \n%s",as.character(attr(argList,"condition")))))
                     
                    
                     if(debug){
@@ -1396,24 +1387,107 @@ shinyServer(function(input, output, session) {
                                    "observationExclusionsTab","subjectExclusionsTab",
                                    "observationExclusionsSummaryTab",
                                    "subjectExclusionsSummaryTab")){
-                      if("src" %in% names(p1)){
+                      if("src" %in% names(pListGlobal[[paste0('Plot',item,n)]])){
                         output[[paste("Plot",item,n,sep="")]] <<-
-                          renderImage(p1,deleteFile=F)
+                          renderImage(pListGlobal[[paste0('Plot',item,n)]]$src,deleteFile=F)
                       }else{
                         output[[paste("Plot",item,n,sep="")]] <<- 
-                          renderPrint({ print(head(p1$preview,n=input[[paste0("previewhead",item,n)]]),row.names=F)})
+                          renderPrint({ print(head(pListGlobal[[paste0('Plot',item,n)]]$preview,n=input[[paste0("previewhead",item,n)]]),row.names=F)})
                       }
                     }else if(item %nin% c("demogTabCont","demogTabCat","NMTab")){
                       #Perform the actual plotting for most figures (ggplots)
                       output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
-                        do.call(pListPrint,do.call(callType,argList))
+                        
+                        do.call(pListPrint,pListGlobal[[paste0('Plot',item,n)]])
                       })
+# Theme Editor# -----
+                      #observe({
+                        #pList.new<<-pListGlobal[[paste0('Plot',item,n)]]$pList
+                        pListGlobal[[paste0('TempPlot',item,n)]]<<-pListGlobal[[paste0('Plot',item,n)]]$pList[[1]]
+                        theme.now=theme_get()
+                        if(length(pListGlobal[[paste0('TempPlot',item,n)]]$theme)>0) theme.now=theme.now+pListGlobal[[paste0('TempPlot',item,n)]]$theme
+                        pListGlobal[[paste0('Theme',item,n)]]<<-themeFetch(theme.now)
+                      #})
+                      
+                      
+                      #Update Theme
+                      update.Theme=eventReactive(input$sendTheme,{
+                        strThemeCallList=lapply(names(pListGlobal[[paste0('Theme',item,n)]]),function(item0){
+                          if(debug) {
+                            input.now=reactiveValuesToList(input)
+                            save(input.now,item0,pListGlobal,file=file.path(debugDir,"themeEditor.rda"))
+                            }
+                          themeNewVal(pListGlobal[[paste0('Theme',item,n)]][item0],pListGlobal[[paste0('TempPlot',item,n)]],input)
+                        })
+                        
+                        strThemeCall=paste0("pListGlobal[['TempPlot",item,n,"']]<<-pListGlobal[['TempPlot",item,n,"']]+theme(",paste0(unlist(strThemeCallList),collapse = ","),")")
+                        eval(parse(text=strThemeCall))
+                        pListGlobal[[paste0('Plot',item,n)]]$pList[[1]]<<-pListGlobal[[paste0('TempPlot',item,n)]]
+                        return(pListGlobal[[paste0('Plot',item,n)]])
+                      })
+                      
+                      #Update Session Theme
+                      observeEvent(input$SetThemeGlobal,{
+                        if(length(pListGlobal[[paste0('TempPlot',item,n)]]$theme)>0) theme.now=theme.now+pListGlobal[[paste0('TempPlot',item,n)]]$theme
+                        theme_set(theme_get()%+replace%theme.now)
+                      })
+                      
+                      #Update Grid Theme
+                      update.ThemeGrid=eventReactive(input$SetThemeGrid,{
+                        p.now<<-pList.new[[1]]
+                        if(length(p.now$theme)>0) theme.now=theme.now+p.now$theme
+                        
+                        for(i in 1:length(pList.new)) pList.new[[i]]<<- pList.new[[i]]+theme.now
+                        
+                        return(pList.new)
+                      })
+                      
+                      #Populate Modal Elements
+                      output[[paste0("popTheme",item,n)]]<<-renderUI({
+                        bsModal(id = paste0("updateThemePopup",item,n), title = "Update Plot Theme", trigger = paste0("updateTheme",item,n), size = "large",
+                                
+                                do.call(tabsetPanel,
+
+                                        unlist(lapply(1:length(pListGlobal[[paste0('Theme',item,n)]]),FUN = function(j){
+                                          if(themeListDepth(pListGlobal[[paste0('Theme',item,n)]][j])>2){
+                                            list(themeMakePanel(pListGlobal[[paste0('Theme',item,n)]][j]))
+                                          }else{
+                                            unlist(lapply(j, function(i) {themeMakePanel(pListGlobal[[paste0('Theme',item,n)]][i])}),F)}
+                                        }),F)
+
+
+                                ),
+                                hr(),
+                                actionButton(inputId = paste0(item,n,"sendTheme"),label = "Set Theme")
+                                
+                                
+                        )
+                      })
+                      
+                      #Render the updated plot
+                      observeEvent(input[[paste0("updateTheme",item,n)]],{
+                        ptitle=paste0(item,n)
+                        pList.out=pListGlobal[[paste0('Plot',ptitle)]]
+                        temp=0
+                        if(input$ConcvTime1sendTheme>0){ 
+                          pList.out=update.Theme()
+                          temp=1
+                        }
+                        input.now=reactiveValuesToList(input)
+                        if(debug) save(pListGlobal,pList.out,temp,input.now,item,n,file=file.path(debugDir,"themeEditor.rda"))
+                        
+                        output[[paste0("Plot",ptitle)]]<<-renderPlot({do.call(pListPrint,pList.out)})
+                      })
+# End of Theme Editor# ----
+
+                      
+                      
                     # }else if(item=="ConcvTimeMult"){
                     #   output[[paste("Plot",item,n,sep="")]] <<- renderImage({ p1 },deleteFile=F)
                     }else{
                       # Probably one of demogTabCont, demogTabCat, NMTab, ConcvTimeMult
                       output[[paste("Plot",item,n,sep="")]]<<-renderImage(
-                        renderTex(obj=p1,item=paste0(item,n),
+                        renderTex(obj=pListGlobal[[paste('Plot',item,n)]],item=paste0(item,n),
                                   margin=c(left=input[[paste0("leftmargin",item,n)]],
                                            top=input[[paste0("topmargin",item,n)]],
                                            bottom=input[[paste0("bottommargin",item,n)]],
@@ -1427,7 +1501,7 @@ shinyServer(function(input, output, session) {
                       input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
                       names(input_vals) <- input_nms
                       message <- "DEBUG E"
-                      save(message,argList,input_vals,item,n,p1,file=file.path(srcDir,"tmp","message.rda"))
+                      save(message,argList,input_vals,item,n,pListGlobal,file=file.path(srcDir,"tmp","message.rda"))
                     } 
                     
                     
@@ -1794,7 +1868,7 @@ shinyServer(function(input, output, session) {
   
   
   
-  #Output and Saving Tabset  
+# Output and Saving Tabset  ----
   
   output$SaveTabset<-renderUI({
     cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " saveTabset\n")))
@@ -1812,5 +1886,86 @@ shinyServer(function(input, output, session) {
     
   
   })
+  
+  
+
+  
+# Render Plot----  
+  # output$Plot=renderPlot({
+  #   pList.print(pList.new)
+  # },height=1200)
+  # observeEvent(input$updateElem,{
+  #   output$Plot=renderPlot({
+  #     if(input$sendElem==0){
+  #       pList.print(pList.new)
+  #     }else{
+  #       #browser()
+  #       pList.out=update.Layer()
+  #       pList.print(pList.out)
+  #     }
+  #   },height=1200)
+  # })
+  # 
+  # observeEvent(input$updateTheme,{
+  #   output$Plot=renderPlot({
+  #     if(input$sendTheme==0){
+  #       pList.print(pList.new)
+  #     }else{
+  #       pList.out=update.Theme()
+  #       pList.print(pList.out)
+  #     }
+  #   },height=1200)
+  # })
+  # 
+  # observeEvent(input$SetThemeGrid,{
+  #   pList.out=update.ThemeGrid()
+  #   output$Plot=renderPlot({pList.print(pList.out)},height=1200)
+  # })
+  
+ 
+  observeEvent(input$fastForward,{
+
+      runjs("function sleep (time) {
+                                    return new Promise((resolve) => setTimeout(resolve, time));
+            };
+            
+            $('a[data-value=\"tabProjectInfo\"]').tab('show');
+            
+            sleep(2000).then(() => {$('a[data-value=\"Model Info\"]').tab('show');
+                                      console.log('release 1');
+                                    });
+            
+            sleep(3000).then(() => {
+                                      $('a[data-value=\"tabDataInput\"]').tab('show');
+                                      console.log('release 2');
+                                    });
+            
+            sleep(5000).then(() => {
+                                      $('#updateSourceView').click();
+                                      console.log('release 3');
+                                    });
+            sleep(6000).then(() => {
+                                     $('a[data-value=\"Run Data\"]').tab('show');
+                                      console.log('release 4');
+                                    });
+            
+            sleep(8000).then(() => {
+                                      $('#updateRunView').click();
+                                      console.log('release 5');
+                                    });
+            sleep(12000).then(() => {
+                                      $('a[data-value=\"atabData\"]').tab('show');
+                                      console.log('release 6');
+                                    });
+            /*sleep(14000).then(() => {
+                                     $('#performMerge').click();
+                                      console.log('release 7');
+                                    });*/
+            ")
+
+  })
+  
+  
+  
   #End Shiny Server
 })

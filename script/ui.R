@@ -5,7 +5,7 @@ library(TFL) # the Amgen Internal TFL package
 library(shiny)
 library(shinydashboard)
 library(shinyFiles)
-#library(shinyjs)
+library(shinyjs)
 
 # Defaults are used to keep the current entries in dynamic memory, 
 #   defaults first are the pre-defined defaults
@@ -16,6 +16,7 @@ library(shinyFiles)
 	  # Application title
       	dashboardHeader(title="Pharmacometrics TFL"),
       	dashboardSidebar(
+      	  actionLink('fastForward','Fast Forward'),
       	  sidebarMenu(
       	     
       	      # selectInput(inputId="templateSelection", label="Open Template", choices=c("New Analysis"="Template_New","Template_V8"="Template_V8", "Template_Other"="Template_Other")),
@@ -23,7 +24,6 @@ library(shinyFiles)
       	    
       	      fileInput(inputId="templatePath", label="Select Personal Template", multiple=FALSE),
       	      h1(""),
-      	      
       	      actionButton("templateGo", "Go"),
       	      h1(""),
       	      # shinyDirButton(id="dataPath", label='Set working directory', title='Please select a working directory'),
@@ -43,6 +43,7 @@ library(shinyFiles)
       	  )
       	),
       	dashboardBody(
+      	  useShinyjs(),
       	  tabItems(
       	    tabItem(tabName="tabIntro",
       	            h2("User guide:",
