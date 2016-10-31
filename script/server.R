@@ -1395,23 +1395,24 @@ shinyServer(function(input, output, session) {
                           renderPrint({ print(head(pListGlobal[[paste0('Plot',item,n)]]$preview,n=input[[paste0("previewhead",item,n)]]),row.names=F)})
                       }
                     }else if(item %nin% c("demogTabCont","demogTabCat","NMTab")){
-                      #Perform the actual plotting for most figures (ggplots)
+                      
+# Theme Editor# -----
                       output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
-                        
+                        runjs("console.log('trip1')")
                         do.call(pListPrint,pListGlobal[[paste0('Plot',item,n)]])
                       })
-# Theme Editor# -----
-                      #observe({
-                        #pList.new<<-pListGlobal[[paste0('Plot',item,n)]]$pList
-                        pListGlobal[[paste0('TempPlot',item,n)]]<<-pListGlobal[[paste0('Plot',item,n)]]$pList[[1]]
+                      
+                      pListGlobal[[paste0('TempPlot',item,n)]]<<-pListGlobal[[paste0('Plot',item,n)]]$pList[[1]]
                         theme.now=theme_get()
-                        if(length(pListGlobal[[paste0('TempPlot',item,n)]]$theme)>0) theme.now=theme.now+pListGlobal[[paste0('TempPlot',item,n)]]$theme
+                        if(length(pListGlobal[[paste0('TempPlot',item,n)]]$theme)>0) {
+                          theme.now=theme.now+pListGlobal[[paste0('TempPlot',item,n)]]$theme
+                          }
                         pListGlobal[[paste0('Theme',item,n)]]<<-themeFetch(theme.now)
-                      #})
+                      
                       
                       
                       #Update Theme
-                      update.Theme=eventReactive(input$sendTheme,{
+                      update.Theme=eventReactive(input$setTheme,{
                         strThemeCallList=lapply(names(pListGlobal[[paste0('Theme',item,n)]]),function(item0){
                           if(debug) {
                             input.now=reactiveValuesToList(input)
@@ -1443,11 +1444,10 @@ shinyServer(function(input, output, session) {
                       })
                       
                       #Populate Modal Elements
-                      output[[paste0("popTheme",item,n)]]<<-renderUI({
-                        bsModal(id = paste0("updateThemePopup",item,n), title = "Update Plot Theme", trigger = paste0("updateTheme",item,n), size = "large",
+                      output$popTheme<<-renderUI({
+                        bsModal(id = "updateThemePopup", title = "Update Plot Theme", trigger = "updateTheme", size = "large",
                                 
                                 do.call(tabsetPanel,
-
                                         unlist(lapply(1:length(pListGlobal[[paste0('Theme',item,n)]]),FUN = function(j){
                                           if(themeListDepth(pListGlobal[[paste0('Theme',item,n)]][j])>2){
                                             list(themeMakePanel(pListGlobal[[paste0('Theme',item,n)]][j]))
@@ -1458,26 +1458,22 @@ shinyServer(function(input, output, session) {
 
                                 ),
                                 hr(),
-                                actionButton(inputId = paste0(item,n,"sendTheme"),label = "Set Theme")
+                                actionButton(inputId = "setTheme",label = "Set Theme")
                                 
                                 
                         )
                       })
                       
-                      #Render the updated plot
-                      observeEvent(input[[paste0("updateTheme",item,n)]],{
-                        ptitle=paste0(item,n)
-                        pList.out=pListGlobal[[paste0('Plot',ptitle)]]
-                        temp=0
-                        if(input$ConcvTime1sendTheme>0){ 
-                          pList.out=update.Theme()
-                          temp=1
-                        }
-                        input.now=reactiveValuesToList(input)
-                        if(debug) save(pListGlobal,pList.out,temp,input.now,item,n,file=file.path(debugDir,"themeEditor.rda"))
-                        
-                        output[[paste0("Plot",ptitle)]]<<-renderPlot({do.call(pListPrint,pList.out)})
+
+                    #Render the updated plot
+                      observeEvent(input$updateTheme,{
+
+                        output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
+                            do.call(pListPrint,update.Theme())
+                          #pListGlobal[[paste0('Plot',item,n)]]
                       })
+                    })
+                      
 # End of Theme Editor# ----
 
                       
@@ -1929,6 +1925,7 @@ shinyServer(function(input, output, session) {
                                     return new Promise((resolve) => setTimeout(resolve, time));
             };
             
+
             $('a[data-value=\"tabProjectInfo\"]').tab('show');
             
             sleep(2000).then(() => {$('a[data-value=\"Model Info\"]').tab('show');
@@ -1944,23 +1941,35 @@ shinyServer(function(input, output, session) {
                                       $('#updateSourceView').click();
                                       console.log('release 3');
                                     });
-            sleep(6000).then(() => {
+            sleep(7000).then(() => {
                                      $('a[data-value=\"Run Data\"]').tab('show');
                                       console.log('release 4');
                                     });
             
-            sleep(8000).then(() => {
+            sleep(9000).then(() => {
                                       $('#updateRunView').click();
                                       console.log('release 5');
                                     });
-            sleep(12000).then(() => {
+            sleep(13000).then(() => {
                                       $('a[data-value=\"atabData\"]').tab('show');
                                       console.log('release 6');
                                     });
-            /*sleep(14000).then(() => {
+            sleep(14000).then(() => {
                                      $('#performMerge').click();
                                       console.log('release 7');
-                                    });*/
+                                    });
+            sleep(15000).then(() => {
+                                      $('a[data-value=\"tabAnalysisSelection\"]').tab('show');
+                                      console.log('release 8');
+                                    });
+            sleep(16000).then(() => {
+                                      $('a[data-value=\"tabFigures\"]').tab('show');
+                                      console.log('release 9');
+                                    });
+            sleep(17000).then(() => {
+                                      $('#buttonConcvTime1').click();
+                                      console.log('release 10');
+                                    });
             ")
 
   })

@@ -95,7 +95,12 @@ library(shinyjs)
       	    ),
       	    tabItem(tabName="tabFigures",
       	            h3("Figures"),
-      	            uiOutput("figuresTabset")
+      	            column(width=3,actionLink("updateElem","Update Plot Layer")),
+      	            column(width=3,actionLink("updateTheme","Update Plot Theme")),
+      	            column(width=3,actionLink("SetThemeGrid",'Update Grid Theme')),
+      	            column(width=3,actionLink("SetThemeGlobal",'Update Global Theme')),
+      	            uiOutput("figuresTabset"),
+      	            uiOutput('popTheme')
       	    ),
       	    tabItem(tabName="tabTables",
       	            h3("Tables"),
