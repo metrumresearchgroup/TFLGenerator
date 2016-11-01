@@ -94,7 +94,7 @@ shinyServer(function(input, output, session) {
   #   paste(allvalues, collapse = "\n")
   # })
   
-# Open Template ----
+  # Open Template ----
   observeEvent(input$templateGo,{
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " templateGo\n"))
     inFile <- input$templatePath
@@ -118,7 +118,7 @@ shinyServer(function(input, output, session) {
   })
   
   
-# Setting Color Schemes ----
+  # Setting Color Schemes ----
   
   cat(file=stderr(), paste0("LOG: ", Sys.time(), " Setting the color schemes\n"))
   unlockBinding("cleanScales", as.environment("package:TFL"))
@@ -136,7 +136,7 @@ shinyServer(function(input, output, session) {
   observe(
     if("Color" %in% names(input)){
       if(!input$Color){
-      cat(file=stderr(), paste0("LOG: ", Sys.time(), " setGrayScale\n"))
+        cat(file=stderr(), paste0("LOG: ", Sys.time(), " setGrayScale\n"))
         cleanScales<<-setGrayScale()}
     }
   )
@@ -147,7 +147,7 @@ shinyServer(function(input, output, session) {
   
   # output$dataPath <- currentWD()
   output$dataPath <- renderText({currentWD()})
-
+  
   # currentWD <- reactive(
   #   if("dataPath" %nin% names(input)){
   #     if(("manualDataPath" %in% names(input)) & ("manualDataPath" != Defaults["manualDataPath"])){
@@ -211,14 +211,14 @@ shinyServer(function(input, output, session) {
       # dataTrans=input[["dataTrans"]],
       sessionInfo=sessionInfo()
     )
-    })
+  })
   
   output$readThis <- renderPrint({readThis()})
   
   cat(file=stderr(), paste0("LOG: ", Sys.time(), " Entering initial/external interactions\n"))
-# Initial/external interactions ----
-
-
+  # Initial/external interactions ----
+  
+  
   # Debugging input
   # load("tmp/shinytmpdat.rda")
   # dataFile <- function() dati
@@ -229,7 +229,7 @@ shinyServer(function(input, output, session) {
   # nms <- load("tmp/message.rda")
   # input <- input_vals
   # currentWD <- function() input[["manualDataPath"]]
-
+  
   #read data in a reactive format
   tableFile=reactive({
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " tableFile called\n"))
@@ -242,7 +242,7 @@ shinyServer(function(input, output, session) {
     
     
     withProgress(message="Loading...", value=.25, {
-
+      
       if(input$runno!="#"){
         
         extensions=unlist(str_split(input$ext, ","))
@@ -339,7 +339,7 @@ shinyServer(function(input, output, session) {
   
   cat(file=stderr(), paste0("LOG: ", Sys.time(), " End dataFile definition\n"))
   
-# Read data in a reactive format ----
+  # Read data in a reactive format ----
   sourceFile=reactive({
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " sourceFile called\n"))
     
@@ -362,7 +362,7 @@ shinyServer(function(input, output, session) {
           return()
         }
       }
-
+      
       dat <- get("originalSourceData",envir = .GlobalEnv) # Point to a copy here
       
       dat=dat[rowSums(is.na(dat)) != ncol(dat),]
@@ -407,10 +407,10 @@ shinyServer(function(input, output, session) {
     
     # Update selectizeInputs
     updateSelectizeInput(session,"sourceSubset",
-                   choices= unique(c(Defaults[["sourceSubset"]],names(dat))),
-                   selected=Defaults[["sourceSubset"]],
-                   server=T)
-
+                         choices= unique(c(Defaults[["sourceSubset"]],names(dat))),
+                         selected=Defaults[["sourceSubset"]],
+                         server=T)
+    
     # For debugging, save a copy of input
     if(debug){
       if(exists("dat")) sourcedat <- dat else return(NULL)
@@ -429,17 +429,17 @@ shinyServer(function(input, output, session) {
   
   cat(file=stderr(), paste0("LOG: ", Sys.time(), " End sourceFile definition\n"))
   
-    
-
-
+  
+  
+  
   
   #############################################################################
   revals <- reactiveValues(nms_source="",nms_tab="",nms_subj="",nms_obs="",nms_df="")
   
-
+  
   #read data in a reactive format
   dataFile=reactive({
-  cat(file=stderr(), paste0("LOG: ", Sys.time(), " dataFile called\n"))
+    cat(file=stderr(), paste0("LOG: ", Sys.time(), " dataFile called\n"))
     
     if(is.null(tableFile()) & is.null(sourceFile())){
       return()
@@ -451,7 +451,7 @@ shinyServer(function(input, output, session) {
                    all.x=input[["keepAllSource"]],
                    all.y=input[["keepAllRun"]],
                    sort=F,suffixes=c(".source",".table")
-                   ) 
+      ) 
     }else {
       if(!is.null(tableFile())) dat <- tableFile() else dat <- sourceFile()
     }
@@ -501,8 +501,8 @@ shinyServer(function(input, output, session) {
     if("observationExclusion_col" %in% names(input)){
       if(input[["observationExclusion_col"]]%in%names(dat)) revals$nms_obs <- isolate(unique(dat[,input$observationExclusion_col]))
     }
-
-        # Can we calculate whole subject exclusions yet?
+    
+    # Can we calculate whole subject exclusions yet?
     defs <- grep("subjectExclusion[[:digit:]]",names(Defaults),value=T)
     if(length(defs)>0){
       
@@ -585,10 +585,10 @@ shinyServer(function(input, output, session) {
       }
       
     }
-
+    
     revals$nms_df <- isolate(names(dat))
     
-
+    
     
     # For debugging, save a copy of input
     if(debug){
@@ -608,8 +608,8 @@ shinyServer(function(input, output, session) {
   cat(file=stderr(), paste0("LOG: ", Sys.time(), " End dataFile definition\n"))
   
   
-# Output Renders - Just the data set overview and plot title----
-
+  # Output Renders - Just the data set overview and plot title----
+  
   #Raw Contents
   observeEvent(input[["updateRunView"]],{
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_tabledata called\n"))
@@ -634,11 +634,11 @@ shinyServer(function(input, output, session) {
       return(DT::datatable(isolate(dataFile()), filter="top"))
     })  
   })
-
+  
   output$contentsHead_subjectExclusions <- DT::renderDataTable({ NULL })
   
-
-        
+  
+  
   output$contentsHead_observationExclusions <- DT::renderDataTable({NULL})
   observeEvent(input$generateobservationExclusions,{
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_observationExclusions called\n"))
@@ -663,8 +663,8 @@ shinyServer(function(input, output, session) {
   output$contentsSummary_tabledata <- renderPrint({summarizeContents(tableFile())})
   output$contentsSummary_sourcedata <- renderPrint({summarizeContents(sourceFile())})
   output$contentsSummary_analysisdata <- renderPrint({summarizeContents(dataFile())})
-
-    observeEvent(input$generatesubjectExclusions,{
+  
+  observeEvent(input$generatesubjectExclusions,{
     cat(file=stderr(),paste0("LOG: ", Sys.time(), " contentsHead_subjectExclusions called\n"))
     foo <- isolate(dataFile())
     output$contentsHead_subjectExclusions <- 
@@ -715,7 +715,7 @@ shinyServer(function(input, output, session) {
     out <- c(out, list(h1("")),list(actionButton("generatesubjectExclusions","Generate subject exclusions")))
     return(out)
   })
-
+  
   obsexcl_list <- reactive({
     # if(req(input$generateExclusions) == 0) return(list(h1(""),renderText("Press button to generate exclusions mapping")))
     # if("subjectExclusion_col" %nin% names(input)) return(list(renderPrint("Input exclusion column")))
@@ -750,50 +750,48 @@ shinyServer(function(input, output, session) {
     try(rm("observationExclusions",envir=.GlobalEnv))
     try(revals$nms_subj <- revals$nms_obs <- "")
     Defaults <<- DefaultsFirst
-    })
-
+  })
+  
   output$projectInfoTabset <- renderUI({
-    auto.path=list(wd='',srcData=Defaults$srcData,runno=Defaults$runno)
-    if(debug) auto.path=list(wd='/data/co/tflgenerator/NMStorage',srcData='0069/fakeSource.csv',runno='0069')
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " creating data input tabset\n"))
     tabsetPanel(
-             tabPanel(title="Project Information",
-                      wellPanel(
-                        textInput(inputId="projectTitle", label="Project Title:", value=Defaults$projectTitle),
-                        boxInputLarge(inputId="projectInfo", label="Project Information:", value=Defaults$projectInfo)
-                        )
-                      ),
-             tabPanel(title="Model Info",
-                      wellPanel(
-                        textInput(inputId="manualDataPath", label="Parent working directory:", value=auto.path$wd),	
-                        textInput(inputId="srcData", label='NONMEM source data:',value=auto.path$srcData),
-                        textInput(inputId="runno", label="Run Number:", value=auto.path$runno),
-                        #textInput(inputId="numModel", label="Number of Models", value="1"),
-                        textInput(inputId="ext", label="File Extensions:", value=Defaults$ext),
-                        checkboxInput('header', 'Header?', value=Defaults$header),
-                        numericInput("skipLines", "Skip Lines:", value=Defaults$skipLines),
-                        actionButton("clearDataCache","Clear cached data")
-                        #,
-                        #textInput(inputId="baseModel", label="Base Model #", value="")
-                      )
-              )
-             # ,
-             # tabPanel(title="Change E-R SSAP Defaults",
-             #          wellPanel( 
-             #            textInput("DVCol", "DV Column", Defaults$DVCol),
-             #            textInput("TAFDCol", "TAFD Column", Defaults$TAFDCol),
-             #            textInput("STUDYCol", "STUDY Column", Defaults$STUDYCol),
-             #            textInput("NMIDCol", "NMID Column", Defaults$NMIDCol),
-             #            textInput("IPREDCol", "IPRED Column", Defaults$IPREDCol),
-             #            textInput("PREDCol", "PRED Columns", Defaults$PREDCol),
-             #            textInput("subjectExclusion_col", "Subject exclusion column\n(analysis dataset)",Defaults$subjectExclusion_col),
-             #            textInput("observationExclusion_col", "Observation exclusion column\n(analysis dataset)",Defaults$observationExclusion_col)
-             #          )
-             # )
-
+      tabPanel(title="Project Information",
+               wellPanel(
+                 textInput(inputId="projectTitle", label="Project Title:", value=Defaults$projectTitle),
+                 boxInputLarge(inputId="projectInfo", label="Project Information:", value=Defaults$projectInfo)
+               )
+      ),
+      tabPanel(title="Model Info",
+               wellPanel(
+                 textInput(inputId="manualDataPath", label="Parent working directory:", value=Defaults$manualDataPath),	
+                 textInput(inputId="srcData", label='NONMEM source data:',value=Defaults$srcData),
+                 textInput(inputId="runno", label="Run Number:", value=Defaults$runno),
+                 #textInput(inputId="numModel", label="Number of Models", value="1"),
+                 textInput(inputId="ext", label="File Extensions:", value=Defaults$ext),
+                 checkboxInput('header', 'Header?', value=Defaults$header),
+                 numericInput("skipLines", "Skip Lines:", value=Defaults$skipLines),
+                 actionButton("clearDataCache","Clear cached data")
+                 #,
+                 #textInput(inputId="baseModel", label="Base Model #", value="")
+               )
+      )
+      # ,
+      # tabPanel(title="Change E-R SSAP Defaults",
+      #          wellPanel( 
+      #            textInput("DVCol", "DV Column", Defaults$DVCol),
+      #            textInput("TAFDCol", "TAFD Column", Defaults$TAFDCol),
+      #            textInput("STUDYCol", "STUDY Column", Defaults$STUDYCol),
+      #            textInput("NMIDCol", "NMID Column", Defaults$NMIDCol),
+      #            textInput("IPREDCol", "IPRED Column", Defaults$IPREDCol),
+      #            textInput("PREDCol", "PRED Columns", Defaults$PREDCol),
+      #            textInput("subjectExclusion_col", "Subject exclusion column\n(analysis dataset)",Defaults$subjectExclusion_col),
+      #            textInput("observationExclusion_col", "Observation exclusion column\n(analysis dataset)",Defaults$observationExclusion_col)
+      #          )
+      # )
+      
     )
   })
-
+  
   
   #Data Tabset  
   output$DataTabset <- renderUI({		
@@ -877,13 +875,13 @@ shinyServer(function(input, output, session) {
                  code("group_by($DATA, STUDY, NMID) %>% arrange(STUDY, desc(NMID), TIME)")
                )
       )
-
+      
     )
     dummy=(do.call(tabsetPanel, PanelSet))
     return(dummy)
     
   })
-
+  
   #Data Tabset  
   output$aDataTabset <- renderUI({		
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " creating analysis data view tabset \n"))
@@ -1038,7 +1036,7 @@ shinyServer(function(input, output, session) {
     )
   })
   
-# Analysis Selection ----
+  # Analysis Selection ----
   output$PlotTabset<-renderUI({
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " creating analysis selection tabset\n"))
     panelList=list()
@@ -1048,8 +1046,8 @@ shinyServer(function(input, output, session) {
       for(i in c(1:length(tabList$label[which(tabList$tabType==item)]))){
         
         testList[[i]]=do.call(what=textInput, args=list(inputId=tabList$inputId[which(tabList$tabType==item)][[i]],
-                                                      label=tabList$label[which(tabList$tabType==item)][[i]],
-                                                      value=Defaults[[tabList$inputId[which(tabList$tabType==item)][[i]]]])
+                                                        label=tabList$label[which(tabList$tabType==item)][[i]],
+                                                        value=Defaults[[tabList$inputId[which(tabList$tabType==item)][[i]]]])
         )
       }
       wellList=do.call(what=wellPanel, args=testList)
@@ -1057,11 +1055,11 @@ shinyServer(function(input, output, session) {
       j=j+1
     }
     stuff=do.call(what=tabsetPanel, panelList)
-
+    
     return(do.call(what=tabPanel, args=list("Figures", stuff)) )
   })
-
-#Figures, Tables and Listings Tabset
+  
+  #Figures, Tables and Listings Tabset
   output$figuresTabset<-renderUI({
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " creating figures tabset \n"))
     type="Figures"
@@ -1076,8 +1074,9 @@ shinyServer(function(input, output, session) {
         }
       }
     }
-    return(do.call(tabsetPanel, PanelSet))
-
+    
+    tabList <- do.call(tabsetPanel, PanelSet)
+    
   })
   
   output$listingsTabset<-renderUI({
@@ -1106,9 +1105,9 @@ shinyServer(function(input, output, session) {
     return(do.call(tabsetPanel, PanelSet))
     
   })
-
+  
   output$currentTFLTabset <- renderUI({
-  cat(file=stderr(), paste0("LOG: ", Sys.time(), " creating current TFL tabset\n"))
+    cat(file=stderr(), paste0("LOG: ", Sys.time(), " creating current TFL tabset\n"))
     outList <- data.frame()
     for(item in plotList$type){
       numbers=as.numeric(unlist(str_extract_all(input[[paste(item, "Num", sep="")]], "\\d+")))
@@ -1171,22 +1170,22 @@ shinyServer(function(input, output, session) {
   output$tflOrder_figures <- renderPrint({
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " matching figure order to that specified\n"))
     tryCatch(
-        data.frame(Label=paste0("Figure ", 1:length(input[["figureOrder"]])),
+      data.frame(Label=paste0("Figure ", 1:length(input[["figureOrder"]])),
                  Title=input[["figureOrder"]]),
-        error=function(e) print("Unspecified")
+      error=function(e) print("Unspecified")
     )
   })
   output$tflOrder_listings <- renderPrint({
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " matching listing order to that specified\n"))
     tryCatch(
-        data.frame(Label=paste0("Listing ", 1:length(input[["listingOrder"]])),
+      data.frame(Label=paste0("Listing ", 1:length(input[["listingOrder"]])),
                  Title=input[["listingOrder"]]),
-        error=function(e) print("Unspecified")
+      error=function(e) print("Unspecified")
     )
   })
   
-# Autosave routine -------------------------
-
+  # Autosave routine -------------------------
+  
   autosave <- function(){
     local({
       
@@ -1206,7 +1205,7 @@ shinyServer(function(input, output, session) {
             "RTF",
             "dataPath", 
             "recall"
-            ))
+          ))
           {
             if(!is.null(input[[item]])){
               Defaults.autosave[[item]]<-input[[item]]
@@ -1227,13 +1226,13 @@ shinyServer(function(input, output, session) {
       }
     })
   }
-
   
-# Generating Plots, internal and saving ---------------
-
+  
+  # Generating Plots, internal and saving ---------------
+  
   cat(file=stderr(), paste0("LOG: ", Sys.time(), " Begin generating plots\n"))
   for (this_item in plotList$type){
-   
+    
     local({
       item=this_item
       #Observe if any plots of that type have been assigned inputs
@@ -1246,7 +1245,7 @@ shinyServer(function(input, output, session) {
         
         testClick=which(sapply(names(input)[grepl(paste0('button',item),names(input))],function(x) input[[x]]>0))
         if(length(testClick)>0) numRange=numRange[testClick]
-
+        
         for (this_n in numRange){
           local({
             n=this_n
@@ -1254,7 +1253,7 @@ shinyServer(function(input, output, session) {
               observeEvent(input[[paste("button",item,n,sep="")]],{ 
                 
                 autosave()                
-
+                
                 if(debug){
                   message <- "DEBUG A"
                   input_nms <- names(input)
@@ -1264,7 +1263,7 @@ shinyServer(function(input, output, session) {
                 } 
                 #check if the defaults/inputs for a plot have been created
                 if(length(grep(paste(item, n,sep=""), names(input)))>0){
-                 
+                  
                   cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " checking priors for", item,n, "\n")))
                   
                   if(debug){
@@ -1280,7 +1279,7 @@ shinyServer(function(input, output, session) {
                     message <- "DEBUG AAA"
                     save(message,idx,idn,Defaults,file=file.path(debugDir,"message.rda"))
                   }                     
-          
+                  
                   
                   #some values don't exist as inputs, for example the priors variable to check for priors
                   idtest=idx[idx %in% idn]
@@ -1375,7 +1374,7 @@ shinyServer(function(input, output, session) {
                       
                     }else pListGlobal[[paste0('Plot',item,n)]]<<- arrangeGrob(textGrob(sprintf("You broke something \n%s",as.character(attr(argList,"condition")))))
                     
-                   
+                    
                     if(debug){
                       message <- "DEBUG D"
                       save(message,file=file.path(debugDir,"message.rda"))
@@ -1394,92 +1393,98 @@ shinyServer(function(input, output, session) {
                         output[[paste("Plot",item,n,sep="")]] <<- 
                           renderPrint({ print(head(pListGlobal[[paste0('Plot',item,n)]]$preview,n=input[[paste0("previewhead",item,n)]]),row.names=F)})
                       }
-                    }else if(item %nin% c("demogTabCont","demogTabCat","NMTab")){
+                    }else if(item %nin% c("demogTabCont","demogTabCat","NMTab")) {
                       
-# Theme Editor# -----
+                      # Theme Editor# -----
                       output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
                         runjs("console.log('trip1')")
                         do.call(pListPrint,pListGlobal[[paste0('Plot',item,n)]])
                       })
                       
                       pListGlobal[[paste0('TempPlot',item,n)]]<<-pListGlobal[[paste0('Plot',item,n)]]$pList[[1]]
-                        theme.now=theme_get()
-                        if(length(pListGlobal[[paste0('TempPlot',item,n)]]$theme)>0) {
-                          theme.now=theme.now+pListGlobal[[paste0('TempPlot',item,n)]]$theme
-                          }
-                        pListGlobal[[paste0('Theme',item,n)]]<<-themeFetch(theme.now)
+                      theme.now=theme_get()
+                      if(length(pListGlobal[[paste0('TempPlot',item,n)]]$theme)>0) {
+                        theme.now=theme.now+pListGlobal[[paste0('TempPlot',item,n)]]$theme
+                      }
+                      pListGlobal[[paste0('Theme',item,n)]]<<-themeFetch(theme.now)
                       
-                      
-                      
-                      #Update Theme
-                      update.Theme=eventReactive(input$setTheme,{
-                        strThemeCallList=lapply(names(pListGlobal[[paste0('Theme',item,n)]]),function(item0){
-                          if(debug) {
-                            input.now=reactiveValuesToList(input)
-                            save(input.now,item0,pListGlobal,file=file.path(debugDir,"themeEditor.rda"))
-                            }
-                          themeNewVal(pListGlobal[[paste0('Theme',item,n)]][item0],pListGlobal[[paste0('TempPlot',item,n)]],input)
-                        })
-                        
-                        strThemeCall=paste0("pListGlobal[['TempPlot",item,n,"']]<<-pListGlobal[['TempPlot",item,n,"']]+theme(",paste0(unlist(strThemeCallList),collapse = ","),")")
-                        eval(parse(text=strThemeCall))
-                        pListGlobal[[paste0('Plot',item,n)]]$pList[[1]]<<-pListGlobal[[paste0('TempPlot',item,n)]]
-                        return(pListGlobal[[paste0('Plot',item,n)]])
-                      })
-                      
-                      #Update Session Theme
-                      observeEvent(input$SetThemeGlobal,{
-                        if(length(pListGlobal[[paste0('TempPlot',item,n)]]$theme)>0) theme.now=theme.now+pListGlobal[[paste0('TempPlot',item,n)]]$theme
-                        theme_set(theme_get()%+replace%theme.now)
-                      })
-                      
-                      #Update Grid Theme
-                      update.ThemeGrid=eventReactive(input$SetThemeGrid,{
-                        p.now<<-pList.new[[1]]
-                        if(length(p.now$theme)>0) theme.now=theme.now+p.now$theme
-                        
-                        for(i in 1:length(pList.new)) pList.new[[i]]<<- pList.new[[i]]+theme.now
-                        
-                        return(pList.new)
-                      })
-                      
-                      #Populate Modal Elements
-                      output$popTheme<<-renderUI({
-                        bsModal(id = "updateThemePopup", title = "Update Plot Theme", trigger = "updateTheme", size = "large",
-                                
+                      if(debug) {
+                        input.now=reactiveValuesToList(isolate(input))
+                        isolate(
+                          save(input.now,pListGlobal,file=file.path(debugDir,"prethemeEditor.rda"))
+                        )
+                      }           
+
+                      # #Update Session Theme
+                      # observeEvent(input[["SetThemeGlobal",title,n]],{
+                      #   if(length(pListGlobal[[paste0('TempPlot',item,n)]]$theme)>0) theme.now=theme.now+pListGlobal[[paste0('TempPlot',item,n)]]$theme
+                      #   theme_set(theme_get()%+replace%theme.now)
+                      # })
+                      # 
+                      # #Update Grid Theme
+                      # update.ThemeGrid=eventReactive(input$SetThemeGrid,{
+                      #   p.now<<-pList.new[[1]]
+                      #   if(length(p.now$theme)>0) theme.now=theme.now+p.now$theme
+                      #   
+                      #   for(i in 1:length(pList.new)) pList.new[[i]]<<- pList.new[[i]]+theme.now
+                      #   
+                      #   return(pList.new)
+                      # })
+                      # 
+                      # #Populate Modal Elements
+                      output[[paste0("popTheme",item,n)]]<<-renderUI({
+                        bsModal(id = paste0("updateThemePopup",item,n), title = "Update Plot Theme", trigger = paste0("updateTheme",item,n), size = "large",
+
                                 do.call(tabsetPanel,
                                         unlist(lapply(1:length(pListGlobal[[paste0('Theme',item,n)]]),FUN = function(j){
                                           if(themeListDepth(pListGlobal[[paste0('Theme',item,n)]][j])>2){
-                                            list(themeMakePanel(pListGlobal[[paste0('Theme',item,n)]][j]))
+                                            list(themeMakePanel(pListGlobal[[paste0('Theme',item,n)]][j],item=item,n=n))
                                           }else{
-                                            unlist(lapply(j, function(i) {themeMakePanel(pListGlobal[[paste0('Theme',item,n)]][i])}),F)}
+                                            unlist(lapply(j, function(i) {themeMakePanel(pListGlobal[[paste0('Theme',item,n)]][i],item=item,n=n)}),F)}
                                         }),F)
 
 
                                 ),
                                 hr(),
-                                actionButton(inputId = "setTheme",label = "Set Theme")
-                                
-                                
+                                actionButton(inputId = paste0("setTheme",item,n),label = "Set Theme")
                         )
                       })
                       
+                      #Update Theme
+                      observeEvent(input[[paste0('setTheme',item,n)]],{
+                        if(debug) {
+                          input.now=reactiveValuesToList(isolate(input))
+                          isolate(
+                            save(input.now,pListGlobal,file=file.path(debugDir,"setTheme.rda"))
+                          )
+                        }
+                        
+                        strThemeCallList=lapply(names(pListGlobal[[paste0('Theme',item,n)]]),function(item0){
+                          themeNewVal(item,n,pListGlobal[[paste0('Theme',item,n)]][item0],pListGlobal[[paste0('TempPlot',item,n)]],input)
+                        })
 
-                    #Render the updated plot
-                      observeEvent(input$updateTheme,{
-
-                        output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
-                            do.call(pListPrint,update.Theme())
-                          #pListGlobal[[paste0('Plot',item,n)]]
+                        strThemeCall=paste0("pListGlobal[['TempPlot",item,n,"']]<<-pListGlobal[['TempPlot",item,n,"']]+theme(",paste0(unlist(strThemeCallList),collapse = ","),")")
+                        eval(parse(text=strThemeCall))
+                        pListGlobal[[paste0('Plot',item,n)]]$pList[[1]]<<-pListGlobal[[paste0('TempPlot',item,n)]]
                       })
-                    })
                       
-# End of Theme Editor# ----
-
+                      # 
+                      # 
+                      # # DGP: What is this doing?
+                      # #Render the updated plot
+                      # observeEvent(input[["updateTheme",item,n]],{
+                      #   output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
+                      #       do.call(pListPrint,update.Theme())
+                      #     #pListGlobal[[paste0('Plot',item,n)]]
+                      # })
+                      # })
+                      
+                      # End of Theme Editor# ----
                       
                       
-                    # }else if(item=="ConcvTimeMult"){
-                    #   output[[paste("Plot",item,n,sep="")]] <<- renderImage({ p1 },deleteFile=F)
+                      
+                      # }else if(item=="ConcvTimeMult"){
+                      #   output[[paste("Plot",item,n,sep="")]] <<- renderImage({ p1 },deleteFile=F)
                     }else{
                       # Probably one of demogTabCont, demogTabCat, NMTab, ConcvTimeMult
                       output[[paste("Plot",item,n,sep="")]]<<-renderImage(
@@ -1558,7 +1563,7 @@ shinyServer(function(input, output, session) {
                                 Sys.Date()
                     )
                     dir.create(file.path(Dir,"PNG"),recursive=T)
-
+                    
                     
                     argList=createArgList(input, item, n, dataFile=dataFile(), currentWD=currentWD())
                     callType=argList$callType
@@ -1646,12 +1651,12 @@ shinyServer(function(input, output, session) {
                            CSV=p1csv
                       )
                     
-
+                    
                     # Make a docx version of the caption and footnote
                     p1List$docxCaption = renderTex(list(caption=p1List$Legend,
                                                         footnote=p1List$Footnote),
                                                    paste0(item,n), pandoc=T)
-
+                    
                     p1Name=paste(item,n, sep="")
                     #if(callType=="ConcvTimeMult") p1List$Plot <- p1$src
                     
@@ -1689,10 +1694,10 @@ shinyServer(function(input, output, session) {
                     # guiGrobs object created here and stored in global env.
                     saveGrob(plot=p1List, Name=p1Name, file=sprintf("%s_Grobs.rda", fileHead),
                              writeRda=F)
-
+                    
                     # Dump the captions and footnotes into the working directory
                     dir.create(file.path(Dir,"Captions"),recursive=T)
-
+                    
                     for(nms in names(guiGrobs)){
                       if("docxCaption" %in% names(guiGrobs[[nms]])){
                         file.copy(guiGrobs[[nms]]$docxCaption,
@@ -1737,11 +1742,11 @@ shinyServer(function(input, output, session) {
                     }
                     
                     figureOrder <- tryCatch(sapply(input[["figureOrder"]], getObj) ,
-                                                   error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","figureOrderError.rda")) )
+                                            error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","figureOrderError.rda")) )
                     tableOrder <- tryCatch(sapply(input[["tableOrder"]], getObj) ,
-                                                  error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","tableOrderError.rda")))
+                                           error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","tableOrderError.rda")))
                     listingOrder <- tryCatch(sapply(input[["listingOrder"]], getObj),
-                                                    error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","ListingOrderError.rda")) )
+                                             error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","ListingOrderError.rda")) )
                     
                     ordering <- c(tableOrder, figureOrder, listingOrder)
                     if(debug){
@@ -1777,7 +1782,7 @@ shinyServer(function(input, output, session) {
         }) # End local
       }) # End for this item
     }
-      
+    
     observe(if(input$RTF & input$saveAs!="" ){
       withProgress(message = "Writing", value=.5,{
         isolate({
@@ -1829,42 +1834,42 @@ shinyServer(function(input, output, session) {
     }) # End RTF observer
   }) # End observer for outputGo
   
-
+  
   ##################################################
   
   observeEvent(input$newTemplateGo,{  
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " newTemplateGo\n"))
-     if(input$saveTemplateAs!=""){
-         for(item in names(DefaultsFirst)){
-           #put in the non-plot related Defaults too
-           if (item %nin% c(
-             "saveAll",
-             "saveAs",
-             "saveParm",
-             "saveAsParm",
-             "PNG",
-             "RTF",
-             "dataPath", 
-             "recall"))
-           {Defaults[[item]]<<-input[[item]]}
-         }
-       if(debug){
-         input_nms <- names(input)
-         input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
-         names(input_vals) <- input_nms
-         message <- "DEBUG Y"
-         save(message, Defaults, input_vals, file=file.path(debugDir,"message.rda"))
-       }
-       tryCatch(recordInput(input=input,Defaults=Defaults,currentWD=currentWD()),
-                warning=function(w) cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " recordInput warning\n",w))),
-                error=function(e)  cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " recordInput error\n",e)))
-       )
-     }
+    if(input$saveTemplateAs!=""){
+      for(item in names(DefaultsFirst)){
+        #put in the non-plot related Defaults too
+        if (item %nin% c(
+          "saveAll",
+          "saveAs",
+          "saveParm",
+          "saveAsParm",
+          "PNG",
+          "RTF",
+          "dataPath", 
+          "recall"))
+        {Defaults[[item]]<<-input[[item]]}
+      }
+      if(debug){
+        input_nms <- names(input)
+        input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
+        names(input_vals) <- input_nms
+        message <- "DEBUG Y"
+        save(message, Defaults, input_vals, file=file.path(debugDir,"message.rda"))
+      }
+      tryCatch(recordInput(input=input,Defaults=Defaults,currentWD=currentWD()),
+               warning=function(w) cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " recordInput warning\n",w))),
+               error=function(e)  cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " recordInput error\n",e)))
+      )
+    }
   })
   
   
   
-# Output and Saving Tabset  ----
+  # Output and Saving Tabset  ----
   
   output$SaveTabset<-renderUI({
     cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " saveTabset\n")))
@@ -1880,13 +1885,13 @@ shinyServer(function(input, output, session) {
       
     )
     
-  
+    
   })
   
   
-
   
-# Render Plot----  
+  
+  # Render Plot----  
   # output$Plot=renderPlot({
   #   pList.print(pList.new)
   # },height=1200)
@@ -1918,10 +1923,10 @@ shinyServer(function(input, output, session) {
   #   output$Plot=renderPlot({pList.print(pList.out)},height=1200)
   # })
   
- 
+  
   observeEvent(input$fastForward,{
-
-      runjs("function sleep (time) {
+    
+    runjs("function sleep (time) {
                                     return new Promise((resolve) => setTimeout(resolve, time));
             };
             
@@ -1971,7 +1976,7 @@ shinyServer(function(input, output, session) {
                                       console.log('release 10');
                                     });
             ")
-
+    
   })
   
   

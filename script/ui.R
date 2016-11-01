@@ -1,5 +1,10 @@
 #rm(list=ls(all=TRUE))
-.libPaths("/data/co/tflgenerator/script/lib")
+
+if(dir.exists("/data/tflgenerator/script/lib")){ 
+  .libPaths("/data/tflgenerator/script/lib")
+}else{
+  .libPaths("/data/co/tflgenerator/script/lib")
+}
 library(GUI)
 library(TFL) # the Amgen Internal TFL package
 library(shiny)
@@ -95,12 +100,12 @@ library(shinyjs)
       	    ),
       	    tabItem(tabName="tabFigures",
       	            h3("Figures"),
-      	            column(width=3,actionLink("updateElem","Update Plot Layer")),
-      	            column(width=3,actionLink("updateTheme","Update Plot Theme")),
-      	            column(width=3,actionLink("SetThemeGrid",'Update Grid Theme')),
-      	            column(width=3,actionLink("SetThemeGlobal",'Update Global Theme')),
-      	            uiOutput("figuresTabset"),
-      	            uiOutput('popTheme')
+      	            # column(width=3,actionLink("updateElem","Update Plot Layer")),
+      	            # column(width=3,actionLink("updateTheme","Update Plot Theme")),
+      	            # column(width=3,actionLink("SetThemeGrid",'Update Grid Theme')),
+      	            # column(width=3,actionLink("SetThemeGlobal",'Update Global Theme')),
+      	            uiOutput("figuresTabset")
+      	            # uiOutput('popTheme')
       	    ),
       	    tabItem(tabName="tabTables",
       	            h3("Tables"),
