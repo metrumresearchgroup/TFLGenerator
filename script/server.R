@@ -34,7 +34,7 @@ library(readr)
 library(shinyAce)
 # library(doParallel)
 # library(foreach)
-#library(shinyjs)
+library(shinyjs)
 #library(shinyBS)
 
 # Set up parallel backend
@@ -628,46 +628,67 @@ shinyServer(function(input, output, session) {
     
     if(debug){
       input_vals <- reactiveValuesToList(input)
+      if(!exists("subjectExclusions",.GlobalEnv)) subjectExclusions <- NULL
+      if(!exists("observationExclusions",.GlobalEnv)) observationExclusions <- NULL
       try(save(n,item,title,vpcRun,input_vals,subjectExclusions,observationExclusions,file=file.path(srcDir,"tmp","vpcFile.rda")))
     }
     
-    vpcctl <- try(read.nmctl(file.path(currentWD(),vpcRun,paste0(vpcRun,".ctl"))))
-    vpctab <- vpcctl[grep("^[$]DATA",vpcctl)]
-    vpctab <- strsplit(as.character(vpctab),split=" ",fixed=T)
-    vpctab <- unlist(vpctab)[unlist(sapply(vpctab, function(x) grepl("*.csv|CSV",x),simplify = F))]
-    vpctab <- try(read_csv(file.path(currentWD(),vpcRun,vpctab)))
+    # These will read the source file in $DATA.  Query the user instead, so omitted.
+    vpcctl <- try(read.nmctl(file.path(currentWD(),vpcRun,paste0(basename(vpcRun),".ctl"))))
+    # vpctab <- vpcctl[grep("^[$]DATA",vpcctl)]
+    # vpctab <- strsplit(as.character(vpctab),split=" ",fixed=T)
+    # vpctab <- unlist(vpctab)[unlist(sapply(vpctab, function(x) grepl("*.csv|CSV",x),simplify = F))]
+    # vpctab <- try(read_csv(file.path(currentWD(),vpcRun,vpctab)))
+    # vpctab <- try(read.csv(file.path(currentWD(),input[[paste0("vpcSource",title)]])))
     
     vpcloc <- list.files(file.path(currentWD(),vpcRun))
-    vpcloc <- grep(paste0(vpcRun,".tab|TAB"),vpcloc,value=T)
+    vpcloc <- grep(paste0(basename(vpcRun),".tab|TAB"),vpcloc,value=T)
     if(length(vpcloc)==0){
+      validate(
+        need(vpcloc!=0, "VPC simulations file not found")
+      )
       cat(file=stderr(), paste0("LOG: ", Sys.time(), " VPC file not found\n"))
       return()
     }
     if(length(vpcloc)>1){
-      cat(file=stderr(), paste0("LOG: ", Sys.time(), " More than one vpc tab found, using ", vocloc[1],"\n"))
+      cat(file=stderr(), paste0("LOG: ", Sys.time(), " More than one vpc tab found, using ", vpcloc[1],"\n"))
     }
-    req(input[[paste0("vpcColnames",title)]])
+    validate(
+      need(input[[paste0("vpcColnames",title)]]!="", "Input column names for the NONMEM table file")
+    )
     vpcColnames <- sapply(unlist(strsplit(input[[paste0("vpcColnames",title)]],",")), stringr:::str_trim)
     dat <- try(read.table(file.path(currentWD(),vpcRun,vpcloc),header=F,nrows=1))
     if(dat[1]=="TABLE"){
+      validate(
+        need(FALSE,"VPC simulations need to be run with NOHEADER")
+      )
       cat(file=stderr(), paste0("LOG: ", Sys.time(), " VPC simulations need to be run with NOHEADER\n"))
       return()
     }
 
     dat <- try(read_table(file.path(currentWD(),vpcRun,vpcloc),col_names=F))
     if(length(vpcColnames)!=ncol(dat)){
+      validate(
+        need(FALSE, "Number of specified column names is not equal to number of coluns in simulation table")
+      )
       cat(file=stderr(), paste0("LOG: ", Sys.time(), " Number of vpc column names not equal to number of columns in simulation table\n"))
       return()
     }
     
     colnames(dat) <- vpcColnames
-    req(input[[paste0("vpcRep",title)]])
+    validate(
+      need(input[[paste0("vpcRep",title)]]!="", "Enter the number of simulation replicates")
+    )
     dat$IREP <- rep(1:input[[paste0("vpcRep",title)]],each=nrow(dat)/input[[paste0("vpcRep",title)]])
     
     # Tack on the source data
     
     ## Load it first
     vpcsrc <- try(read_csv(file=file.path(currentWD(),input[[paste0("vpcSource",title)]])))
+    validate(
+      need(class(vpcsrc)!="tryError", "Please select a valid source data location")
+    )
+    
 
     if(class(vpcsrc) != "try-error"){
       # Rename observed DV
@@ -676,6 +697,12 @@ shinyServer(function(input, output, session) {
           vpcsrc[,paste0(input[[paste0("vpcSourceDV",title)]],"obs")] <- 
             vpcsrc[,input[[paste0("vpcSourceDV",title)]]]
           vpcsrc[,input[[paste0("vpcSourceDV",title)]]] <- NULL
+          missing <- is.na(vpcsrc[,paste0(input[[paste0("vpcSourceDV",title)]],"obs")])
+          validate(
+            need(sum(missing)==0,
+                   paste0(missing," observed values dropped for missingness"))
+          )
+          vpcsrc <- vpcsrc[!missing,]
         }
       }
 
@@ -688,9 +715,13 @@ shinyServer(function(input, output, session) {
         }
       }
       
-      # Merge
+      # Merge.  This isn't necessary, but is a check to ensure the user is using the right datasets.
       if(any(colnames(dat)%in%colnames(vpcsrc))){
        dat <- try(dplyr::left_join(dat, vpcsrc) )
+       missing <- sum(is.na(vpcsrc[,paste0(input[[paste0("vpcSourceDV",title)]],"obs")]))
+       validate(
+         need(missing==0, "Some simulation values have no matching observations!")
+         )
       }else if(nrow(dat)==nrow(vpcsrc)) dat <- cbind(vpcsrc,dat)
     }else vpcsrcnms <- ""
       
@@ -723,19 +754,19 @@ shinyServer(function(input, output, session) {
       }
     }
 
-    if(exists("subjectExclusions")){
+    if(exists("subjectExclusions",envir=.GlobalEnv)){
       if(("NMID" %in% names(dat)) & ("NMID" %in% names(subjectExclusions))){
         dat <- filter(dat, NMID %nin% subjectExclusions$NMID)
       }
     }
-    if(exists("observationExclusions")){
+    if(exists("observationExclusions",envir=.GlobalEnv)){
       commoncols <- intersect(names(dat), names(observationExclusions))
       dat <- dat[paste(dat[,commoncols]) %nin%  paste(observationExclusions[,commoncols]),]
     }
     if(debug){
       save(n,input_vals,dat,vpcRun,file=file.path(srcDir,"tmp","vpcFile.rda"))
     }
-   vpcDataList[[as.character(vpcRun)]] <<- isolate(dat)
+   vpcDataList[[basename(vpcRun)]] <<- isolate(dat)
    return(dat)
 
   }
@@ -768,32 +799,32 @@ shinyServer(function(input, output, session) {
       return(DT::datatable(isolate(dataFile()), filter="top"))
     })  
   })
-  observeEvent(input[["updateVPCView"]],{
-      cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_vpcdata called\n"))
-      autosave()
-      # output$contentsHead_vpcdata <- DT::renderDataTable({
-      #   return(DT::datatable(isolate(vpcFile()), filter="top"))
-      # })  
-      withProgress(message="Loading VPC data", value=0, {
-        for(nm in grep("vpcRun",names(isolate(input)),value=T)){
-          if(isolate(input[[nm]])!=""){
-            n <- gsub("vpcRunVPC","",nm)
-            vpcRun <- as.character(isolate(input[[nm]]))
-            dat <- isolate(vpcFile(n)) # Populate the vpcDataList
-            if(debug){
-              input_vals <- isolate(reactiveValuesToList(input))
-              vpcDataList_vals <- isolate(vpcDataList)
-              save(input_vals, vpcDataList_vals, file=file.path(srcDir,"tmp","updateVPCview.rda"))
-            }
-            output[[paste0("contentsHead_vpcdata",n)]] <-  
-              # renderPrint({summarizeContents(vpcDataList[[vpcRun]])})
-              # DT::renderDataTable({ DT::datatable(vpcDataList[[vpcRun]], filter="top") })
-              renderTable({head(vpcDataList[[vpcRun]], n=input[[paste0("nheadVPC",n)]])})
-          }
-        incProgress(1/length(grep("vpcRun",names(isolate(input)))))  
-        }
-      })
-  })
+  # observeEvent(input[["updateVPCView"]],{
+  #     cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_vpcdata called\n"))
+  #     autosave()
+  #     # output$contentsHead_vpcdata <- DT::renderDataTable({
+  #     #   return(DT::datatable(isolate(vpcFile()), filter="top"))
+  #     # })  
+  #     withProgress(message="Loading VPC data", value=0, {
+  #       for(nm in grep("vpcRun",names(isolate(input)),value=T)){
+  #         if(isolate(input[[nm]])!=""){
+  #           n <- gsub("vpcRunVPC","",nm)
+  #           vpcRun <- as.character(isolate(input[[nm]]))
+  #           dat <- isolate(vpcFile(n)) # Populate the vpcDataList
+  #           if(debug){
+  #             input_vals <- isolate(reactiveValuesToList(input))
+  #             vpcDataList_vals <- isolate(vpcDataList)
+  #             save(input_vals, vpcDataList_vals, file=file.path(srcDir,"tmp","updateVPCview.rda"))
+  #           }
+  #           output[[paste0("contentsHead_vpcdata",n)]] <-  
+  #             # renderPrint({summarizeContents(vpcDataList[[vpcRun]])})
+  #             # DT::renderDataTable({ DT::datatable(vpcDataList[[vpcRun]], filter="top") })
+  #             renderTable({head(vpcDataList[[basename(vpcRun)]], n=input[[paste0("nheadVPC",n)]])})
+  #         }
+  #       incProgress(1/length(grep("vpcRun",names(isolate(input)))))  
+  #       }
+  #     })
+  # })
 
   output$contentsHead_subjectExclusions <- DT::renderDataTable({ NULL })
   
@@ -1418,6 +1449,34 @@ shinyServer(function(input, output, session) {
             n=this_n
             if(is.na(n) | (length(n)==0)) n<-0
             if(n!=0){	
+              
+              # Observer for VPC data display ----
+              observeEvent(input[[paste0("updateVPCView",item,n)]],{
+                cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_vpcdata called\n"))
+                autosave()
+                # output$contentsHead_vpcdata <- DT::renderDataTable({
+                #   return(DT::datatable(isolate(vpcFile()), filter="top"))
+                # })
+                withProgress(message="Loading VPC data", value=0, {
+                  nm <- basename(isolate(input[[paste0("vpcRun",item,n)]]))
+                  req(nm!="")
+                  vpcRun <- nm
+                  dat <- isolate(vpcFile(n)) # Populate the vpcDataList
+                  output[[paste0("contentsHead_vpcdata",n)]] <<-
+                    # renderPrint({summarizeContents(vpcDataList[[vpcRun]])})
+                    # DT::renderDataTable({ head(dat, n=input[[paste0("nhead",item,n)]])}, filter="top")
+                    renderTable({head(dat, n=isolate(input[[paste0("nhead",item,n)]]))})
+                })
+                if(debug){
+                  input_vals <- isolate(reactiveValuesToList(input))
+                  vpcDataList_vals <- isolate(vpcDataList)
+                  # runjs(paste0("console.log('",class(vpcDataList[[nm]]),"')"))                  
+                  save(input_vals, vpcDataList_vals, file=file.path(srcDir,"tmp","updateVPCview.rda"))
+                }
+              })
+              
+              # Observer for button clicks ----
+              
               observeEvent(input[[paste("button",item,n,sep="")]],{ 
                 
                 autosave()                
@@ -1594,7 +1653,6 @@ shinyServer(function(input, output, session) {
                       message <- "DEBUG E"
                       save(message,argList,input_vals,item,n,p1,vpcDataList,file=file.path(srcDir,"tmp","message.rda"))
                     } 
-                    
                     
                   } # End sameAsDefault!=1
                   

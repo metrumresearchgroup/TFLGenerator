@@ -72,26 +72,6 @@ License: GPL-2
 MD5sum: bcbffd84a796a969b5445e1c86fd6273
 NeedsCompilation: no
 
-Package: ggplot2
-Version: 1.0.1
-Depends: R (>= 2.14), stats, methods
-Imports: plyr (>= 1.7.1), digest, grid, gtable (>= 0.1.1), reshape2,
-        scales (>= 0.2.3), proto, MASS
-Suggests: quantreg, Hmisc, mapproj, maps, hexbin, maptools, multcomp,
-        nlme, testthat, knitr, mgcv
-Enhances: sp
-License: GPL-2
-MD5sum: e287a45fee45b0cc22c8d4c1c0318d97
-NeedsCompilation: no
-
-Package: gridExtra
-Version: 0.9
-Depends: R(>= 2.4.0), grid
-Suggests: RGraphics, pixmap, EBImage, ggplot2, lattice
-License: GPL (>= 2)
-MD5sum: fd6a6503977c9e22d90334b3a4de0c35
-NeedsCompilation: no
-
 Package: gtools
 Version: 3.5.0
 Depends: R (>= 2.10)
@@ -105,7 +85,7 @@ Depends: R (>= 2.3.0), grid, gridExtra (<= 0.9), ggplot2 (<= 1.0.1),
         gdata, boot, plyr, stringr, scales, Hmisc, shinydashboard,
         shinyFiles, DT, dplyr, reshape2, rtf, metrumrg, gtools,
         animation
-MD5sum: 6d5f967b1007455bedf22a884c63973c
+MD5sum: 4aa3a4613f6e8c2d4a691ee38eabb73c
 NeedsCompilation: no
 
 Package: Hmisc
@@ -253,7 +233,7 @@ Depends: R (>= 2.3.0), grid, gridExtra (<= 0.9), ggplot2 (<= 1.0.1),
         gdata, boot, plyr, stringr, scales, Hmisc, shinydashboard,
         shinyFiles, DT, dplyr, reshape2, rtf, metrumrg, gtools,
         animation
-MD5sum: a53dd1e8c74793c9fd5e7dd1890475c2
+MD5sum: 9ba2cfe66370a33bba6c2ca207dcb9c0
 NeedsCompilation: no
 
 Package: tibble
