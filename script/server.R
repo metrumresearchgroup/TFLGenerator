@@ -621,16 +621,17 @@ shinyServer(function(input, output, session) {
   vpcDataList <- list()
 
   vpcFile <- function(n,item="VPC") {
-    cat(file=stderr(), paste0("LOG: ", Sys.time(), " vpcFile called\n"))
+    cat(file=stderr(), paste0("LOG: ", Sys.time(), " vpcFile ", n, " called\n"))
     title <- paste0(item,n)
     # req(input[[paste0("vpcRun",title)]])
     vpcRun <- input[[paste0("vpcRun",title)]]
     
     if(debug){
       input_vals <- reactiveValuesToList(input)
+      revals_vals <- reactiveValuesToList(revals)
       if(!exists("subjectExclusions",.GlobalEnv)) subjectExclusions <- NULL
       if(!exists("observationExclusions",.GlobalEnv)) observationExclusions <- NULL
-      try(save(n,item,title,vpcRun,input_vals,subjectExclusions,observationExclusions,file=file.path(srcDir,"tmp","vpcFile.rda")))
+      try(save(n,item,title,vpcRun,input_vals,subjectExclusions,observationExclusions,revals,file=file.path(srcDir,"tmp","vpcFile.rda")))
     }
     
     # These will read the source file in $DATA.  Query the user instead, so omitted.
@@ -676,6 +677,11 @@ shinyServer(function(input, output, session) {
     }
     
     colnames(dat) <- vpcColnames
+    revals[[paste0("nms_tab",item,n)]] <- isolate(colnames(dat))
+    updateSelectizeInput(session,paste0("mergeKey",item,n),
+                         choices=intersect(revals[[paste0("nms_tab",item,n)]],revals[[paste0("nms_source",item,n)]]),
+                         selected=Defaults[[paste0("mergeKey",item,n)]],server=T)
+    
     validate(
       need(input[[paste0("vpcRep",title)]]!="", "Enter the number of simulation replicates")
     )
@@ -707,6 +713,11 @@ shinyServer(function(input, output, session) {
       }
 
       vpcsrcnms <- names(vpcsrc)
+      revals[[paste0("nms_source",item,n)]] <- isolate(vpcsrcnms)
+      updateSelectizeInput(session,paste0("mergeKey",item,n),
+                           choices=intersect(revals[[paste0("nms_tab",item,n)]],revals[[paste0("nms_source",item,n)]]),
+                           selected=Defaults[[paste0("mergeKey",item,n)]],server=T)
+      
       # Subset to the requested columns
       if(paste0("dataSubset",title) %in% names(input)){
         if(any(input[[paste0("dataSubset",title)]]!="")){
@@ -717,7 +728,9 @@ shinyServer(function(input, output, session) {
       
       # Merge.  This isn't necessary, but is a check to ensure the user is using the right datasets.
       if(any(colnames(dat)%in%colnames(vpcsrc))){
-       dat <- try(dplyr::left_join(dat, vpcsrc) )
+       dat <- try(dplyr::left_join(dat, 
+                                   vpcsrc, 
+                                   by=input[[paste0("mergeKey",item,n)]]))
        missing <- sum(is.na(vpcsrc[,paste0(input[[paste0("vpcSourceDV",title)]],"obs")]))
        validate(
          need(missing==0, "Some simulation values have no matching observations!")
@@ -727,20 +740,23 @@ shinyServer(function(input, output, session) {
       
 
     # Update selectize for data subsetting
-
-    
     updateSelectizeInput(session,paste0("dataSubset",title),
                          choices= unique(c(Defaults[[paste0("dataSubset",title)]],vpcsrcnms)),
                          selected=Defaults[[paste0("dataSubset",title)]],
                          server=T)
     
-    if("DVCol" %in% names(input)) names(dat)[which(names(dat)==input[["DVCol"]])] = "DV"
-    if("TAFDCol" %in% names(input)) names(dat)[which(names(dat)==input[["TAFDCol"]])]="TAFD"
-    if("NMIDCol" %in% names(input)) names(dat)[which(names(dat)==input[["NMIDCol"]])]="NMID"
-    if("STUDYCol" %in% names(input)) names(dat)[which(names(dat)==input[["STUDYCol"]])]="STUDY"
-    if("IPREDCol" %in% names(input)) names(dat)[which(names(dat)==input[["IPREDCol"]])]="IPRED"
-    if("PREDCol" %in% names(input)) names(dat)[which(names(dat)==input[["PREDCol"]])]="PRED"
     
+    if(input[[paste0("renameToDefaults",title)]]){
+      if("DVCol" %in% names(input)) names(dat)[which(names(dat)==input[["DVCol"]])] = "DV"
+      if("TAFDCol" %in% names(input)) names(dat)[which(names(dat)==input[["TAFDCol"]])]="TAFD"
+      if("NMIDCol" %in% names(input)) names(dat)[which(names(dat)==input[["NMIDCol"]])]="NMID"
+      if("STUDYCol" %in% names(input)) names(dat)[which(names(dat)==input[["STUDYCol"]])]="STUDY"
+      if("IPREDCol" %in% names(input)) names(dat)[which(names(dat)==input[["IPREDCol"]])]="IPRED"
+      if("PREDCol" %in% names(input)) names(dat)[which(names(dat)==input[["PREDCol"]])]="PRED"
+    }
+    
+
+
     # Run parser on merged data
     if(paste0("dataParse_vpc",title) %in% names(input)){
       parsecommands <- cleanparse(input[[paste0("dataParse_vpc",title)]],"dat")
@@ -753,6 +769,14 @@ shinyServer(function(input, output, session) {
         }
       }
     }
+    
+    if(paste0("sortBy",item,n) %in% names(input)){
+      if(all(c("DV","TAFD","NMID")%in%names(dat))){
+        if("STUDY" %in% names(dat)) dat <- dat[order(dat$STUDY,dat$NMID,dat$TAFD),] else dat <- dat[order(dat$NMID,dat$TAFD),]
+      }
+    }# else we assume the user has done so
+    
+    
 
     if(exists("subjectExclusions",envir=.GlobalEnv)){
       if(("NMID" %in% names(dat)) & ("NMID" %in% names(subjectExclusions))){
@@ -851,25 +875,17 @@ shinyServer(function(input, output, session) {
     dimnames(fakeData)[[2]] <- sprintf("%s (%s)",str_trim(dimnames(fakeData)[[2]]),classes)
     return(fakeData)
   }
-  output$contentsSummary_tabledata <- renderPrint({summarizeContents(tableFile())})
-  output$contentsSummary_sourcedata <- renderPrint({summarizeContents(sourceFile())})
-  output$contentsSummary_analysisdata <- renderPrint({summarizeContents(dataFile())})
+  output$contentsSummary_tabledata <- renderPrint({isolate(summarizeContents(tableFile()))})
+  output$contentsSummary_sourcedata <- renderPrint({isolate(summarizeContents(sourceFile()))})
+  output$contentsSummary_analysisdata <- renderPrint({isolate(summarizeContents(dataFile()))})
 
-    observeEvent(input$generatesubjectExclusions,{
+  observeEvent(input$generatesubjectExclusions,{
     cat(file=stderr(),paste0("LOG: ", Sys.time(), " contentsHead_subjectExclusions called\n"))
     foo <- isolate(dataFile())
     output$contentsHead_subjectExclusions <- 
       DT::renderDataTable({DT::datatable(subjectExclusions, filter="top")})
   })
-  # output$contentsSummary_subjectExclusions <- renderPrint(NULL)
-  # observeEvent(exists("subjectExclusions"),{
-  #   output$contentsSummary_subjectExclusions <- renderPrint({summarizeContents(subjectExclusions)})
-  # })
-  # output@contentsSummary_observationExclusions <- renderPrint(NULL)
-  # observeEvent(exists("observationExclusions"),{
-  #   output$contentsSummary_observationExclusions <- renderPrint({summarizeContents(observationExclusions)})
-  # })
-  
+
   
   output$projectTitle <- renderText({
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " printing project title\n"))
@@ -939,7 +955,7 @@ shinyServer(function(input, output, session) {
     try(rm("originalSourceData",envir=.GlobalEnv))
     try(rm("subjectExclusions",envir=.GlobalEnv))
     try(rm("observationExclusions",envir=.GlobalEnv))
-    try(revals$nms_subj <- revals$nms_obs <- "")
+    try(revals$nms_subj <<- revals$nms_obs <- "")
     Defaults <<- DefaultsFirst
     })
 
@@ -1106,7 +1122,7 @@ shinyServer(function(input, output, session) {
                             column(width = 6, title="Merge specification",
                                    selectizeInput("mergeKey", "Choose merge key", 
                                                   choices=intersect(revals$nms_source,revals$nms_tab),
-                                                  multiple=T,
+                                                  multiple=T,options=list(create=TRUE),
                                                   selected=Defaults[["mergeKey"]])
                                    # selectizeInput("mergeKey", "Choose merge key",
                                    #                choices= intersect(names(sourceFile()),names(tableFile())),
@@ -1260,7 +1276,8 @@ shinyServer(function(input, output, session) {
     for (item in plotList$type[types]){
       if(paste(item, "Num", sep="") %in% names(input)){
         if("varNames" %in% names(formals(plotList$Call[plotList$type==item]))){
-          PanelSet=do.call(what=plotList$Call[plotList$type==item], args=list(plotType=item, input=input, Set=PanelSet, varNames=revals$nms_df))
+          if(item=="VPC") varNames <- revals else(varNames=revals$nms_df)
+          PanelSet=do.call(what=plotList$Call[plotList$type==item], args=list(plotType=item, input=input, Set=PanelSet, varNames=varNames))
         }else{
           PanelSet=do.call(what=plotList$Call[plotList$type==item], args=list(plotType=item, input=input, Set=PanelSet ))
         }
@@ -1380,48 +1397,49 @@ shinyServer(function(input, output, session) {
 
   autosave <- function(){
     local({
-      
-      # Autosave routine
-      if(dir.exists(currentWD()) & input[["projectTitle"]]!=""){
+      isolate({
         
-        cat(file=stderr(),paste0("LOG: ", Sys.time(), " Running autosave routine"))
-        Defaults.autosave <- get("Defaults",envir = .GlobalEnv)
-        for(item in names(Defaults.autosave)){
-          #take out some of these
-          if (item %nin% c(
-            "saveAll",
-            "saveAs",
-            "saveParm",
-            "saveAsParm",
-            "PNG",
-            "RTF",
-            "dataPath", 
-            "recall"
+        # Autosave routine
+        if(dir.exists(currentWD()) & input[["projectTitle"]]!=""){
+          
+          cat(file=stderr(),paste0("LOG: ", Sys.time(), " Running autosave routine"))
+          Defaults.autosave <- get("Defaults",envir = .GlobalEnv)
+          for(item in names(Defaults.autosave)){
+            #take out some of these
+            if (item %nin% c(
+              "saveAll",
+              "saveAs",
+              "saveParm",
+              "saveAsParm",
+              "PNG",
+              "RTF",
+              "dataPath", 
+              "recall"
             ))
-          {
-            if(!is.null(input[[item]])){
-              Defaults.autosave[[item]]<-input[[item]]
-              Defaults[[item]]<<-input[[item]]
-            }else{
-              # The subset selectize items may be removed to NULL
-              if(grepl("Subset",item)){
-                Defaults.autosave[[item]]<-""
-                Defaults[[item]]<<-""
+            {
+              if(!is.null(input[[item]])){
+                Defaults.autosave[[item]]<-input[[item]]
+                Defaults[[item]]<<-input[[item]]
+              }else{
+                # The subset selectize items may be removed to NULL
+                if(grepl("Subset",item)){
+                  Defaults.autosave[[item]]<-""
+                  Defaults[[item]]<<-""
+                }
               }
             }
           }
+          if(debug){
+            input_vals <- reactiveValuesToList(input)
+            save(Defaults.autosave, Defaults, input_vals, file=file.path(srcDir,"tmp","autosave-debug.rda"))
+          }
+          tryCatch(recordInput(input=reactiveValuesToList(input),Defaults=Defaults.autosave,currentWD=currentWD(),autosave=T),
+                   warning=function(w) cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " autosave warning\n",w))),
+                   error=function(e)  cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " autosave error\n",e)))
+          )  
+          cat(file=stderr(), paste0("LOG: ", Sys.time(), " Exiting autosave routine"))
         }
-        if(debug){
-          input_vals <- reactiveValuesToList(input)
-          save(Defaults.autosave, Defaults, input_vals, file=file.path(srcDir,"tmp","autosave-debug.rda"))
-        }
-        tryCatch(recordInput(input=reactiveValuesToList(input),Defaults=Defaults.autosave,currentWD=currentWD(),autosave=T),
-                 warning=function(w) cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " autosave warning\n",w))),
-                 error=function(e)  cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " autosave error\n",e)))
-        )  
-        cat(file=stderr(), paste0("LOG: ", Sys.time(), " Exiting autosave routine"))
-        
-      }
+      })
     })
   }
 
