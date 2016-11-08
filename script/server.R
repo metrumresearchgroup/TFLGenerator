@@ -114,6 +114,7 @@ shinyServer(function(input, output, session) {
     for(nm in missingvars) Defaults[[nm]] <- DefaultsFirst[[nm]]
     Defaults <<- Defaults
     # Now we need to reset all input, force a refresh
+    runjs(paste0("console.log('loading source from:",inFile,"')"))
     session$reload()
   })
   
@@ -1213,6 +1214,15 @@ shinyServer(function(input, output, session) {
             }
           }
         }
+        
+        if(exists('themeList',envir = .GlobalEnv)){
+          for(nm in names(themeList)){
+            Defaults.autosave[[nm]]<-Defaults[[nm]]
+            #Defaults[[nm]]<<-themeList[[nm]]
+          }
+        }
+        
+        
         if(debug){
           input_vals <- reactiveValuesToList(input)
           save(Defaults.autosave, Defaults, input_vals, file=file.path(srcDir,"tmp","autosave-debug.rda"))
@@ -1367,12 +1377,12 @@ shinyServer(function(input, output, session) {
                       # }, 
                       error = function(e) {
                         if(debug) save(callType,argList,e,file=file.path(debugDir,"error.rda"))
-                        arrangeGrob(textGrob(sprintf("You broke something\n%s", e)))
+                        ePlot(e)#arrangeGrob(textGrob))
                       }
                       )
                       
                       
-                    }else pListGlobal[[paste0('Plot',item,n)]]<<- arrangeGrob(textGrob(sprintf("You broke something \n%s",as.character(attr(argList,"condition")))))
+                    }else pListGlobal[[paste0('Plot',item,n)]]<<- ePlot(as.character(attr(argList,"condition")))#arrangeGrob(textGrob())
                     
                     
                     if(debug){
@@ -1395,52 +1405,82 @@ shinyServer(function(input, output, session) {
                       }
                     }else if(item %nin% c("demogTabCont","demogTabCat","NMTab")) {
                       
-                      # Theme Editor# -----
+# Theme Editor# -----
+                      
+                      output[[paste0('activePlot',item,n)]]<<-renderUI({
+                        column(width=3,selectInput(paste0("activePlot",item,n),
+                                                   "Choose Plot:",
+                                                   choices = split(1:length(pListGlobal[[paste0('Plot',item,n)]]$pList),factor(names(pListGlobal[[paste0('Plot',item,n)]]$pList),levels=names(pListGlobal[[paste0('Plot',item,n)]]$pList))),
+                                                   selected = 1))
+                      })
+                      
+                      
+                      
                       output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
                         runjs("console.log('trip1')")
                         do.call(pListPrint,pListGlobal[[paste0('Plot',item,n)]])
                       })
                       
-                      pListGlobal[[paste0('TempPlot',item,n)]]<<-pListGlobal[[paste0('Plot',item,n)]]$pList[[1]]
+                      
                       theme.now=theme_get()
-                      if(length(pListGlobal[[paste0('TempPlot',item,n)]]$theme)>0) {
-                        theme.now=theme.now+pListGlobal[[paste0('TempPlot',item,n)]]$theme
-                      }
-                      pListGlobal[[paste0('Theme',item,n)]]<<-themeFetch(theme.now)
                       
                       if(debug) {
                         input.now=reactiveValuesToList(isolate(input))
                         isolate(
                           save(input.now,pListGlobal,file=file.path(debugDir,"prethemeEditor.rda"))
-                        )
-                      }           
+                        )}
+                      
+                      
+                      pListGlobal[[paste0('Theme',item,n)]]<<-lapply(pListGlobal[[paste0('Plot',item,n)]]$pList,function(p){
+                        if(length(p$theme)>0) theme.now=theme.now+p$theme
+                        themeFetch(theme.now)    
+                      })
+                      
+                      plotIdx=reactive({
+                        idx=1
+                        if(!is.null(input[[paste0('activePlot',item,n)]])) idx=as.numeric(input[[paste0('activePlot',item,n)]])
+                        idx=min(length(pListGlobal[[paste0('Plot',item,n)]]$pList),idx)
+                        return(idx)
+                      })
+                      
+                      observe(pListGlobal[[paste0('TempPlot',item,n)]]<<-pListGlobal[[paste0('Plot',item,n)]]$pList[[plotIdx()]])
+                      
+                      
+                      
+                      # if(length(pListGlobal[[paste0('TempPlot',item,n)]]$theme)>0) {
+                      #   theme.now=theme.now+pListGlobal[[paste0('TempPlot',item,n)]]$theme
+                      # }
+                      # themeFetch(theme.now)
+                      
+                     
+                                
 
                       # #Update Session Theme
-                      # observeEvent(input[["SetThemeGlobal",title,n]],{
-                      #   if(length(pListGlobal[[paste0('TempPlot',item,n)]]$theme)>0) theme.now=theme.now+pListGlobal[[paste0('TempPlot',item,n)]]$theme
-                      #   theme_set(theme_get()%+replace%theme.now)
-                      # })
+                      observeEvent(input[[paste0("SetThemeGlobal",item,n)]],{
+                        if(length(pListGlobal[[paste0('TempPlot',item,n)]]$theme)>0) theme.now=theme.now+pListGlobal[[paste0('TempPlot',item,n)]]$theme
+                        theme_set(theme_get()%+replace%theme.now)
+                      })
                       # 
                       # #Update Grid Theme
-                      # update.ThemeGrid=eventReactive(input$SetThemeGrid,{
-                      #   p.now<<-pList.new[[1]]
-                      #   if(length(p.now$theme)>0) theme.now=theme.now+p.now$theme
-                      #   
-                      #   for(i in 1:length(pList.new)) pList.new[[i]]<<- pList.new[[i]]+theme.now
-                      #   
-                      #   return(pList.new)
-                      # })
+                      update.ThemeGrid=eventReactive(input[[paste0("SetThemeGrid",item,n)]],{
+                        p.now<<-pListGlobal[[paste0('Plot',item,n)]]$pList[[as.numeric(input[[paste0('activePlot',item,n)]])]]
+                        if(length(p.now$theme)>0) theme.now=theme.now+pListGlobal[[paste0('TempPlot',item,n)]]$theme
+
+                        for(i in 1:length(pListGlobal[[paste0('Plot',item,n)]]$pList)) pListGlobal[[paste0('Plot',item,n)]]$pList[[i]]<<- pListGlobal[[paste0('Plot',item,n)]]$pList[[i]]+theme.now
+
+                        return(pListGlobal[[paste0('Plot',item,n)]])
+                      })
                       # 
                       # #Populate Modal Elements
                       output[[paste0("popTheme",item,n)]]<<-renderUI({
                         bsModal(id = paste0("updateThemePopup",item,n), title = "Update Plot Theme", trigger = paste0("updateTheme",item,n), size = "large",
 
                                 do.call(tabsetPanel,
-                                        unlist(lapply(1:length(pListGlobal[[paste0('Theme',item,n)]]),FUN = function(j){
-                                          if(themeListDepth(pListGlobal[[paste0('Theme',item,n)]][j])>2){
-                                            list(themeMakePanel(pListGlobal[[paste0('Theme',item,n)]][j],item=item,n=n))
+                                        unlist(lapply(1:length(pListGlobal[[paste0('Theme',item,n)]][[plotIdx()]]),FUN = function(j){
+                                          if(themeListDepth(pListGlobal[[paste0('Theme',item,n)]][[plotIdx()]][j])>2){
+                                            list(themeMakePanel(pListGlobal[[paste0('Theme',item,n)]][[plotIdx()]][j],item=item,n=n))
                                           }else{
-                                            unlist(lapply(j, function(i) {themeMakePanel(pListGlobal[[paste0('Theme',item,n)]][i],item=item,n=n)}),F)}
+                                            unlist(lapply(j, function(i) {themeMakePanel(pListGlobal[[paste0('Theme',item,n)]][[plotIdx()]][i],item=item,n=n)}),F)}
                                         }),F)
 
 
@@ -1450,36 +1490,73 @@ shinyServer(function(input, output, session) {
                         )
                       })
                       
-                      #Update Theme
-                      observeEvent(input[[paste0('setTheme',item,n)]],{
-                        if(debug) {
-                          input.now=reactiveValuesToList(isolate(input))
-                          isolate(
-                            save(input.now,pListGlobal,file=file.path(debugDir,"setTheme.rda"))
-                          )
-                        }
-                        
-                        strThemeCallList=lapply(names(pListGlobal[[paste0('Theme',item,n)]]),function(item0){
-                          themeNewVal(item,n,pListGlobal[[paste0('Theme',item,n)]][item0],pListGlobal[[paste0('TempPlot',item,n)]],input)
-                        })
+                      observe({
+                        if(!exists('themeList',envir = .GlobalEnv)) themeList<<-list()
+                        if(length(themeList[[paste0('themeUpdate',item,n)]])==0){
+                          themeList[[paste0('themeUpdate',item,n)]]<<-recList(length(pListGlobal[[paste0('Plot',item,n)]]$pList))
+                          names(themeList[[paste0('themeUpdate',item,n)]])<<-names(pListGlobal[[paste0('Plot',item,n)]]$pList)
+                        } 
 
+                        if(!isTRUE(all.equal(names(themeList[[paste0('themeUpdate',item,n)]]),names(pListGlobal[[paste0('Plot',item,n)]]$pList)))){
+                          updatethemeList<<-recList(length(pListGlobal[[paste0('Plot',item,n)]]$pList))
+                          names(updatethemeList)<<-names(pListGlobal[[paste0('Plot',item,n)]]$pList)
+                   
+                          for(tIdx in intersect(names(updatethemeList),names(themeList[[paste0('themeUpdate',item,n)]]))){
+                            updatethemeList[[tIdx]]<<-themeList[[paste0('themeUpdate',item,n)]][[tIdx]]
+                          }
+
+                          themeList[[paste0('themeUpdate',item,n)]]<<-updatethemeList
+                          
+                          themeListStr=paste0(paste(names(pListGlobal[[paste0('Plot',item,n)]]$pList),themeList[[paste0('themeUpdate',item,n)]],sep='='),collapse=',')
+                          
+                          Defaults[[paste0("themeUpdate",item,n)]]<<-paste0('list(',themeListStr,')')
+                          isolate(autosave())
+                        }
+                      })
+                      
+                      #Update Theme
+                      update.Theme=eventReactive(input[[paste0('setTheme',item,n)]],{
+                        pId=plotIdx()
+                        strThemeCallList=lapply(names(pListGlobal[[paste0('Theme',item,n)]][[pId]]),function(item0){
+                          themeNewVal(item,n,pListGlobal[[paste0('Theme',item,n)]][[pId]][item0],pListGlobal[[paste0('TempPlot',item,n)]],input)
+                        })
+                        
+                        if(debug) {isolate(save(themeList,strThemeCallList,pListGlobal,pId,file=file.path(debugDir,"updateTheme.rda")))}
+                        
+                        themeList[[paste0('themeUpdate',item,n)]][[pId]]<<-paste0("theme(",paste0(unlist(strThemeCallList),collapse = ","),")")
+                        
+                        if(debug) {isolate(save(themeList,pListGlobal,pId,file=file.path(debugDir,"updateTheme1.rda")))}
+                        
+                        themeListStr=paste0(paste(names(pListGlobal[[paste0('Plot',item,n)]]$pList),themeList[[paste0('themeUpdate',item,n)]],sep='='),collapse=',')
+                      
+                        Defaults[[paste0("themeUpdate",item,n)]]<<-paste0('list(',themeListStr,')')
+                        isolate(autosave())
+                        
                         strThemeCall=paste0("pListGlobal[['TempPlot",item,n,"']]<<-pListGlobal[['TempPlot",item,n,"']]+theme(",paste0(unlist(strThemeCallList),collapse = ","),")")
                         eval(parse(text=strThemeCall))
-                        pListGlobal[[paste0('Plot',item,n)]]$pList[[1]]<<-pListGlobal[[paste0('TempPlot',item,n)]]
+                        pListGlobal[[paste0('Plot',item,n)]]$pList[[as.numeric(input[[paste0('activePlot',item,n)]])]]<<-pListGlobal[[paste0('TempPlot',item,n)]]
+                        return(pListGlobal[[paste0('Plot',item,n)]])
                       })
                       
                       # 
                       # 
                       # # DGP: What is this doing?
                       # #Render the updated plot
-                      # observeEvent(input[["updateTheme",item,n]],{
-                      #   output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
-                      #       do.call(pListPrint,update.Theme())
-                      #     #pListGlobal[[paste0('Plot',item,n)]]
-                      # })
-                      # })
+                      observeEvent(input[[paste0("updateTheme",item,n)]],{
+                        output[[paste0("Plot", item,n)]]<<-renderPlot({
+                          if(input[[paste0("setTheme",item,n)]]==0){
+                            do.call(pListPrint,pListGlobal[[paste0('Plot',item,n)]])
+                          }else{
+                            do.call(pListPrint,update.Theme())
+                          }
+                        })
+                      })
                       
-                      # End of Theme Editor# ----
+                      observeEvent(input[[paste0("SetThemeGrid",item,n)]],{
+                        output[[paste0("Plot", item,n)]]=renderPlot({do.call(pListPrint,update.ThemeGrid())})
+                      })
+                      
+# End of Theme Editor# ----
                       
                       
                       
