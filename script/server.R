@@ -1,4 +1,4 @@
-debug <- F
+debug <- T
 
 #rm(list=ls(all=TRUE))
 Sys.setenv(PATH=paste0(Sys.getenv("PATH"),":/usr/bin:/usr/lib/rstudio-server/bin")) # Get pandoc and imagemagick
@@ -795,6 +795,91 @@ shinyServer(function(input, output, session) {
 
   }
   
+  # vpcAddlFile ----
+  vpcAddlFile <- function(n,item="VPC") {
+    cat(file=stderr(), paste0("LOG: ", Sys.time(), " vpcAddlFile ", n, " called\n"))
+    title <- paste0(item,n)
+    # req(input[[paste0("vpcRun",title)]])
+    vpcRun <- input[[paste0("vpcRun",title)]]
+    
+    if(debug){
+      input_vals <- reactiveValuesToList(input)
+      revals_vals <- reactiveValuesToList(revals)
+      if(!exists("subjectExclusions",.GlobalEnv)) subjectExclusions <- NULL
+      if(!exists("observationExclusions",.GlobalEnv)) observationExclusions <- NULL
+      try(save(n,item,title,vpcRun,input_vals,subjectExclusions,observationExclusions,revals,file=file.path(srcDir,"tmp","vpcAddlFile.rda")))
+    }
+    
+    # Tack on the source data
+    
+    ## Load it first
+    dat <- try(read_csv(file=file.path(currentWD(),input[[paste0("addlVpcSource",title)]])))
+    validate(
+      need(class(dat)!="tryError", "Please select a valid source data location")
+    )
+
+    if(input[[paste0("addlRenameToDefaults",title)]]){
+      if("DVCol" %in% names(input)) names(dat)[which(names(dat)==input[["DVCol"]])] = "DV"
+      if("TAFDCol" %in% names(input)) names(dat)[which(names(dat)==input[["TAFDCol"]])]="TAFD"
+      if("NMIDCol" %in% names(input)) names(dat)[which(names(dat)==input[["NMIDCol"]])]="NMID"
+      if("STUDYCol" %in% names(input)) names(dat)[which(names(dat)==input[["STUDYCol"]])]="STUDY"
+      if("IPREDCol" %in% names(input)) names(dat)[which(names(dat)==input[["IPREDCol"]])]="IPRED"
+      if("PREDCol" %in% names(input)) names(dat)[which(names(dat)==input[["PREDCol"]])]="PRED"
+    }
+    
+
+
+    # Run parser on merged data
+    if(paste0("addlDataParse_vpc",title) %in% names(input)){
+      parsecommands <- cleanparse(input[[paste0("addlDataParse_vpc",title)]],"dat")
+      if(!is.null(parsecommands)){
+        for(i in 1:length(parsecommands$commands)){
+          if(parsecommands$within[i]) tryCatch(eval(parse(text=paste0("dat <- within(dat, {", parsecommands$commands[i], "})"))),
+                                               error=function(e) cat(file=stderr(),paste("Parsing command broken:\n",parsecommands$commands[i],"\n", e)))
+          if(!parsecommands$within[i]) tryCatch(eval(parse(text=paste0("dat <- ", parsecommands$commands[i]))),
+                                                error=function(e) cat(file=stderr(),print(paste("Parsing command broken:\n",parsecommands$commands[i],"\n", e))))
+        }
+      }
+    }
+    
+    if(all(class(dat) != "try-error")){
+      # Rename observed DV
+      if(!is.null(input[[paste0("vpcSourceDV",title)]])){
+        if(input[[paste0("vpcSourceDV",title)]]!=""){
+          dat[,paste0(input[[paste0("vpcSourceDV",title)]],"obs")] <- 
+            dat[,input[[paste0("vpcSourceDV",title)]]]
+          dat[,input[[paste0("vpcSourceDV",title)]]] <- NULL
+          missing <- is.na(dat[,paste0(input[[paste0("vpcSourceDV",title)]],"obs")])
+          validate(
+            need(sum(missing)==0,
+                 paste0(missing," observed values dropped for missingness"))
+          )
+          dat <- dat[!missing,]
+        }
+      }
+    }
+    
+    if(exists("subjectExclusions",envir=.GlobalEnv)){
+      if(("NMID" %in% names(dat)) & ("NMID" %in% names(subjectExclusions))){
+        if("STUDY" %in% names(dat) & ("STUDY" %in% names(subjectExclusions))){
+          dat <- filter(dat, paste(NMID,STUDY) %nin% paste(subjectExclusions$NMID,subjectExclusions$STUDY) )
+        }else{
+          dat <- filter(dat, NMID %nin% subjectExclusions$NMID)
+        }
+      }
+    }
+    if(exists("observationExclusions",envir=.GlobalEnv)){
+      commoncols <- intersect(names(dat), names(observationExclusions))
+      dat <- dat[paste(dat[,commoncols]) %nin%  paste(observationExclusions[,commoncols]),]
+    }
+    if(debug){
+      save(n,input_vals,dat,vpcRun,file=file.path(srcDir,"tmp","addlVpcFile.rda"))
+    }
+    vpcDataList[[paste0("addl",basename(vpcRun))]] <<- isolate(dat)
+    return(dat)
+    
+  }
+  
   # Output Renders - Just the data set overview and plot title
   ##############
  
@@ -1483,7 +1568,31 @@ shinyServer(function(input, output, session) {
                   output[[paste0("contentsHead_vpcdata",n)]] <<-
                     # renderPrint({summarizeContents(vpcDataList[[vpcRun]])})
                     # DT::renderDataTable({ head(dat, n=input[[paste0("nhead",item,n)]])}, filter="top")
-                    renderTable({head(dat, n=isolate(input[[paste0("nhead",item,n)]]))})
+                    renderTable({head(dat, n=input[[paste0("nhead",item,n)]])})
+                })
+                if(debug){
+                  input_vals <- isolate(reactiveValuesToList(input))
+                  vpcDataList_vals <- isolate(vpcDataList)
+                  # runjs(paste0("console.log('",class(vpcDataList[[nm]]),"')"))                  
+                  save(input_vals, vpcDataList_vals, file=file.path(srcDir,"tmp","updateVPCview.rda"))
+                }
+              })             
+              
+              observeEvent(input[[paste0("updateAddlVPCView",item,n)]],{
+                cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_addlVpcdata called\n"))
+                autosave()
+                
+                req(input[[paste0("vpcRun",item,n)]])
+
+                withProgress(message="Loading additional VPC data", value=0, {
+                  nm <- basename(isolate(input[[paste0("vpcRun",item,n)]]))
+                  req(nm!="")
+                  vpcRun <- nm
+                  dat <- isolate(vpcAddlFile(n)) # Populate the vpcDataList
+                  output[[paste0("contentsHead_addlVpcdata",n)]] <<-
+                    # renderPrint({summarizeContents(vpcDataList[[vpcRun]])})
+                    # DT::renderDataTable({ head(dat, n=input[[paste0("nhead",item,n)]])}, filter="top")
+                    renderTable({head(dat, n=input[[paste0("addlNhead",item,n)]])})
                 })
                 if(debug){
                   input_vals <- isolate(reactiveValuesToList(input))
@@ -1492,6 +1601,8 @@ shinyServer(function(input, output, session) {
                   save(input_vals, vpcDataList_vals, file=file.path(srcDir,"tmp","updateVPCview.rda"))
                 }
               })
+              
+              
               
               # Observer for button clicks ----
               
@@ -1551,6 +1662,11 @@ shinyServer(function(input, output, session) {
 
                     if(item=="VPC"){
                       dati <- vpcDataList[[input[[paste0("vpcRun",item,n)]]]]
+                      if(!is.null(vpcDataList[[paste0("addl",input[[paste0("vpcRun",item,n)]])]])){
+                        dati <- list(vpc=dati, addl=vpcDataList[[paste0("addl",input[[paste0("vpcRun",item,n)]])]])
+                      }else{
+                        dati <- list(vpc=dati)
+                      }
                     }else{
                       dati <- dataFile()
                     }
@@ -1648,6 +1764,7 @@ shinyServer(function(input, output, session) {
                     }else if(item %nin% c("demogTabCont","demogTabCat","NMTab","ConcvTimeMult")){
                       #Perform the actual plotting for most figures (ggplots)
                       output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
+                        runjs("console.log('creatingplot')")
                         print(p1)
                       })
                     }else if(item=="ConcvTimeMult"){
@@ -1733,6 +1850,11 @@ shinyServer(function(input, output, session) {
                     
                     if(item=="VPC"){
                       dati <- vpcDataList[[input[[paste0("vpcRun",item,n)]]]]
+                      if(!is.null(vpcDataList[[paste0("addl",input[[paste0("vpcRun",item,n)]])]])){
+                        dati <- list(vpc=dati, addl=vpcDataList[[paste0("addl",input[[paste0("vpcRun",item,n)]])]])
+                      }else{
+                        dati <- list(vpc=dati)
+                      }
                     }else{
                       dati <- dataFile()
                     }
