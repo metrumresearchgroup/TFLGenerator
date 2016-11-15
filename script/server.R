@@ -529,24 +529,27 @@ shinyServer(function(input, output, session) {
             save(defs,codes,reasons,Defaults,file=file.path(srcDir,"tmp/defs_subj.rda"))
           }
           
-          excldat <- dat[dat[,input[["subjectExclusion_col"]]] %in% codes, ]
-          
-          # Ensure there are no patients in the excluded dataset left
-          if("NMID" %in% names(dat)){
-            if(c("STUDY" %in% names(dat))){
-              ids <- unique(paste(excldat$NMID, excldat$STUDY))
-              subjectExclusions <- dat[paste(dat$NMID,dat$STUDY)%in%ids,]
-              dat <- dat[paste(dat$NMID,dat$STUDY)%nin%ids,]
-            }else{
-              ids <- unique(paste(excldat$NMID))
-              subjectExclusions <- dat[paste(dat$NMID) %in% ids,]
-              dat <- dat[paste(dat$NMID)%nin%ids,]
+          if(!is.null(dat[input[["subjectExclusion_col"]],])){
+            
+            excldat <- dat[dat[,input[["subjectExclusion_col"]]] %in% codes, ]
+            
+            # Ensure there are no patients in the excluded dataset left
+            if("NMID" %in% names(dat)){
+              if(c("STUDY" %in% names(dat))){
+                ids <- unique(paste(excldat$NMID, excldat$STUDY))
+                subjectExclusions <- dat[paste(dat$NMID,dat$STUDY)%in%ids,]
+                dat <- dat[paste(dat$NMID,dat$STUDY)%nin%ids,]
+              }else{
+                ids <- unique(paste(excldat$NMID))
+                subjectExclusions <- dat[paste(dat$NMID) %in% ids,]
+                dat <- dat[paste(dat$NMID)%nin%ids,]
+              }
+              subjectExclusions$excl_reasons <- 
+                metrumrg:::map(subjectExclusions[,input[["subjectExclusion_col"]]],
+                               codes, reasons)
+              #Make this available everywhere
+              subjectExclusions <<- subjectExclusions
             }
-            subjectExclusions$excl_reasons <- 
-              metrumrg:::map(subjectExclusions[,input[["subjectExclusion_col"]]],
-                             codes, reasons)
-            #Make this available everywhere
-            subjectExclusions <<- subjectExclusions
           }
         }
       }
@@ -579,14 +582,16 @@ shinyServer(function(input, output, session) {
           codes <- codes[!is.na(reasons)]
           reasons <- reasons[!is.na(reasons)]
           
-          observationExclusions <- dat[dat[,input[["observationExclusion_col"]]] %in% codes, ]
-          dat <- dat[dat[,input[["observationExclusion_col"]]] %nin% codes,]
-          
-          observationExclusions$excl_reasons <- 
-            metrumrg:::map(observationExclusions[,input[["observationExclusion_col"]]],
-                           codes, reasons)
-          #Make this available in global
-          observationExclusions <<- observationExclusions
+          if(!is.null(dat[input[["observationExclusion_col"]],])){
+            observationExclusions <- dat[dat[,input[["observationExclusion_col"]]] %in% codes, ]
+            dat <- dat[dat[,input[["observationExclusion_col"]]] %nin% codes,]
+            
+            observationExclusions$excl_reasons <- 
+              metrumrg:::map(observationExclusions[,input[["observationExclusion_col"]]],
+                             codes, reasons)
+            #Make this available in global
+            observationExclusions <<- observationExclusions
+          }
           
         }
       }
@@ -601,11 +606,10 @@ shinyServer(function(input, output, session) {
     if(debug){
       dati <- dat
       tabList <- get("tabList",envir=.GlobalEnv)
-      if(exists("subjectExclusions") & exists("observationExclusions")){
-        save(dati,dat0,subjectExclusions,observationExclusions,Defaults,file=file.path(debugDir,"shinytmpdat.rda"))
-      }else{
-        save(dati,Defaults,file=file.path(debugDir,"shinytmpdat.rda"))
-      }
+        these <- c("dati","dat0","Defaults")
+        if(exists("subjectExclusions")) these <- c("subjectExclusions",these)
+        if(exists('observationExclusions')) these <- c("observationExclusions",these)
+        save(list=these,file=file.path(debugDir,"shinytmpdat.rda"))
     }
     # End debugging
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " dataFile finished successfully\n"))
