@@ -40,7 +40,6 @@ library(shinyjs)
       	      menuItem(text="Data Exclusions", tabName="tabDataExc", icon=icon("sliders")),
       	      menuItem(text="Analysis Selection", tabName="tabAnalysisSelection", icon=icon("check-square-o")),
       	      menuItem(text="Figures", tabName="tabFigures", icon=icon("bar-chart")),
-      	      menuItem(text="Figure Editor", tabName="tabFiguresEditor", icon=icon("sliders")),
       	      menuItem(text="Tables", tabName="tabTables", icon=icon("table")),
       	      menuItem(text="Listings", tabName="tabListings", icon=icon("navicon")),
       	      menuItem(text="Current TFL", tabName="tabCurrentTFL", icon=icon("file-word-o")),

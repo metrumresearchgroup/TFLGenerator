@@ -42,7 +42,7 @@ library(dplyr)
 
 cat(file=stderr(), paste0("LOG: ", Sys.time(), " Finished preamble\n"))
 #pListGlobal=new.env()
-pListPlot=pListTheme=pListTempPlot=list()
+pListPlot=list()
 
 
 
@@ -1415,9 +1415,7 @@ shinyServer(function(input, output, session) {
                         jsPrint('default print')
                         do.call(pListPrint,pListPlot[[paste0(item,n)]])
                       })                      
-                      
-                      updateSelectInput(session = session,inputId = 'editPlots',choices = names(pListPlot),selected = names(pListPlot)[1])
-                      
+
                       # }else if(item=="ConcvTimeMult"){
                       #   output[[paste("Plot",item,n,sep="")]] <<- renderImage({ p1 },deleteFile=F)
                     }else{
@@ -1454,120 +1452,6 @@ shinyServer(function(input, output, session) {
       }) # end observer
     }) #end local
   }
-  
-  ##################################################
-#Figures Editor tabset----
-  output$figuresEditorTabset<-renderUI({
-    cat(file=stderr(), paste0("LOG: ", Sys.time(), " creating figures editor tabset \n"))
-    
-    pObjs=names(pListPlot)
-    
-    tabPanel(title="Plot Editor",value = 'PlotEditorPanel',
-             
-             column(width=3,actionLink(inputId = "updateElem",label = "Update Plot Layer")),
-             column(width=2,actionLink(inputId = "updateTheme",label = "Update Plot Theme")),
-             column(width=2,actionLink(inputId = "SetThemeGrid",label = 'Update Grid Theme')),
-             column(width=3,actionLink(inputId = "SetThemeGlobal",label = 'Update Global Theme')),
-             uiOutput('currentPlots'),
-             uiOutput('activePlot'),
-             plotOutput('editPlot'),
-             uiOutput('popTheme')
-    )
-  })
-  
-  output$currentPlots<-renderUI({
-    column(width=3,selectInput(inputId = "editPlots",
-                               label = "Choose Plot to edit:",
-                               choices = names(pListPlot),
-                               selected = names(pListPlot)[1]))
-  })
-  
-  output$activePlot<-renderUI({
-    pEdit<<-pListPlot[[input$editPlots]]
-    pObj=pEdit$pList
-    pObjf=factor(names(pObj),levels=names(pObj))
-    column(width=3,selectInput('activePlot',
-                               "Active Plot:",
-                               choices = split(1:length(pObj),pObjf),
-                               selected = 1))
-  })
-
-  #Get the chosen plot from the selectInput
-  plotIdx=reactive({
-    idx=1
-    if(!is.null(input$activePlot)) idx=as.numeric(input$activePlot)
-    idx=min(length(pEdit$pList),idx)
-    return(idx)
-  })
-  # }else{
-  #   plotIdx=reactive(1)
-  # }
-  
-  theme.session=theme_get()
-
-  
-  #Initialize themeList that holds themes for all plot type
-  if(!exists('themeList',envir = .GlobalEnv)){
-    jsPrint('initialize themeList')
-    themeList<<-list()
-  }
-  
-  itemN<-reactive({input$editPlots})
-  
-
-  #read back in the theme elements from the Modal
-  update.Theme=eventReactive(input$setTheme,{
-    jsPrint('reading theme from modal')
-    pId=plotIdx()
-    
-    pTemp<<-pEdit$pList[[pId]]
-    pTemp.name=names(pEdit$pList)[pId]
-    
-    strThemeCallList=lapply(names(pEdit.theme()[[pId]]),function(item0){
-      themeNewVal(pEdit.theme()[[pId]][item0],pTemp,input)
-    })
-    
-    themeList<-paste0("theme(",paste0(unlist(strThemeCallList),collapse = ","),")")
-    themeListStr<-paste0(paste(names(pEdit$pList),themeList,sep='='),collapse=',')
-    Defaults[[paste0("themeUpdate",itemN())]]<<-paste0('list(',themeListStr,')')
-    isolate({autosave()})
-    
-    strThemeCall=paste0("pTemp<<-pTemp+theme(",paste0(unlist(strThemeCallList),collapse = ","),")")
-    eval(parse(text=strThemeCall))
-    pEdit$pList[[pId]]<<-pTemp
-    return(pEdit)
-  })
-  
-  #Create the Modal
-  
-  pEdit.theme<-reactive({
-    pEdit<<-pListPlot[[input$editPlots]]
-    lapply(pEdit$pList,
-                         function(p){
-                           if(length(p$theme)>0) theme.session=theme.session+p$theme
-                           themeFetch(theme.session)    
-                         }
-    ) 
-  })
-  
-    output$popTheme<-renderUI({
-      jsPrint('making modal')
-      themeModal(pTheme=pEdit.theme()[[plotIdx()]])
-    })
-
-    assemblePlot<-reactive({
-      argList=isolate(try(createArgList(input, itemN(), dataFile=dataFile(), currentWD=currentWD())))
-      callType
-      do.call(callType,argList)  
-    })
-    
-        
-    output$editPlot<-renderPlot(do.call(pListPrint,assemblePlot()))
-  
-  #############################  
-  
-  
-  
   
   observeEvent(input$outputGo,{
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " outputGo clicked"))
