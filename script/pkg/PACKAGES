@@ -83,16 +83,16 @@ MD5sum: bcbffd84a796a969b5445e1c86fd6273
 NeedsCompilation: no
 
 Package: ggplot2
-Version: 2.1.0
+Version: 2.2.0
 Depends: R (>= 3.1)
 Imports: digest, grid, gtable (>= 0.1.1), MASS, plyr (>= 1.7.1),
-        reshape2, scales (>= 0.3.0), stats
+        reshape2, scales (>= 0.4.1), stats, tibble, lazyeval
 Suggests: covr, ggplot2movies, hexbin, Hmisc, lattice, mapproj, maps,
         maptools, mgcv, multcomp, nlme, testthat (>= 0.11.0), quantreg,
         knitr, rpart, rmarkdown, svglite
 Enhances: sp
-License: GPL-2
-MD5sum: 771928cfb97c649c720423deb3ec7fd3
+License: GPL-2 | file LICENSE
+MD5sum: af42e7ac71e9bf566f03ef0ce7b2d56c
 NeedsCompilation: no
 
 Package: gridExtra
@@ -138,11 +138,11 @@ MD5sum: 2f64c9bfcd2876c4c796b4d44a0e9b78
 NeedsCompilation: no
 
 Package: lazyeval
-Version: 0.1.10
+Version: 0.2.0
 Depends: R (>= 3.1.0)
-Suggests: knitr, rmarkdown (>= 0.2.65), microbenchmark, testthat
+Suggests: knitr, rmarkdown (>= 0.2.65), testthat, covr
 License: GPL-3
-MD5sum: a3e40488f509df5a6bfd74c1546a4b4a
+MD5sum: df1daac908dcf02ae7e12f4335b1b13b
 NeedsCompilation: yes
 
 Package: metrumrg
@@ -218,6 +218,17 @@ License: GPL (>= 2)
 MD5sum: b7055a0888b9a0aafe7b684cdbdbca83
 NeedsCompilation: no
 
+Package: scales
+Version: 0.4.1
+Depends: R (>= 2.13)
+Imports: RColorBrewer, dichromat, plyr, munsell (>= 0.2), labeling,
+        methods, Rcpp
+LinkingTo: Rcpp
+Suggests: testthat (>= 0.8), covr, hms
+License: MIT + file LICENSE
+MD5sum: 3fb2218866a7fe4c1f6e66790876f85a
+NeedsCompilation: yes
+
 Package: shinyAce
 Version: 0.2.1
 Depends: R (>= 2.15.0)
@@ -260,14 +271,6 @@ License: MIT + file LICENSE
 MD5sum: fdf5b5ebf56c1ce3b8512cefdac67bf8
 NeedsCompilation: no
 
-Package: TFL
-Version: 1.0.2
-Depends: R (>= 2.3.0), grid, gridExtra (>= 2.1), ggplot2 (>= 2.0),
-        gdata, boot, plyr, stringr, scales, shinydashboard, shinyFiles,
-        DT, dplyr, reshape2, rtf, metrumrg, gtools, animation
-MD5sum: 0b42c8b96d7a4312c98221eac2f5ddbc
-NeedsCompilation: no
-
 Package: tibble
 Version: 1.1
 Depends: R (>= 3.1.2)
@@ -278,5 +281,4 @@ Suggests: testthat, withr, knitr (>= 1.5.32), rmarkdown, Lahman (>=
 License: MIT + file LICENSE
 MD5sum: 2fe9f806109d0b7fadafb1ffafea4cb8
 NeedsCompilation: yes
-
 
