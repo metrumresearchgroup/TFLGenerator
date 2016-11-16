@@ -51,7 +51,7 @@ library(shinyjs)
 
 cat(file=stderr(), paste0("LOG: ", Sys.time(), " Finished preamble\n"))
 #pListGlobal=new.env()
-pListPlot=pListTheme=pListTempPlot=list()
+pListPlot=list()
 
 
 
@@ -1693,9 +1693,7 @@ shinyServer(function(input, output, session) {
                         jsPrint('default print')
                         do.call(pListPrint,pListPlot[[paste0(item,n)]])
                       })                      
-                      
-                      updateSelectInput(session = session,inputId = 'editPlots',choices = names(pListPlot),selected = names(pListPlot)[1])
-                      
+
                       # }else if(item=="ConcvTimeMult"){
                       #   output[[paste("Plot",item,n,sep="")]] <<- renderImage({ p1 },deleteFile=F)
                     }else{
@@ -1729,9 +1727,6 @@ shinyServer(function(input, output, session) {
       }) # end observer
     }) #end local
   }
-  
-  ##################################################
-  
   
   observeEvent(input$outputGo,{
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " outputGo clicked"))
