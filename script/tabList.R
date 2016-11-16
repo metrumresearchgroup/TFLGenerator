@@ -26,7 +26,8 @@ tabList=list(
               "subjectExclusionsSummaryTabNum",
               "observationExclusionsSummaryTabNum",
               "distMultNum",
-              "barchartMultNum"
+              "barchartMultNum",
+              "VPCNum"
               #, "DescListNum"
     ),
     label=c("Serum Concentration Versus Time-Individual",
@@ -54,10 +55,11 @@ tabList=list(
             "Summary of subject exclusions",
             "Summary of observation exclusions",
             "Variable distribution (multipanel)",
-            "Bar charts (multipanel)"
+            "Bar charts (multipanel)",
+            "VPC plots"
             #, "Descriptive Listing"
     ),
-    value=rep(0,23),
+    value=rep(0,24),
     # value=c(Defaults$ConcvTimeNum,
     #         Defaults$ConcvTimeMultNum,
     #         Defaults$ConcvTimeGroupNum,
@@ -107,6 +109,7 @@ tabList=list(
               "Tables",
               "Tables",
               "ModelFigures",
+              "ModelFigures",
               "ModelFigures"
               #, "Listings"
     ),
@@ -134,6 +137,7 @@ tabList=list(
                   "Listings",
                   "Tables",
                   "Tables",
+                  "Figures",
                   "Figures",
                   "Figures"
                   #,"Listings"

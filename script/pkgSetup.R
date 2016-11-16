@@ -1,4 +1,5 @@
 # Expects to be run from script
+
 author <- c('yonis','danp')
 pkgs <- c('metrumrg','shinyFiles','animation','gdata','shinydashboard',
           'DT','rtf','lazyeval','dplyr','DBI','ggplot2','gridExtra',

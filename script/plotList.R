@@ -12,7 +12,8 @@ plotList <- list(
      "subjectExclusionsSummaryTab",
      "observationExclusionsSummaryTab",
      "distMult",
-     "barchartMult"
+     "barchartMult",
+     "VPC"
   ),
   Ind = c(
     "ConcvTime" ,    "ConcvTimeInd"   ,   
@@ -25,7 +26,8 @@ plotList <- list(
     "subjectExclusionsSummaryTab",
     "observationExclusionsSummaryTab",
     "distMult",
-    "barchartMult"
+    "barchartMult",
+    "VPC"
   ),
   Sum = c(
     "ConcvTime" ,    "ConcvTimeSum"   ,  
@@ -38,7 +40,8 @@ plotList <- list(
     "subjectExclusionsSummaryTab",
     "observationExclusionsSummaryTab",
     "distMult",
-    "barchartMult"
+    "barchartMult",
+    "VPC"
   ),
   Call = c(
     "panelTypeConcvTime"      ,  "panelTypeConcvTimeGroup" ,
@@ -51,7 +54,8 @@ plotList <- list(
   "panelTypesubjectExclusionsSummaryTab",
   "panelTypeobservationExclusionsSummaryTab",
   "panelTypedistMult",
-  "panelTypebarchartMult"
+  "panelTypebarchartMult",
+  "panelTypeVPC"
   ),
   sidebarType = 
     c("Figures"               , "Figures"                 , 
@@ -63,6 +67,7 @@ plotList <- list(
       "Listings"              , "Listings",
       "Tables"                ,
       "Tables"                ,
+      "Figures"               ,
       "Figures"               ,
       "Figures"
   )
