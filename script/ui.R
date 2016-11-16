@@ -40,11 +40,11 @@ library(shinyjs)
       	      menuItem(text="Data Exclusions", tabName="tabDataExc", icon=icon("sliders")),
       	      menuItem(text="Analysis Selection", tabName="tabAnalysisSelection", icon=icon("check-square-o")),
       	      menuItem(text="Figures", tabName="tabFigures", icon=icon("bar-chart")),
+      	      menuItem(text="Figure Editor", tabName="tabFiguresEditor", icon=icon("sliders")),
       	      menuItem(text="Tables", tabName="tabTables", icon=icon("table")),
       	      menuItem(text="Listings", tabName="tabListings", icon=icon("navicon")),
       	      menuItem(text="Current TFL", tabName="tabCurrentTFL", icon=icon("file-word-o")),
       	      menuItem(text="Save and Export", tabName="tabOutput", icon=icon("mail-forward"))
-      	      
       	  )
       	),
       	dashboardBody(
@@ -63,7 +63,9 @@ library(shinyjs)
       	            # ,
       	            h1(""),
       	            h2("Debug:"),
+      	            code(verbatimTextOutput("serverLogs")),
       	            code(verbatimTextOutput("readThis"))
+      	            
       	            # ,
       	            # h1(""),
       	            # h2("Client data:"),
@@ -106,6 +108,10 @@ library(shinyjs)
       	            # column(width=3,actionLink("SetThemeGlobal",'Update Global Theme')),
       	            uiOutput("figuresTabset")
       	            # uiOutput('popTheme')
+      	    ),
+      	    tabItem(tabName="tabFiguresEditor",
+      	            h3("Figures Editor"),
+      	            uiOutput("figuresEditorTabset")
       	    ),
       	    tabItem(tabName="tabTables",
       	            h3("Tables"),
