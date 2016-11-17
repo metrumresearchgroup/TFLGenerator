@@ -1535,21 +1535,16 @@ shinyServer(function(input, output, session) {
                 isolate(autosave())
                 
                 if(debug){
-                  message <- "DEBUG A"
                   input_nms <- names(input)
                   input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
                   names(input_vals) <- input_nms
-                  save(message, input_vals,n,file=file.path(debugDir,"message.rda"))
+                  save(item,input_vals,n,file=file.path(debugDir,"messagea.rda"))
                 } 
                 #check if the defaults/inputs for a plot have been created
                 if(length(grep(paste(item, n,sep=""), names(input)))>0){
                   
                   cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " checking priors for", item,n, "\n")))
                   
-                  if(debug){
-                    message <- "DEBUG AA"
-                    save(message,file=file.path(debugDir,"message.rda"))
-                  }                     
                   
                   ##Check to see if the input has changed since the last time it was rendered
                   idx=grep(paste(item,n,sep=""), names(Defaults), value=TRUE)
