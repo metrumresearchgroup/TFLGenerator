@@ -41,7 +41,6 @@ library(dplyr)
 library(shinyjs)
 # library(shinyBS)
 
-# currentWD <- function() srcDir
 
 # Set up parallel backend
 # cl <- makeCluster(8)
