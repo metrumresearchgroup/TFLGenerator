@@ -1,4 +1,4 @@
-debug <- T
+debug <- F
 
 #rm(list=ls(all=TRUE))
 Sys.setenv(PATH=paste0(Sys.getenv("PATH"),":/usr/bin:/usr/lib/rstudio-server/bin")) # Get pandoc and imagemagick
@@ -115,7 +115,7 @@ shinyServer(function(input, output, session) {
   cleanScales<<-setColorScale(shapeList = shape_pal()(6))
   
   observe(
-    if("Color" %in% names(input)){
+    if("Color" %in% isolate(names(input))){
       if(input$Color){
         cat(file=stderr(), paste0("LOG: ", Sys.time(), " setColorScale\n"))
         cleanScales<<-setColorScale()}
@@ -123,7 +123,7 @@ shinyServer(function(input, output, session) {
   )
   
   observe(
-    if("Color" %in% names(input)){
+    if("Color" %in% isolate(names(input))){
       if(!input$Color){
         cat(file=stderr(), paste0("LOG: ", Sys.time(), " setGrayScale\n"))
         cleanScales<<-setGrayScale()}
@@ -137,7 +137,7 @@ shinyServer(function(input, output, session) {
   output$dataPath <- renderText({currentWD()})
   
   currentWD <- reactive(
-    if("manualDataPath" %in% names(input)){
+    if("manualDataPath" %in% isolate(names(input))){
       if(input$manualDataPath!=""){
         workingDirectory <- input[["manualDataPath"]]
         cat(file=stderr(), paste0("LOG: ", Sys.time(), " setting working directory to manualDataPath\n"))
@@ -209,7 +209,7 @@ shinyServer(function(input, output, session) {
   tableFile=reactive({
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " tableFile called\n"))
     
-    if("runno" %nin% names(input)) return()
+    if("runno" %nin% isolate(names(input))) return()
     
     if(input$runno=="#"){
       return()
@@ -257,7 +257,7 @@ shinyServer(function(input, output, session) {
     dat=try(data.frame(get("originalTableData",envir=.GlobalEnv), stringsAsFactors=F))
     if(class(dat)=="try-error") return()
     
-    if("tableSubset" %in% names(input)){
+    if("tableSubset" %in% isolate(names(input))){
       if(length(input[["tableSubset"]] > 0)){
         if(any(input[["tableSubset"]] != "")) dat <- dat[, setdiff(names(dat),input[["tableSubset"]])]
       }
@@ -266,7 +266,7 @@ shinyServer(function(input, output, session) {
       }
     }
     
-    if("tableNA" %in% names(input)){
+    if("tableNA" %in% isolate(names(input))){
       tableNA <- unlist(strsplit(input$tableNA,","))
       tableNAnum <- as.numeric(tableNA)
       tableNA <- tableNA[ !is.na(tableNA) ]
@@ -281,7 +281,7 @@ shinyServer(function(input, output, session) {
     }
     
     
-    if("dataParse_table" %in% names(input)){
+    if("dataParse_table" %in% isolate(names(input))){
       parsecommands <- cleanparse(input[["dataParse_table"]],"dat")
       if(!is.null(parsecommands)){
         for(i in 1:length(parsecommands$commands)){
@@ -318,7 +318,7 @@ shinyServer(function(input, output, session) {
   sourceFile=reactive({
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " sourceFile called\n"))
     
-    if("srcData" %nin% names(input)) return()
+    if("srcData" %nin% isolate(names(input))) return()
     
     if(input$srcData%in%c("sourcedata.csv",""," ","  ","   ")){
       return()
@@ -344,7 +344,7 @@ shinyServer(function(input, output, session) {
       incProgress(amount=.5)
       dat=data.frame(dat, stringsAsFactors=F)
       
-      if("sourceSubset" %in% names(input)){
+      if("sourceSubset" %in% isolate(names(input))){
         if(length(input[["sourceSubset"]] > 0)){
           if(any(input[["sourceSubset"]] != "")) dat <- dat[,setdiff(names(dat),input[["sourceSubset"]])]
         }
@@ -353,7 +353,7 @@ shinyServer(function(input, output, session) {
         }
       }
       
-      if("sourceNA" %in% names(input)){
+      if("sourceNA" %in% isolate(names(input))){
         sourceNA <- unlist(strsplit(input$sourceNA,","))
         sourceNAnum <- as.numeric(sourceNA)
         sourceNA <- sourceNA[ !is.na(sourceNA) ]
@@ -367,7 +367,7 @@ shinyServer(function(input, output, session) {
         }
       }
       
-      if("dataParse_source" %in% names(input)){
+      if("dataParse_source" %in% isolate(names(input))){
         parsecommands <- cleanparse(input[["dataParse_source"]],"dat")
         if(!is.null(parsecommands)){
           for(i in 1:length(parsecommands$commands)){
@@ -422,9 +422,9 @@ shinyServer(function(input, output, session) {
     
     if(!is.null(tableFile()) & !is.null(sourceFile())){
       dat <- merge(sourceFile(), tableFile(), 
-                   by=input[["mergeKey"]],
-                   all.x=input[["keepAllSource"]],
-                   all.y=input[["keepAllRun"]],
+                   by=isolate(input[["mergeKey"]]),
+                   all.x=isolate(input[["keepAllSource"]]),
+                   all.y=isolate(input[["keepAllRun"]]),
                    sort=F,suffixes=c(".source",".table")
       ) 
     }else {
@@ -439,12 +439,12 @@ shinyServer(function(input, output, session) {
     updateSelectizeInput(session,"PREDCol",choices=names(dat),selected=Defaults[["PREDCol"]],server=T)
     
     # dat=data.frame(dat, stringsAsFactors=TRUE)
-    if("DVCol" %in% names(input)) names(dat)[which(names(dat)==input[["DVCol"]])] = "DV"
-    if("TAFDCol" %in% names(input)) names(dat)[which(names(dat)==input[["TAFDCol"]])]="TAFD"
-    if("NMIDCol" %in% names(input)) names(dat)[which(names(dat)==input[["NMIDCol"]])]="NMID"
-    if("STUDYCol" %in% names(input)) names(dat)[which(names(dat)==input[["STUDYCol"]])]="STUDY"
-    if("IPREDCol" %in% names(input)) names(dat)[which(names(dat)==input[["IPREDCol"]])]="IPRED"
-    if("PREDCol" %in% names(input)) names(dat)[which(names(dat)==input[["PREDCol"]])]="PRED"
+    if("DVCol" %in% isolate(names(input))) names(dat)[which(names(dat)==input[["DVCol"]])] = "DV"
+    if("TAFDCol" %in% isolate(names(input))) names(dat)[which(names(dat)==input[["TAFDCol"]])]="TAFD"
+    if("NMIDCol" %in% isolate(names(input))) names(dat)[which(names(dat)==input[["NMIDCol"]])]="NMID"
+    if("STUDYCol" %in% isolate(names(input))) names(dat)[which(names(dat)==input[["STUDYCol"]])]="STUDY"
+    if("IPREDCol" %in% isolate(names(input))) names(dat)[which(names(dat)==input[["IPREDCol"]])]="IPRED"
+    if("PREDCol" %in% isolate(names(input))) names(dat)[which(names(dat)==input[["PREDCol"]])]="PRED"
     
     if(input$sortBy){
       if(all(c("DV","TAFD","NMID")%in%names(dat))){
@@ -452,7 +452,7 @@ shinyServer(function(input, output, session) {
       }
     }# else we assume the user has done so
     
-    if("dataParse_analysis" %in% names(input)){
+    if("dataParse_analysis" %in% isolate(names(input))){
       parsecommands <- cleanparse(input[["dataParse_analysis"]],"dat")
       if(!is.null(parsecommands)){
         for(i in 1:length(parsecommands$commands)){
@@ -470,10 +470,10 @@ shinyServer(function(input, output, session) {
     updateSelectizeInput(session,"observationExclusion_col",choices=names(dat),selected=Defaults[["observationExclusion_col"]],server=T)
     
     
-    if("subjectExclusion_col" %in% names(input)){
+    if("subjectExclusion_col" %in% isolate(names(input))){
       if(input[["subjectExclusion_col"]]%in%names(dat)) revals$nms_subj <- isolate(unique(dat[,input$subjectExclusion_col]))
     }
-    if("observationExclusion_col" %in% names(input)){
+    if("observationExclusion_col" %in% isolate(names(input))){
       if(input[["observationExclusion_col"]]%in%names(dat)) revals$nms_obs <- isolate(unique(dat[,input$observationExclusion_col]))
     }
     
@@ -482,7 +482,7 @@ shinyServer(function(input, output, session) {
     if(length(defs)>0){
       
       # Get the exclusions inputs, assign to Defaults for autosave
-      for(excl in grep("subjectExclusion",names(input),value=T)){
+      for(excl in grep("subjectExclusion",isolate(names(input)),value=T)){
         if(!grepl("contentsHead",excl))  Defaults[[excl]] <<- input[[excl]]
       }
       
@@ -527,7 +527,7 @@ shinyServer(function(input, output, session) {
     defs <- grep("observationExclusion[[:digit:]]",names(Defaults),value=T)
     if(length(defs)>0){
       # Get the exclusions inputs, assign to Defaults for autosave
-      for(excl in grep("observationExclusion",names(input),value=T)){
+      for(excl in grep("observationExclusion",isolate(names(input)),value=T)){
         if(!grepl("contentsHead",excl)) Defaults[[excl]] <<- input[[excl]]
       }
       
@@ -691,7 +691,7 @@ shinyServer(function(input, output, session) {
                            selected=Defaults[[paste0("mergeKey",item,n)]],server=T)
       
       # Subset to the requested columns
-      if(paste0("dataSubset",title) %in% names(input)){
+      if(paste0("dataSubset",title) %in% isolate(names(input))){
         if(any(input[[paste0("dataSubset",title)]]!="")){
           vpcsrc <- subset(vpcsrc, select=input[[paste0("dataSubset",title)]])
           vpcsrc <- vpcsrc[!duplicated(vpcsrc),]
@@ -719,18 +719,18 @@ shinyServer(function(input, output, session) {
     
     
     if(input[[paste0("renameToDefaults",title)]]){
-      if("DVCol" %in% names(input)) names(dat)[which(names(dat)==input[["DVCol"]])] = "DV"
-      if("TAFDCol" %in% names(input)) names(dat)[which(names(dat)==input[["TAFDCol"]])]="TAFD"
-      if("NMIDCol" %in% names(input)) names(dat)[which(names(dat)==input[["NMIDCol"]])]="NMID"
-      if("STUDYCol" %in% names(input)) names(dat)[which(names(dat)==input[["STUDYCol"]])]="STUDY"
-      if("IPREDCol" %in% names(input)) names(dat)[which(names(dat)==input[["IPREDCol"]])]="IPRED"
-      if("PREDCol" %in% names(input)) names(dat)[which(names(dat)==input[["PREDCol"]])]="PRED"
+      if("DVCol" %in% isolate(names(input))) names(dat)[which(names(dat)==input[["DVCol"]])] = "DV"
+      if("TAFDCol" %in% isolate(names(input))) names(dat)[which(names(dat)==input[["TAFDCol"]])]="TAFD"
+      if("NMIDCol" %in% isolate(names(input))) names(dat)[which(names(dat)==input[["NMIDCol"]])]="NMID"
+      if("STUDYCol" %in% isolate(names(input))) names(dat)[which(names(dat)==input[["STUDYCol"]])]="STUDY"
+      if("IPREDCol" %in% isolate(names(input))) names(dat)[which(names(dat)==input[["IPREDCol"]])]="IPRED"
+      if("PREDCol" %in% isolate(names(input))) names(dat)[which(names(dat)==input[["PREDCol"]])]="PRED"
     }
     
     
     
     # Run parser on merged data
-    if(paste0("dataParse_vpc",title) %in% names(input)){
+    if(paste0("dataParse_vpc",title) %in% isolate(names(input))){
       parsecommands <- cleanparse(input[[paste0("dataParse_vpc",title)]],"dat")
       if(!is.null(parsecommands)){
         for(i in 1:length(parsecommands$commands)){
@@ -742,7 +742,7 @@ shinyServer(function(input, output, session) {
       }
     }
     
-    if(paste0("sortBy",item,n) %in% names(input)){
+    if(paste0("sortBy",item,n) %in% isolate(names(input))){
       if(all(c("DV","TAFD","NMID")%in%names(dat))){
         if("STUDY" %in% names(dat)) dat <- dat[order(dat$STUDY,dat$NMID,dat$TAFD),] else dat <- dat[order(dat$NMID,dat$TAFD),]
       }
@@ -791,18 +791,18 @@ shinyServer(function(input, output, session) {
     )
     
     if(input[[paste0("addlRenameToDefaults",title)]]){
-      if("DVCol" %in% names(input)) names(dat)[which(names(dat)==input[["DVCol"]])] = "DV"
-      if("TAFDCol" %in% names(input)) names(dat)[which(names(dat)==input[["TAFDCol"]])]="TAFD"
-      if("NMIDCol" %in% names(input)) names(dat)[which(names(dat)==input[["NMIDCol"]])]="NMID"
-      if("STUDYCol" %in% names(input)) names(dat)[which(names(dat)==input[["STUDYCol"]])]="STUDY"
-      if("IPREDCol" %in% names(input)) names(dat)[which(names(dat)==input[["IPREDCol"]])]="IPRED"
-      if("PREDCol" %in% names(input)) names(dat)[which(names(dat)==input[["PREDCol"]])]="PRED"
+      if("DVCol" %in% isolate(names(input))) names(dat)[which(names(dat)==input[["DVCol"]])] = "DV"
+      if("TAFDCol" %in% isolate(names(input))) names(dat)[which(names(dat)==input[["TAFDCol"]])]="TAFD"
+      if("NMIDCol" %in% isolate(names(input))) names(dat)[which(names(dat)==input[["NMIDCol"]])]="NMID"
+      if("STUDYCol" %in% isolate(names(input))) names(dat)[which(names(dat)==input[["STUDYCol"]])]="STUDY"
+      if("IPREDCol" %in% isolate(names(input))) names(dat)[which(names(dat)==input[["IPREDCol"]])]="IPRED"
+      if("PREDCol" %in% isolate(names(input))) names(dat)[which(names(dat)==input[["PREDCol"]])]="PRED"
     }
     
     
     
     # Run parser on merged data
-    if(paste0("addlDataParse_vpc",title) %in% names(input)){
+    if(paste0("addlDataParse_vpc",title) %in% isolate(names(input))){
       parsecommands <- cleanparse(input[[paste0("addlDataParse_vpc",title)]],"dat")
       if(!is.null(parsecommands)){
         for(i in 1:length(parsecommands$commands)){
@@ -929,7 +929,7 @@ shinyServer(function(input, output, session) {
   # Exclusions ----
   excl_list <- reactive({
     # if(req(input$generateExclusions) == 0) return(list(h1(""),renderText("Press button to generate exclusions mapping")))
-    # if("subjectExclusion_col" %nin% names(input)) return(list(renderPrint("Input exclusion column")))
+    # if("subjectExclusion_col" %nin% isolate(names(input))) return(list(renderPrint("Input exclusion column")))
     # if(input$subjectExclusion_col == "") return(list(renderPrint("Input exclusion column")))
     cat(file=stderr(),paste0("LOG: ", Sys.time(), " excl_list called\n"))
     #nms <- isolate(unique(dataFile()[,input$subjectExclusion_col]))
@@ -955,7 +955,7 @@ shinyServer(function(input, output, session) {
   
   obsexcl_list <- reactive({
     # if(req(input$generateExclusions) == 0) return(list(h1(""),renderText("Press button to generate exclusions mapping")))
-    # if("subjectExclusion_col" %nin% names(input)) return(list(renderPrint("Input exclusion column")))
+    # if("subjectExclusion_col" %nin% isolate(names(input))) return(list(renderPrint("Input exclusion column")))
     # if(input$subjectExclusion_col == "") return(list(renderPrint("Input exclusion column")))
     cat(file=stderr(),paste0("LOG: ", Sys.time(), " obsexcl_list called\n"))
     #nms <- isolate(unique(dataFile()[,input$observationExclusion_col]))
@@ -1281,7 +1281,7 @@ shinyServer(function(input, output, session) {
     types=grep(type, plotList$sidebarType)
     PanelSet=list()
     for (item in plotList$type[types]){
-      if(paste(item, "Num", sep="") %in% names(input)){
+      if(paste(item, "Num", sep="") %in% isolate(names(input))){
         if("varNames" %in% names(formals(plotList$Call[plotList$type==item]))){
           if(item=="VPC") varNames <- revals else(varNames=revals$nms_df)
           PanelSet=do.call(what=plotList$Call[plotList$type==item], args=list(plotType=item, input=input, Set=PanelSet, varNames=varNames))
@@ -1301,7 +1301,7 @@ shinyServer(function(input, output, session) {
     types=grep(type, plotList$sidebarType)
     PanelSet=list()
     for (item in plotList$type[types]){
-      if(paste(item, "Num", sep="") %in% names(input)){
+      if(paste(item, "Num", sep="") %in% isolate(names(input))){
         PanelSet=do.call(what=plotList$Call[plotList$type==item], args=list(plotType=item, input=input, Set=PanelSet) )
       }
     }
@@ -1314,7 +1314,7 @@ shinyServer(function(input, output, session) {
     types=grep(type, plotList$sidebarType)
     PanelSet=list()
     for (item in plotList$type[types]){
-      if(paste(item, "Num", sep="") %in% names(input)){
+      if(paste(item, "Num", sep="") %in% isolate(names(input))){
         PanelSet=do.call(what=plotList$Call[plotList$type==item], args=list(plotType=item, input=input, Set=PanelSet) )
       }
     }
@@ -1461,14 +1461,14 @@ shinyServer(function(input, output, session) {
     local({
       item=this_item
       #Observe if any plots of that type have been assigned inputs
-      observe(if(length(grep(paste("reset", item, sep=""), names(input)))>0){
+      observe(if(length(grep(paste("reset", item, sep=""), isolate(names(input))))>0){
         
         numbers=as.numeric(unlist(str_extract_all(input[[paste(item, "Num", sep="")]], "\\d+")))
         if(length(numbers)>1){numRange=numbers[which(numbers!=0)]}
         if(length(numbers)==1){numRange=c(0:numbers)}
         if(length(numbers)==0){numRange=0}
         
-        testClick=which(sapply(names(input)[grepl(paste0('button',item),names(input))],function(x) input[[x]]>0))
+        testClick=which(sapply(isolate(names(input))[grepl(paste0('button',item),isolate(names(input)))],function(x) input[[x]]>0))
         if(length(testClick)>0) numRange=numRange[testClick]
         
         for (this_n in numRange){
@@ -1535,20 +1535,20 @@ shinyServer(function(input, output, session) {
                 isolate(autosave())
                 
                 if(debug){
-                  input_nms <- names(input)
+                  input_nms <- isolate(names(input))
                   input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
                   names(input_vals) <- input_nms
                   save(item,input_vals,n,file=file.path(debugDir,"messagea.rda"))
                 } 
                 #check if the defaults/inputs for a plot have been created
-                if(length(grep(paste(item, n,sep=""), names(input)))>0){
+                if(length(grep(paste(item, n,sep=""), isolate(names(input))))>0){
                   
                   cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " checking priors for", item,n, "\n")))
                   
                   
                   ##Check to see if the input has changed since the last time it was rendered
                   idx=grep(paste(item,n,sep=""), names(Defaults), value=TRUE)
-                  idn=grep(paste(item,n,sep=""), names(input), value=TRUE)
+                  idn=grep(paste(item,n,sep=""), isolate(names(input)), value=TRUE)
                   
                   if(debug){
                     message <- "DEBUG AAA"
@@ -1566,7 +1566,7 @@ shinyServer(function(input, output, session) {
                   }
                   
                   if(debug){
-                    input_nms <- names(input)
+                    input_nms <- isolate(names(input))
                     input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
                     names(input_vals) <- input_nms
                     dataFile_vals <- isolate(dataFile())
@@ -1603,7 +1603,7 @@ shinyServer(function(input, output, session) {
                       # if(sameAsDefault==1 & input[[paste0("button",item,n)]]>1) argList$genAll <- F else argList$genAll <- T
                       # if(debug){
                       #   message="ConcvTime sameAsDefault"
-                      #   input_nms <- names(input)
+                      #   input_nms <- isolate(names(input))
                       #   input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
                       #   names(input_vals) <- input_nms
                       #   save(message,idx,idn,Defaults,argList,input_vals,file=file.path(debugDir,"page.rda"))
@@ -1612,7 +1612,7 @@ shinyServer(function(input, output, session) {
                     
                     if(debug){
                       message <- "DEBUG B"
-                      input_nms <- names(input)
+                      input_nms <- isolate(names(input))
                       input_vals <- reactiveValuesToList(input)
                       names(input_vals) <- input_nms
                       
@@ -1625,7 +1625,7 @@ shinyServer(function(input, output, session) {
                       argList$callType=NULL
                       if(debug){
                         message <- "DEBUG B"
-                        input_nms <- names(input)
+                        input_nms <- isolate(names(input))
                         input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
                         names(input_vals) <- input_nms
                         
@@ -1733,7 +1733,7 @@ shinyServer(function(input, output, session) {
         local({
           item=this_item
           #Observe if any plots of that type have been assigned inputs
-          if(length(grep(paste("reset", item, sep=""), names(input)))>0){
+          if(length(grep(paste("reset", item, sep=""), isolate(names(input))))>0){
             
             numbers=as.numeric(unlist(str_extract_all(input[[paste(item, "Num", sep="")]], "\\d+")))
             if(length(numbers)>1){numRange=numbers[which(numbers!=0)]}
@@ -1752,7 +1752,7 @@ shinyServer(function(input, output, session) {
                     
                     if(debug){
                       message <- "DEBUG OUTPUTGO"
-                      input_nms <- names(input)
+                      input_nms <- isolate(names(input))
                       input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
                       names(input_vals) <- input_nms
                       save(message,item,n,input_vals,Defaults,file=file.path(debugDir,"message.rda"))
@@ -1813,7 +1813,7 @@ shinyServer(function(input, output, session) {
                       
                       if(debug){
                         message="DEBUG G"
-                        input_nms <- names(input)
+                        input_nms <- isolate(names(input))
                         input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
                         names(input_vals) <- input_nms
                         save(message,input_vals,item,Dir,fileHead,callType, argList, file=file.path(debugDir,"message.rda"))
@@ -1839,9 +1839,9 @@ shinyServer(function(input, output, session) {
                              Marks=ifelse("markBy" %in% names(argList), argList$markBy, ""),
                              Groups=ifelse("groupBy" %in% names(argList), argList$groupBy, ""),
                              Stratification="",
-                             LegendTitle=ifelse(paste("LegendTitle", item, n, sep="") %in% names(input), input[[paste("LegendTitle", item, n, sep="")]], ""),
-                             Legend=ifelse(paste("Legend", item, n, sep="") %in% names(input), input[[paste("Legend", item, n, sep="")]], ""),
-                             Footnote=ifelse(paste("Footnote",item,n,sep="") %in% names(input), input[[paste("Footnote",item,n,sep="")]], ""),
+                             LegendTitle=ifelse(paste("LegendTitle", item, n, sep="") %in% isolate(names(input)), input[[paste("LegendTitle", item, n, sep="")]], ""),
+                             Legend=ifelse(paste("Legend", item, n, sep="") %in% isolate(names(input)), input[[paste("Legend", item, n, sep="")]], ""),
+                             Footnote=ifelse(paste("Footnote",item,n,sep="") %in% isolate(names(input)), input[[paste("Footnote",item,n,sep="")]], ""),
                              Plot=p1,
                              Type=plotList$sidebarType[plotList$type==item],
                              CSV=p1csv
@@ -1994,7 +1994,7 @@ shinyServer(function(input, output, session) {
           cat(file=stderr(), paste0("LOG: ", Sys.time(), " writing RTF\n"))
           if(debug){
             message <- "writing RTF"
-            input_nms <- isolate(names(input))
+            input_nms <- isolate(isolate(names(input)))
             input_vals <- isolate(lapply(input_nms, function(inputi) try(input[[inputi]])))
             names(input_vals) <- input_nms
             save(message,input_vals,guiGrobs,file=file.path(debugDir,"message.rda"))
@@ -2059,7 +2059,7 @@ shinyServer(function(input, output, session) {
         {Defaults[[item]]<<-input[[item]]}
       }
       if(debug){
-        input_nms <- names(input)
+        input_nms <- isolate(names(input))
         input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
         names(input_vals) <- input_nms
         message <- "DEBUG Y"
