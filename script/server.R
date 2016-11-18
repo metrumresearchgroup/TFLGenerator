@@ -779,7 +779,7 @@ shinyServer(function(input, output, session) {
       revals_vals <- reactiveValuesToList(revals)
       if(!exists("subjectExclusions",.GlobalEnv)) subjectExclusions <- NULL
       if(!exists("observationExclusions",.GlobalEnv)) observationExclusions <- NULL
-      try(save(n,item,title,vpcRun,input_vals,subjectExclusions,observationExclusions,revals,file=file.path(srcDir,"tmp","vpcAddlFile.rda")))
+      try(save(n,item,title,vpcRun,input_vals,subjectExclusions,observationExclusions,revals_vals,file=file.path(srcDir,"tmp","vpcAddlFile.rda")))
     }
     
     # Tack on the source data
@@ -1595,11 +1595,12 @@ shinyServer(function(input, output, session) {
                     
                     # Special routine for multipage
                     if(item == "ConcvTimeMult"){
-                      idtest=idx[idx %in% idn]
-                      idtest <- setdiff(idtest,paste0("page",item,n))
-                      sameAsDefault <- sum(sapply(idtest, function(X){input[[X]]==Defaults[X]}))/length(idtest)
-                      # If page is the only thing that changed, don't regen all plots
-                      if(sameAsDefault==1 & input[[paste0("button",item,n)]]>1) argList$regenPlots <- F else argList$regenPlots <- T
+                      argList$genAll <- F # we never want all of them here, just at the end when writing to disk
+                      # idtest=idx[idx %in% idn]
+                      # idtest <- setdiff(idtest,paste0("page",item,n))
+                      # sameAsDefault <- sum(sapply(idtest, function(X){input[[X]]==Defaults[X]}))/length(idtest)
+                      # # If page is the only thing that changed, don't regen all plots
+                      # if(sameAsDefault==1 & input[[paste0("button",item,n)]]>1) argList$genAll <- F else argList$genAll <- T
                       # if(debug){
                       #   message="ConcvTime sameAsDefault"
                       #   input_nms <- names(input)
@@ -1687,11 +1688,8 @@ shinyServer(function(input, output, session) {
                         jsPrint('default print')
                         do.call(pListPrint,pListPlot[[paste0(item,n)]])
                       })                      
-
-                      # }else if(item=="ConcvTimeMult"){
-                      #   output[[paste("Plot",item,n,sep="")]] <<- renderImage({ p1 },deleteFile=F)
                     }else{
-                      # Probably one of demogTabCont, demogTabCat, NMTab, ConcvTimeMult
+                      # Probably one of demogTabCont, demogTabCat, NMTab
                       output[[paste("Plot",item,n,sep="")]]<<-renderImage(
                         renderTex(obj=pListPlot[[paste0(item,n)]],item=paste0(item,n),
                                   margin=c(left=input[[paste0("leftmargin",item,n)]],
@@ -1722,6 +1720,8 @@ shinyServer(function(input, output, session) {
     }) #end local
   }
   
+  
+  # Output requested, build all ----
   observeEvent(input$outputGo,{
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " outputGo clicked"))
     
@@ -1764,11 +1764,16 @@ shinyServer(function(input, output, session) {
                     )
                     dir.create(file.path(Dir,"PNG"),recursive=T)
                     
-                    
-                    
-                    
+
                     if(item=="VPC"){
+                      if(is.null(vpcDataList[[input[[paste0("vpcRun",item,n)]]]])){
+                        cat(file=stderr(), "LOG: You need to load the VPC data in the preview section in this version of the TFL generator. \n")
+                      }
                       dati <- vpcDataList[[input[[paste0("vpcRun",item,n)]]]]
+                      if(debug){
+                        input_vals <- reactiveValuesToList(input)
+                        save(vpcDataList, input_vals, item, n, file=file.path(srcDir,"vpcDebug.rda"))
+                      }
                       if(!is.null(vpcDataList[[paste0("addl",input[[paste0("vpcRun",item,n)]])]])){
                         dati <- list(vpc=dati, addl=vpcDataList[[paste0("addl",input[[paste0("vpcRun",item,n)]])]])
                       }else{
@@ -1783,15 +1788,9 @@ shinyServer(function(input, output, session) {
                     callType=argList$callType
                     argList$callType=NULL
                     
-                    # for(IDX in idx){
-                    #   Defaults[[IDX]]<<-input[[IDX]]
-                    # }
-                    # Defaults[[paste("priorExists", item, n, sep="")]]<<-TRUE
-                    
                     
                     if(item%in%"ConcvTimeMult"){
-                      argList$tmpDir <- file.path(Dir,"PNG")
-                      argList$regenPlots <- T
+                      argList$genAll <- T
                     }
                     
                     #insert an error block around the plotting
@@ -1804,27 +1803,7 @@ shinyServer(function(input, output, session) {
                       arrangeGrob(textGrob(sprintf("You broke something\n%s", e)))
                     })
                     
-                    # if(item %nin% c("demogTabCont","demogTabCat","NMTab")){
-                    #   #Perform the actual plotting
-                    #   output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
-                    #     print(p1)
-                    #   })					
-                    # }else if(item=="ConcvTimeMult"){
-                    #   output[[paste("Plot",item,n,sep="")]] <<- renderImage({ p1 },deleteFile=F)
-                    # }else{
-                    #   output[[paste("Plot",item,n,sep="")]]<<-renderImage(
-                    #     renderTex(obj=p1,item=paste0(item,n),
-                    #               margin=c(left=input[[paste0("leftmargin",item,n)]],
-                    #                        top=input[[paste0("topmargin",item,n)]],
-                    #                        bottom=input[[paste0("bottommargin",item,n)]],
-                    #                        right=input[[paste0("rightmargin",item,n)]]))
-                    #     ,deleteFile=F)
-                    # }
-                    
                     #Create the save directory
-                    
-                    
-                    
                     
                     fileHead=sprintf("%s%s_%s",Dir, input$saveAs, Sys.Date())
                     # cat(Dir)
@@ -1890,9 +1869,16 @@ shinyServer(function(input, output, session) {
                       }
                     }else if(callType %nin% c("demogTabCont","demogTabCat","RNM")){
                       #savePlots(plotName=p1,  directory=Dir, saveName=paste(item,n, sep=""))
-                      p1=do.call(callType,argList)
-                      p1$fname=file.path(Dir,paste0(item,n))
-                      do.call(pListSave,p1)
+                      if(item=="ConcvTimeMult"){
+                        lapply(1:length(p1List$Plot), function(i){
+                          p1List$Plot[[i]]$fname=file.path(Dir,"PNG",paste0(item,n,"-",i))
+                          do.call(pListSave,p1List$Plot[[i]])  
+                          })
+                      }else{
+                        p1=p1List$Plot
+                        p1$fname=file.path(Dir,"PNG",paste0(item,n))
+                        do.call(pListSave,p1)
+                      }
                     }else if(item%nin%"ConcvTimeMult"){
                       #argList$page=0
                       #p1=do.call(callType,argList)
