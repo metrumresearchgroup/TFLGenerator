@@ -1,4 +1,4 @@
-debug <- F
+debug <- T
 
 #rm(list=ls(all=TRUE))
 Sys.setenv(PATH=paste0(Sys.getenv("PATH"),":/usr/bin:/usr/lib/rstudio-server/bin")) # Get pandoc and imagemagick
@@ -762,7 +762,7 @@ shinyServer(function(input, output, session) {
     if(debug){
       save(n,input_vals,dat,vpcRun,file=file.path(srcDir,"tmp","vpcFile.rda"))
     }
-    vpcDataList[[basename(vpcRun)]] <<- isolate(dat)
+    vpcDataList[[paste0("VPC",n)]] <<- isolate(dat)
     return(dat)
     
   }
@@ -847,7 +847,7 @@ shinyServer(function(input, output, session) {
     if(debug){
       save(n,input_vals,dat,vpcRun,file=file.path(srcDir,"tmp","addlVpcFile.rda"))
     }
-    vpcDataList[[paste0("addl",basename(vpcRun))]] <<- isolate(dat)
+    vpcDataList[[paste0("addl","VPC",n)]] <<- isolate(dat)
     return(dat)
     
   }
@@ -1461,7 +1461,7 @@ shinyServer(function(input, output, session) {
     local({
       item=this_item
       #Observe if any plots of that type have been assigned inputs
-      observe(if(length(grep(paste("reset", item, sep=""), isolate(names(input))))>0){
+      observe(if(length(grep(paste("reset", item, sep=""), names(input)))>0){
         
         numbers=as.numeric(unlist(str_extract_all(input[[paste(item, "Num", sep="")]], "\\d+")))
         if(length(numbers)>1){numRange=numbers[which(numbers!=0)]}
@@ -1581,9 +1581,9 @@ shinyServer(function(input, output, session) {
                     
                     
                     if(item=="VPC"){
-                      dati <- vpcDataList[[input[[paste0("vpcRun",item,n)]]]]
-                      if(!is.null(vpcDataList[[paste0("addl",input[[paste0("vpcRun",item,n)]])]])){
-                        dati <- list(vpc=dati, addl=vpcDataList[[paste0("addl",input[[paste0("vpcRun",item,n)]])]])
+                      dati <- vpcDataList[[paste0("VPC",n)]]
+                      if(!is.null(vpcDataList[[paste0("addl","VPC",n)]])){
+                        dati <- list(vpc=dati, addl=vpcDataList[[paste0("addl","VPC",n)]])
                       }else{
                         dati <- list(vpc=dati)
                       }
@@ -1759,7 +1759,7 @@ shinyServer(function(input, output, session) {
                     }
                     withProgress(value=.5,message=paste0("Generating output PNG's and captions for ", item),{
                       
-                      Dir=sprintf("%s/%s_%s/", currentWD(), 
+                      Dir=sprintf("%s/%s_%s/", isolate(currentWD()), 
                                   gsub("'","",
                                        gsub("[[:space:]]|\\.", "_", input$projectTitle)
                                   ), 
@@ -1769,21 +1769,21 @@ shinyServer(function(input, output, session) {
                       
                       
                       if(item=="VPC"){
-                        if(is.null(vpcDataList[[input[[paste0("vpcRun",item,n)]]]])){
+                        if(is.null(vpcDataList[[paste0("VPC",n)]])){
                           cat(file=stderr(), "LOG: You need to load the VPC data in the preview section in this version of the TFL generator. \n")
                         }
-                        dati <- vpcDataList[[input[[paste0("vpcRun",item,n)]]]]
+                        dati <- isolate(vpcDataList[[paste0("VPC",n)]])
                         if(debug){
                           input_vals <- reactiveValuesToList(input)
                           save(vpcDataList, input_vals, item, n, file=file.path(srcDir,"vpcDebug.rda"))
                         }
-                        if(!is.null(vpcDataList[[paste0("addl",input[[paste0("vpcRun",item,n)]])]])){
-                          dati <- list(vpc=dati, addl=vpcDataList[[paste0("addl",input[[paste0("vpcRun",item,n)]])]])
+                        if(!is.null(isolate(vpcDataList[[paste0("addl","VPC",n)]]))){
+                          dati <- list(vpc=dati, addl=isolate(vpcDataList[[paste0("addl","VPC",n)]]))
                         }else{
                           dati <- list(vpc=dati)
                         }
                       }else{
-                        dati <- dataFile()
+                        dati <- isolate(dataFile())
                       }
                       
                       argList=isolate(createArgList(input, item, n, dataFile=dati, currentWD=currentWD()))                    
@@ -1912,7 +1912,7 @@ shinyServer(function(input, output, session) {
                       #Save only the non-default arguments unless the user asks for a verbose script
                       
                       useArgs=argList
-                      if(input$verbose){useArgs=createArgList(input,item,n,dati,currentWD=currentWD(),complete=T)}
+                      if(input$verbose){useArgs=isolate(createArgList(input,item,n,dati,currentWD=currentWD(),complete=T))}
                       
                       #reduce argList to arguments used in the dataManip
                       argListManip=useArgs[names(useArgs) %in% names(formals(manipDat))]
@@ -1962,11 +1962,11 @@ shinyServer(function(input, output, session) {
                       tryCatch(
                         recordGUI(doWhat=callType, 
                                   toWhat=useArgs,
-                                  input=input,
+                                  input=isolate(input),
                                   item=item,
                                   number=n,
                                   manipArgs=argListManip,
-                                  currentWD=currentWD(),
+                                  currentWD=isolate(currentWD()),
                                   grob=p1List,
                                   ordering=ordering),
                         error=function(e){
@@ -1994,7 +1994,7 @@ shinyServer(function(input, output, session) {
           cat(file=stderr(), paste0("LOG: ", Sys.time(), " writing RTF\n"))
           if(debug){
             message <- "writing RTF"
-            input_nms <- isolate(isolate(names(input)))
+            input_nms <- isolate(names(input))
             input_vals <- isolate(lapply(input_nms, function(inputi) try(input[[inputi]])))
             names(input_vals) <- input_nms
             save(message,input_vals,guiGrobs,file=file.path(debugDir,"message.rda"))
