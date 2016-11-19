@@ -1434,6 +1434,26 @@ shinyServer(function(input, output, session) {
                   Defaults[[item]]<<-""
                 }
               }
+              # If someone has requested 0 plots of a type, clear out old plots
+              plots <- grep("Num",names(Defaults),value=T)
+              plotsN <- unlist(lapply(plots,function(i)as.character(Defaults[[i]])))
+              if(length(plots)==length(plotsN)){
+                plots <- plots[plotsN=="0"]
+                for(ploti in plots){
+                  plotii <- gsub("Num","",ploti)
+                  nullThese <- grep(plotii,names(Defaults),value=T)
+                  nullThese <- nullThese[!grepl("Num",nullThese)]
+                  for(nullThesei in nullThese){
+                    Defaults[[nullThesei]] <<- NULL
+                    Defaults.autosave[[nullThesei]] <- NULL
+                  }
+                }
+              }else{
+                cat(file=stderr(),paste0("LOG: ",Sys.time(), "Defaults records cleanup error"))
+                if(debug){
+                  save(Defaults,file=file.path(srcDir,"autosave-error.rda"))
+                }
+              }
             }
           }
           
@@ -2056,7 +2076,29 @@ shinyServer(function(input, output, session) {
           "RTF",
           "dataPath", 
           "recall"))
-        {Defaults[[item]]<<-input[[item]]}
+        {
+          Defaults[[item]]<<-input[[item]]
+          
+          # If someone has requested 0 plots of a type, clear out old plots
+          plots <- grep("Num",names(Defaults),value=T)
+          plotsN <- unlist(lapply(plots,function(i)as.character(Defaults[[i]])))
+          if(length(plots)==length(plotsN)){
+            plots <- plots[plotsN=="0"]
+            for(ploti in plots){
+              plotii <- gsub("Num","",ploti)
+              nullThese <- grep(plotii,names(Defaults),value=T)
+              nullThese <- nullThese[!grepl("Num",nullThese)]
+              for(nullThesei in nullThese){
+                Defaults[[nullThesei]] <<- NULL
+              }
+            }
+          }else{
+            cat(file=stderr(),paste0("LOG: ",Sys.time(), "Defaults records cleanup error"))
+            if(debug){
+              save(Defaults,file=file.path(srcDir,"recordInput-error.rda"))
+            }
+          }
+        }
       }
       if(debug){
         input_nms <- isolate(names(input))
