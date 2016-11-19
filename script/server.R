@@ -1425,8 +1425,8 @@ shinyServer(function(input, output, session) {
             ))
             {
               if(!is.null(input[[item]])){
-                Defaults.autosave[[item]]<-input[[item]]
-                Defaults[[item]]<<-input[[item]]
+                Defaults.autosave[[item]]<-isolate(input[[item]])
+                Defaults[[item]]<<-isolate(input[[item]])
               }else{
                 # The subset selectize items may be removed to NULL
                 if(grepl("Subset",item)){
@@ -1484,12 +1484,12 @@ shinyServer(function(input, output, session) {
       observe(if(length(grep(paste("reset", item, sep=""), names(input)))>0){
         
         numbers=as.numeric(unlist(str_extract_all(input[[paste(item, "Num", sep="")]], "\\d+")))
-        if(length(numbers)>1){numRange=numbers[which(numbers!=0)]}
+        if(length(numbers)>1){numRange=numbers[which(numbers!=0)]} # This should never happen
         if(length(numbers)==1){numRange=c(0:numbers)}
         if(length(numbers)==0){numRange=0}
         
-        testClick=which(sapply(isolate(names(input))[grepl(paste0('button',item),isolate(names(input)))],function(x) input[[x]]>0))
-        if(length(testClick)>0) numRange=numRange[testClick]
+        # testClick=which(sapply(isolate(names(input))[grepl(paste0('button',item),isolate(names(input)))],function(x) input[[x]]>0))
+        # if(length(testClick)>0) numRange=numRange[testClick]
         
         for (this_n in numRange){
           local({
@@ -1497,54 +1497,49 @@ shinyServer(function(input, output, session) {
             if(is.na(n) | (length(n)==0)) n<-0
             if(n!=0){	
               
-              # Observer for VPC data display ----
-              observeEvent(input[[paste0("updateVPCView",item,n)]],{
-                cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_vpcdata called\n"))
-                isolate(autosave())
-                # output$contentsHead_vpcdata <- DT::renderDataTable({
-                #   return(DT::datatable(isolate(vpcFile()), filter="top"))
-                # })
-                withProgress(message="Loading VPC data", value=0, {
-                  nm <- basename(isolate(input[[paste0("vpcRun",item,n)]]))
-                  req(nm!="")
-                  vpcRun <- nm
-                  dat <- isolate(vpcFile(n)) # Populate the vpcDataList
-                  output[[paste0("contentsHead_vpcdata",n)]] <<-
-                    # renderPrint({summarizeContents(vpcDataList[[vpcRun]])})
-                    # DT::renderDataTable({ head(dat, n=input[[paste0("nhead",item,n)]])}, filter="top")
-                    renderTable({head(dat, n=input[[paste0("nhead",item,n)]])})
-                })
-                if(debug){
-                  input_vals <- isolate(reactiveValuesToList(input))
-                  vpcDataList_vals <- isolate(vpcDataList)
-                  # runjs(paste0("console.log('",class(vpcDataList[[nm]]),"')"))                  
-                  save(input_vals, vpcDataList_vals, file=file.path(srcDir,"tmp","updateVPCview.rda"))
-                }
-              })             
-              
-              observeEvent(input[[paste0("updateAddlVPCView",item,n)]],{
-                cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_addlVpcdata called\n"))
-                isolate(autosave())
+              if(item=="VPC"){
+                # Observer for VPC data display ----
+                observeEvent(input[[paste0("updateVPCView",item,n)]],{
+                  cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_vpcdata called\n"))
+                  isolate(autosave())
+                  # output$contentsHead_vpcdata <- DT::renderDataTable({
+                  #   return(DT::datatable(isolate(vpcFile()), filter="top"))
+                  # })
+                  withProgress(message="Loading VPC data", value=0, {
+                    dat <- isolate(vpcFile(n)) # Populate the vpcDataList
+                    output[[paste0("contentsHead_vpcdata",n)]] <<-
+                      # renderPrint({summarizeContents(vpcDataList[[vpcRun]])})
+                      # DT::renderDataTable({ head(dat, n=input[[paste0("nhead",item,n)]])}, filter="top")
+                      renderTable({head(dat, n=input[[paste0("nhead",item,n)]])})
+                  })
+                  if(debug){
+                    input_vals <- isolate(reactiveValuesToList(input))
+                    vpcDataList_vals <- isolate(vpcDataList)
+                    # runjs(paste0("console.log('",class(vpcDataList[[nm]]),"')"))                  
+                    save(input_vals, vpcDataList_vals, file=file.path(srcDir,"tmp","updateVPCview.rda"))
+                  }
+                })             
                 
-                req(input[[paste0("vpcRun",item,n)]])
-                
-                withProgress(message="Loading additional VPC data", value=0, {
-                  nm <- basename(isolate(input[[paste0("vpcRun",item,n)]]))
-                  req(nm!="")
-                  vpcRun <- nm
-                  dat <- isolate(vpcAddlFile(n)) # Populate the vpcDataList
-                  output[[paste0("contentsHead_addlVpcdata",n)]] <<-
-                    # renderPrint({summarizeContents(vpcDataList[[vpcRun]])})
-                    # DT::renderDataTable({ head(dat, n=input[[paste0("nhead",item,n)]])}, filter="top")
-                    renderTable({head(dat, n=input[[paste0("addlNhead",item,n)]])})
+                observeEvent(input[[paste0("updateAddlVPCView",item,n)]],{
+                  cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_addlVpcdata called\n"))
+                  isolate(autosave())
+                  
+                  withProgress(message="Loading additional VPC data", value=0, {
+                    dat <- isolate(vpcAddlFile(n)) # Populate the vpcDataList
+                    output[[paste0("contentsHead_addlVpcdata",n)]] <<-
+                      # renderPrint({summarizeContents(vpcDataList[[vpcRun]])})
+                      # DT::renderDataTable({ head(dat, n=input[[paste0("nhead",item,n)]])}, filter="top")
+                      renderTable({head(dat, n=input[[paste0("addlNhead",item,n)]])})
+                  })
+                  if(debug){
+                    input_vals <- isolate(reactiveValuesToList(input))
+                    vpcDataList_vals <- isolate(vpcDataList)
+                    # runjs(paste0("console.log('",class(vpcDataList[[nm]]),"')"))                  
+                    save(input_vals, vpcDataList_vals, file=file.path(srcDir,"tmp","updateVPCview.rda"))
+                  }
                 })
-                if(debug){
-                  input_vals <- isolate(reactiveValuesToList(input))
-                  vpcDataList_vals <- isolate(vpcDataList)
-                  # runjs(paste0("console.log('",class(vpcDataList[[nm]]),"')"))                  
-                  save(input_vals, vpcDataList_vals, file=file.path(srcDir,"tmp","updateVPCview.rda"))
-                }
-              })
+                
+              }
               
               
               
@@ -1580,10 +1575,10 @@ shinyServer(function(input, output, session) {
                   idtest=idx[idx %in% idn]
                   
                   
-                  #because of the reactive nature of 'input' comparisons have to be done one at a time
-                  if(length(idtest)>0){
-                    sameAsDefault=sum(sapply(idtest, function(X){all(input[[X]]==Defaults[X])}))/length(idtest)
-                  }
+                  # #because of the reactive nature of 'input' comparisons have to be done one at a time
+                  # if(length(idtest)>0){
+                  #   sameAsDefault=sum(sapply(idtest, function(X){all(input[[X]]==Defaults[X])}))/length(idtest)
+                  # }
                   
                   if(debug){
                     input_nms <- isolate(names(input))
@@ -1591,7 +1586,7 @@ shinyServer(function(input, output, session) {
                     names(input_vals) <- input_nms
                     dataFile_vals <- isolate(dataFile())
                     
-                    save(idx,idn,input_vals,item,n,Defaults,sameAsDefault,vpcDataList,dataFile_vals,
+                    save(idx,idn,input_vals,item,n,Defaults,vpcDataList,dataFile_vals,
                          file=file.path(srcDir,"tmp","preplot.rda"))
                   }
                   
@@ -1789,7 +1784,7 @@ shinyServer(function(input, output, session) {
                       
                       
                       if(item=="VPC"){
-                        if(is.null(vpcDataList[[paste0("VPC",n)]])){
+                        if(is.null(isolate(vpcDataList[[paste0("VPC",n)]]))){
                           cat(file=stderr(), "LOG: You need to load the VPC data in the preview section in this version of the TFL generator. \n")
                         }
                         dati <- isolate(vpcDataList[[paste0("VPC",n)]])
@@ -1979,24 +1974,28 @@ shinyServer(function(input, output, session) {
                              argListManip, p1List=p1List, ordering,
                              file=file.path(srcDir,"tmp","recordGUI.rda"))
                       }
-                      tryCatch(
-                        recordGUI(doWhat=callType, 
-                                  toWhat=useArgs,
-                                  input=isolate(input),
-                                  item=item,
-                                  number=n,
-                                  manipArgs=argListManip,
-                                  currentWD=isolate(currentWD()),
-                                  grob=p1List,
-                                  ordering=ordering),
-                        error=function(e){
-                          cat(file=stderr(), sprintf("Record GUI failed with %s %s\n",item,n))
-                          if(debug){
-                            input_vals <- reactiveValuesToList(input,all.names=T)
-                            save(e,callType, useArgs, input_vals, n, argListManip, file=file.path(srcDir,"tmp","record_output.rda"))
+                      if(item!="VPC"){ ## YOU NEED TO WORK THIS OUT BEFORE V1.2
+                        cat(file=stderr(),paste("LOG: Writing", item, "to the reproducible R script\n"))
+                        tryCatch(
+                          recordGUI(doWhat=callType, 
+                                    toWhat=useArgs,
+                                    input=isolate(input),
+                                    item=item,
+                                    number=n,
+                                    manipArgs=argListManip,
+                                    currentWD=isolate(currentWD()),
+                                    grob=p1List,
+                                    ordering=ordering),
+                          error=function(e){
+                            cat(file=stderr(), sprintf("Record GUI failed with %s %s\n",item,n))
+                            if(debug){
+                              input_vals <- reactiveValuesToList(input,all.names=T)
+                              save(e,callType, useArgs, input_vals, n, argListManip, file=file.path(srcDir,"tmp","record_output.rda"))
+                            }
                           }
-                        }
-                      )
+                        )                       
+                      }
+
                     })
                     
                   }
