@@ -21,6 +21,8 @@ library(shinyjs)
 	  # Application title
       	dashboardHeader(title="Pharmacometrics TFL"),
       	dashboardSidebar(
+      	  actionButton('hardReset','Hard reset'),
+      	  h1(),
       	  actionLink('fastForward','Fast Forward'),
       	  sidebarMenu(
       	     

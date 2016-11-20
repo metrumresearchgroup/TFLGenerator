@@ -81,7 +81,9 @@ shinyServer(function(input, output, session) {
     if(debug) save(Defaults, file=file.path(srcDir,"tmp/globalDefaults.rda"))
   }
   
-  
+  observeEvent(input$hardReset,{
+    stopApp()
+  })
   
   # Open Template ----
   observeEvent(input$templateGo,{
