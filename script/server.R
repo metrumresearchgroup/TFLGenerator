@@ -651,7 +651,7 @@ shinyServer(function(input, output, session) {
     }
     
     colnames(dat) <- vpcColnames
-    revals[[paste0("nms_tab",item,n)]] <- isolate(colnames(dat))
+    # revals[[paste0("nms_tab",item,n)]] <- isolate(colnames(dat))
     # updateSelectizeInput(session,paste0("mergeKey",item,n),
     #                      choices=intersect(isolate(revals[[paste0("nms_tab",item,n)]]),
     #                                        isolate(revals[[paste0("nms_source",item,n)]])),
@@ -688,7 +688,7 @@ shinyServer(function(input, output, session) {
       }
       
       vpcsrcnms <- names(vpcsrc)
-      revals[[paste0("nms_source",item,n)]] <- isolate(vpcsrcnms)
+      # revals[[paste0("nms_source",item,n)]] <- isolate(vpcsrcnms)
       # updateSelectizeInput(session,paste0("mergeKey",item,n),
       #                      choices=intersect(isolate(revals[[paste0("nms_tab",item,n)]]),
       #                                        isolate(revals[[paste0("nms_source",item,n)]])),
@@ -1524,6 +1524,7 @@ shinyServer(function(input, output, session) {
                         # DT::renderDataTable({ head(dat, n=input[[paste0("nhead",item,n)]])}, filter="top")
                         renderTable({head(dat, n=input[[paste0("nhead",item,n)]])})
                       idn <- grep(paste0(item,n),isolate(names(input)),value=T)
+                      idn <- idn[!grepl("addl",idn)]
                       if(length(idn)>0){
                         for(IDN in idn){
                           these <- grep(IDN,names(Defaults))
@@ -1555,6 +1556,7 @@ shinyServer(function(input, output, session) {
                         renderTable({head(dat, n=input[[paste0("addlNhead",item,n)]])})
                     })
                     idn=grep(paste0(item,n), isolate(names(input)), value=TRUE)
+                    idn=grep("addl",idn,value=T)
                     
                     if(length(idn)>0){
                       for(IDN in idn){
@@ -1609,6 +1611,11 @@ shinyServer(function(input, output, session) {
                     cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " creating", item, n, "\n")))
                     
                     idn=grep(paste0(item,n,sep=""), isolate(names(input)), value=TRUE)
+                    
+                    if(debug){
+                      input_vals <- reactiveValuesToList(input)
+                      save(idn, input_vals, Defaults, file=file.path(srcDir,"tmp","update_defaults.rda"))
+                    }
                     
                     if(length(idn)>0){
                       for(IDN in idn){
@@ -2287,7 +2294,8 @@ shinyServer(function(input, output, session) {
     if(sameAsDefault!=1 & debug){
       tests <- lapply(idtest, function(X){ 
         out <- all(input[[X]]==Defaults[X])
-        ifelse(length(out)==0,X,ifelse(out,out,list(input=input[[X]],Defaults=Defaults[[X]])))
+        out[length(out)==0] <- X
+        out[out==FALSE] <- list(input=input[[X]],Defaults=Defaults[[X]])
       })
       names(tests) <- idtest
       save(tests, file=file.path(srcDir,"tmp","sameAsDefault.rda"))
