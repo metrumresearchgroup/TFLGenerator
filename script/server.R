@@ -2296,6 +2296,7 @@ shinyServer(function(input, output, session) {
         out <- all(input[[X]]==Defaults[X])
         out[length(out)==0] <- X
         out[out==FALSE] <- list(input=input[[X]],Defaults=Defaults[[X]])
+        out
       })
       names(tests) <- idtest
       save(tests, file=file.path(srcDir,"tmp","sameAsDefault.rda"))
