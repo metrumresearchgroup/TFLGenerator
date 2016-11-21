@@ -1451,7 +1451,7 @@ shinyServer(function(input, output, session) {
           plotsN <- unlist(lapply(plots,function(i)as.character(Defaults[[i]])))
           if(length(plots)==length(plotsN)){
             plots <- plots[plotsN=="0"]
-            for(ploti in setdiff(plots,"demogTabNum")){
+            for(ploti in setdiff(plots,c("ConcvTimeNum","demogTabNum"))){
               plotii <- gsub("Num","",ploti)
               nullThese <- grep(plotii,names(Defaults),value=T)
               nullThese <- nullThese[!grepl("Num",nullThese)]
