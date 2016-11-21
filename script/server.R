@@ -1544,10 +1544,15 @@ shinyServer(function(input, output, session) {
                 
                 observeEvent(input[[paste0("updateAddlVPCView",item,n)]],{
                   cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_addlVpcdata called\n"))
-                  isolate(autosave())
+                  
+                  if(debug){
+                    input_vals <- reactiveValuesToList(input)
+                    save(input_vals,Defaults,item,n,file=file.path(srcDir,"tmp","vpcaddl-debug.rda"))
+                  }
                   sameAsDefault <- isolate(checkInvalidate(input,item,n))
                   
                   if(sameAsDefault!=1){
+                    # isolate(autosave())
                     withProgress(message="Loading additional VPC data", value=0, {
                       dat <- isolate(vpcAddlFile(n)) # Populate the vpcDataList
                       output[[paste0("contentsHead_addlVpcdata",n)]] <<-
@@ -2274,17 +2279,18 @@ shinyServer(function(input, output, session) {
     if(paste0("button",item,n)%nin%idtest){
       idtest <- unique(c(idtest,paste0("button",item,n)))
       Defaults[[paste0("button",item,n)]] <<- 0
-      if(item=="VPC"){
-        if(paste0("updateVPCView",item,n)%nin%idtest){
-          idtest <- unique(c(idtest,paste0("updateVPCView",item,n)))
-          Defaults[[paste0("updateVPCView",item,n)]] <<- 0
-        }
-        if(paste0("updateAddlVPCView",item,n)%nin%idtest){
-          idtest <- unique(c(idtest,paste0("updateAddlVPCView",item,n)))
-          Defaults[[paste0("updateAddlVPCView",item,n)]] <<- 0
-        }
+    }
+    if(item=="VPC"){
+      if(paste0("updateVPCView",item,n)%nin%idtest){
+        idtest <- unique(c(idtest,paste0("updateVPCView",item,n)))
+        Defaults[[paste0("updateVPCView",item,n)]] <<- 0
+      }
+      if(paste0("updateAddlVPCView",item,n)%nin%idtest){
+        idtest <- unique(c(idtest,paste0("updateAddlVPCView",item,n)))
+        Defaults[[paste0("updateAddlVPCView",item,n)]] <<- 0
       }
     }
+
 
 
     # #because of the reactive nature of 'input' comparisons have to be done one at a time
@@ -2295,11 +2301,12 @@ shinyServer(function(input, output, session) {
       tests <- lapply(idtest, function(X){ 
         out <- all(input[[X]]==Defaults[X])
         out[length(out)==0] <- X
-        out[out==FALSE] <- list(input=input[[X]],Defaults=Defaults[[X]])
         out
       })
       names(tests) <- idtest
-      save(tests, file=file.path(srcDir,"tmp","sameAsDefault.rda"))
+      input_vals <- reactiveValuesToList(input)
+      comparators<-list(Defaults=Defaults[idtest], input=input_vals[idtest])
+      save(tests, comparators,file=file.path(srcDir,"tmp","sameAsDefault.rda"))
     }
     return(sameAsDefault)
   }
