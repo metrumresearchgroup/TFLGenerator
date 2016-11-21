@@ -1,4 +1,4 @@
-debug <- T
+debug <- F
 
 #rm(list=ls(all=TRUE))
 Sys.setenv(PATH=paste0(Sys.getenv("PATH"),":/usr/bin:/usr/lib/rstudio-server/bin")) # Get pandoc and imagemagick
@@ -50,7 +50,6 @@ library(shinyjs)
 
 cat(file=stderr(), paste0("LOG: ", Sys.time(), " Finished preamble\n"))
 #pListGlobal=new.env()
-pListPlot=list()
 
 
 
@@ -240,7 +239,7 @@ shinyServer(function(input, output, session) {
               }			
               #foo=try(read.table(fileName, header=input$header, skip=input$skipLines, stringsAsFactors=F, fill=TRUE, comment.char="",check.names=F))
               
-              foo=try(read.table(fileName, skip=input$skipLines, header=input$header))
+              foo=try(read.table(fileName, skip=input$skipLines, header=input$header, stringsAsFactors=F))
               
               if(class(foo)=="try-error") return()
               if(nrow(foo)==0) return()
@@ -393,7 +392,8 @@ shinyServer(function(input, output, session) {
       if(exists("dat")) sourcedat <- dat else return(NULL)
       tabList <- get("tabList",envir=.GlobalEnv)
       global <- ls(envir = .GlobalEnv)
-      save(sourcedat,tabList,global,Defaults,file=file.path(debugDir,"sourcedat.rda"))
+      input_vals <- reactiveValuesToList(input)
+      save(sourcedat,tabList,global,Defaults,input_vals,file=file.path(debugDir,"sourcedat.rda"))
     }
     revals$nms_source <- isolate(names(dat))
     updateSelectizeInput(session,"mergeKey",
@@ -652,9 +652,10 @@ shinyServer(function(input, output, session) {
     
     colnames(dat) <- vpcColnames
     revals[[paste0("nms_tab",item,n)]] <- isolate(colnames(dat))
-    updateSelectizeInput(session,paste0("mergeKey",item,n),
-                         choices=intersect(revals[[paste0("nms_tab",item,n)]],revals[[paste0("nms_source",item,n)]]),
-                         selected=Defaults[[paste0("mergeKey",item,n)]],server=T)
+    # updateSelectizeInput(session,paste0("mergeKey",item,n),
+    #                      choices=intersect(isolate(revals[[paste0("nms_tab",item,n)]]),
+    #                                        isolate(revals[[paste0("nms_source",item,n)]])),
+    #                      selected=Defaults[[paste0("mergeKey",item,n)]],server=T)
     
     validate(
       need(input[[paste0("vpcRep",title)]]!="", "Enter the number of simulation replicates")
@@ -688,9 +689,10 @@ shinyServer(function(input, output, session) {
       
       vpcsrcnms <- names(vpcsrc)
       revals[[paste0("nms_source",item,n)]] <- isolate(vpcsrcnms)
-      updateSelectizeInput(session,paste0("mergeKey",item,n),
-                           choices=intersect(revals[[paste0("nms_tab",item,n)]],revals[[paste0("nms_source",item,n)]]),
-                           selected=Defaults[[paste0("mergeKey",item,n)]],server=T)
+      # updateSelectizeInput(session,paste0("mergeKey",item,n),
+      #                      choices=intersect(isolate(revals[[paste0("nms_tab",item,n)]]),
+      #                                        isolate(revals[[paste0("nms_source",item,n)]])),
+      #                      selected=Defaults[[paste0("mergeKey",item,n)]],server=T)
       
       # Subset to the requested columns
       if(paste0("dataSubset",title) %in% isolate(names(input))){
@@ -702,9 +704,11 @@ shinyServer(function(input, output, session) {
       
       # Merge.  This isn't necessary, but is a check to ensure the user is using the right datasets.
       if(any(colnames(dat)%in%colnames(vpcsrc))){
+        mergeKey <- strsplit(input[[paste0("mergeKey",item,n)]],",")
+        mergeKey <- str_trim(unlist(mergeKey))
         dat <- try(dplyr::left_join(dat, 
                                     vpcsrc, 
-                                    by=input[[paste0("mergeKey",item,n)]]))
+                                    by=mergeKey))
         missing <- sum(is.na(vpcsrc[,paste0(input[[paste0("vpcSourceDV",title)]],"obs")]))
         validate(
           need(missing==0, "Some simulation values have no matching observations!")
@@ -1285,7 +1289,7 @@ shinyServer(function(input, output, session) {
     for (item in plotList$type[types]){
       if(paste(item, "Num", sep="") %in% isolate(names(input))){
         if("varNames" %in% names(formals(plotList$Call[plotList$type==item]))){
-          if(item=="VPC") varNames <- revals else(varNames=revals$nms_df)
+          if(item=="VPC") varNames <- isolate(revals) else(varNames=isolate(revals$nms_df))
           PanelSet=do.call(what=plotList$Call[plotList$type==item], args=list(plotType=item, input=input, Set=PanelSet, varNames=varNames))
         }else{
           PanelSet=do.call(what=plotList$Call[plotList$type==item], args=list(plotType=item, input=input, Set=PanelSet ))
@@ -1412,6 +1416,10 @@ shinyServer(function(input, output, session) {
         if(dir.exists(currentWD()) & input[["projectTitle"]]!=""){
           
           cat(file=stderr(),paste0("LOG: ", Sys.time(), " Running autosave routine"))
+          if(debug){
+            input_vals <- reactiveValuesToList(input)
+            save(Defaults, input_vals, file=file.path(srcDir,"tmp","autosave-debug-a.rda"))
+          }
           Defaults.autosave <- get("Defaults",envir = .GlobalEnv)
           for(item in names(Defaults.autosave)){
             #take out some of these
@@ -1436,40 +1444,40 @@ shinyServer(function(input, output, session) {
                   Defaults[[item]]<<-""
                 }
               }
-              # If someone has requested 0 plots of a type, clear out old plots
-              plots <- grep("Num",names(Defaults),value=T)
-              plotsN <- unlist(lapply(plots,function(i)as.character(Defaults[[i]])))
-              if(length(plots)==length(plotsN)){
-                plots <- plots[plotsN=="0"]
-                for(ploti in plots){
-                  plotii <- gsub("Num","",ploti)
-                  nullThese <- grep(plotii,names(Defaults),value=T)
-                  nullThese <- nullThese[!grepl("Num",nullThese)]
-                  for(nullThesei in nullThese){
-                    Defaults[[nullThesei]] <<- NULL
-                    Defaults.autosave[[nullThesei]] <- NULL
-                  }
-                }
-              }else{
-                cat(file=stderr(),paste0("LOG: ",Sys.time(), "Defaults records cleanup error"))
-                if(debug){
-                  save(Defaults,file=file.path(srcDir,"autosave-error.rda"))
-                }
-              }
             }
           }
-          
-          if(debug){
-            input_vals <- reactiveValuesToList(input)
-            save(Defaults.autosave, Defaults, input_vals, file=file.path(srcDir,"tmp","autosave-debug.rda"))
+          # If someone has requested 0 plots of a type, clear out old plots
+          plots <- grep("Num",names(Defaults),value=T)
+          plotsN <- unlist(lapply(plots,function(i)as.character(Defaults[[i]])))
+          if(length(plots)==length(plotsN)){
+            plots <- plots[plotsN=="0"]
+            for(ploti in setdiff(plots,"demogTabNum")){
+              plotii <- gsub("Num","",ploti)
+              nullThese <- grep(plotii,names(Defaults),value=T)
+              nullThese <- nullThese[!grepl("Num",nullThese)]
+              for(nullThesei in nullThese){
+                Defaults[[nullThesei]] <<- NULL
+                Defaults.autosave[[nullThesei]] <- NULL
+              }
+            }
+          }else{
+            cat(file=stderr(),paste0("LOG: ",Sys.time(), "Defaults records cleanup error"))
+            if(debug){
+              save(Defaults,file=file.path(srcDir,"autosave-error.rda"))
+            }
           }
-          tryCatch(recordInput(input=reactiveValuesToList(input),Defaults=Defaults.autosave,currentWD=currentWD(),autosave=T),
-                   warning=function(w) cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " autosave warning\n",w))),
-                   error=function(e)  cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " autosave error\n",e)))
-          )  
-          cat(file=stderr(), paste0("LOG: ", Sys.time(), " Exiting autosave routine"))
         }
         
+        if(debug){
+          input_vals <- reactiveValuesToList(input)
+          save(Defaults.autosave, Defaults, input_vals, file=file.path(srcDir,"tmp","autosave-debug.rda"))
+        }
+        tryCatch(recordInput(input=reactiveValuesToList(input),Defaults=Defaults.autosave,currentWD=currentWD(),autosave=T),
+                 warning=function(w) cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " autosave warning\n",w))),
+                 error=function(e)  cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " autosave error\n",e)))
+        )  
+        cat(file=stderr(), paste0("LOG: ", Sys.time(), " Exiting autosave routine"))
+
       })
     })
   }
@@ -1504,40 +1512,63 @@ shinyServer(function(input, output, session) {
                 observeEvent(input[[paste0("updateVPCView",item,n)]],{
                   cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_vpcdata called\n"))
                   isolate(autosave())
-                  # output$contentsHead_vpcdata <- DT::renderDataTable({
-                  #   return(DT::datatable(isolate(vpcFile()), filter="top"))
-                  # })
-                  withProgress(message="Loading VPC data", value=0, {
-                    dat <- isolate(vpcFile(n)) # Populate the vpcDataList
-                    output[[paste0("contentsHead_vpcdata",n)]] <<-
-                      # renderPrint({summarizeContents(vpcDataList[[vpcRun]])})
-                      # DT::renderDataTable({ head(dat, n=input[[paste0("nhead",item,n)]])}, filter="top")
-                      renderTable({head(dat, n=input[[paste0("nhead",item,n)]])})
-                  })
-                  if(debug){
-                    input_vals <- isolate(reactiveValuesToList(input))
-                    vpcDataList_vals <- isolate(vpcDataList)
-                    # runjs(paste0("console.log('",class(vpcDataList[[nm]]),"')"))                  
-                    save(input_vals, vpcDataList_vals, file=file.path(srcDir,"tmp","updateVPCview.rda"))
+                  sameAsDefault <- isolate(checkInvalidate(input,item,n))
+                  if(sameAsDefault!=1){
+                    # output$contentsHead_vpcdata <- DT::renderDataTable({
+                    #   return(DT::datatable(isolate(vpcFile()), filter="top"))
+                    # })
+                    withProgress(message="Loading VPC data", value=0, {
+                      dat <- isolate(vpcFile(n)) # Populate the vpcDataList
+                      output[[paste0("contentsHead_vpcdata",n)]] <<-
+                        # renderPrint({summarizeContents(vpcDataList[[vpcRun]])})
+                        # DT::renderDataTable({ head(dat, n=input[[paste0("nhead",item,n)]])}, filter="top")
+                        renderTable({head(dat, n=input[[paste0("nhead",item,n)]])})
+                      idn <- grep(paste0(item,n),isolate(names(input)),value=T)
+                      if(length(idn)>0){
+                        for(IDN in idn){
+                          these <- grep(IDN,names(Defaults))
+                          if(length(these)>1) for(thesei in these) Defaults[[thesei]] <<- NULL
+                          Defaults[[IDN]]<<-input[[IDN]]
+                        }
+                      }
+                    })
+                    if(debug){
+                      input_vals <- isolate(reactiveValuesToList(input))
+                      vpcDataList_vals <- isolate(vpcDataList)
+                      # runjs(paste0("console.log('",class(vpcDataList[[nm]]),"')"))
+                      save(input_vals, vpcDataList_vals, file=file.path(srcDir,"tmp","updateVPCview.rda"))
+                    }
                   }
                 })             
                 
                 observeEvent(input[[paste0("updateAddlVPCView",item,n)]],{
                   cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_addlVpcdata called\n"))
                   isolate(autosave())
+                  sameAsDefault <- isolate(checkInvalidate(input,item,n))
                   
-                  withProgress(message="Loading additional VPC data", value=0, {
-                    dat <- isolate(vpcAddlFile(n)) # Populate the vpcDataList
-                    output[[paste0("contentsHead_addlVpcdata",n)]] <<-
-                      # renderPrint({summarizeContents(vpcDataList[[vpcRun]])})
-                      # DT::renderDataTable({ head(dat, n=input[[paste0("nhead",item,n)]])}, filter="top")
-                      renderTable({head(dat, n=input[[paste0("addlNhead",item,n)]])})
-                  })
-                  if(debug){
-                    input_vals <- isolate(reactiveValuesToList(input))
-                    vpcDataList_vals <- isolate(vpcDataList)
-                    # runjs(paste0("console.log('",class(vpcDataList[[nm]]),"')"))                  
-                    save(input_vals, vpcDataList_vals, file=file.path(srcDir,"tmp","updateVPCview.rda"))
+                  if(sameAsDefault!=1){
+                    withProgress(message="Loading additional VPC data", value=0, {
+                      dat <- isolate(vpcAddlFile(n)) # Populate the vpcDataList
+                      output[[paste0("contentsHead_addlVpcdata",n)]] <<-
+                        # renderPrint({summarizeContents(vpcDataList[[vpcRun]])})
+                        # DT::renderDataTable({ head(dat, n=input[[paste0("nhead",item,n)]])}, filter="top")
+                        renderTable({head(dat, n=input[[paste0("addlNhead",item,n)]])})
+                    })
+                    idn=grep(paste0(item,n), isolate(names(input)), value=TRUE)
+                    
+                    if(length(idn)>0){
+                      for(IDN in idn){
+                        these <- grep(IDN,names(Defaults))
+                        if(length(these)>1) for(thesei in these) Defaults[[thesei]] <<- NULL
+                        Defaults[[IDN]]<<-input[[IDN]]
+                      }
+                    }
+                    if(debug){
+                      input_vals <- isolate(reactiveValuesToList(input))
+                      vpcDataList_vals <- isolate(vpcDataList)
+                      # runjs(paste0("console.log('",class(vpcDataList[[nm]]),"')"))
+                      save(input_vals, vpcDataList_vals, file=file.path(srcDir,"tmp","updateVPCview.rda"))
+                    }
                   }
                 })
                 
@@ -1549,12 +1580,8 @@ shinyServer(function(input, output, session) {
               
               observeEvent(input[[paste("button",item,n,sep="")]],{ 
                 
-                isolate(autosave())
-                
                 if(debug){
-                  input_nms <- isolate(names(input))
-                  input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
-                  names(input_vals) <- input_nms
+                  input_vals <- reactiveValuesToList(input)
                   save(item,input_vals,n,file=file.path(debugDir,"messagea.rda"))
                 } 
                 #check if the defaults/inputs for a plot have been created
@@ -1563,24 +1590,9 @@ shinyServer(function(input, output, session) {
                   cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " checking priors for", item,n, "\n")))
                   
                   
-                  ##Check to see if the input has changed since the last time it was rendered
-                  idx=grep(paste(item,n,sep=""), names(Defaults), value=TRUE)
-                  idn=grep(paste(item,n,sep=""), isolate(names(input)), value=TRUE)
+                  # ##Check to see if the input has changed since the last time it was rendered
                   
-                  if(debug){
-                    message <- "DEBUG AAA"
-                    save(message,idx,idn,Defaults,file=file.path(debugDir,"message.rda"))
-                  }                     
-                  
-                  
-                  #some values don't exist as inputs, for example the priors variable to check for priors
-                  idtest=idx[idx %in% idn]
-                  
-                  
-                  # #because of the reactive nature of 'input' comparisons have to be done one at a time
-                  # if(length(idtest)>0){
-                  #   sameAsDefault=sum(sapply(idtest, function(X){all(input[[X]]==Defaults[X])}))/length(idtest)
-                  # }
+                  sameAsDefault <- checkInvalidate(input,item,n)
                   
                   if(debug){
                     input_nms <- isolate(names(input))
@@ -1588,19 +1600,31 @@ shinyServer(function(input, output, session) {
                     names(input_vals) <- input_nms
                     dataFile_vals <- isolate(dataFile())
                     
-                    save(idx,idn,input_vals,item,n,Defaults,vpcDataList,dataFile_vals,
+                    save(input_vals,item,n,Defaults,vpcDataList,dataFile_vals,
                          file=file.path(srcDir,"tmp","preplot.rda"))
                   }
                   
-                  #if(sameAsDefault!=1){
-                  if(T){
+                  if(sameAsDefault!=1){
+                  # if(T){
                     cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " creating", item, n, "\n")))
                     
+                    idn=grep(paste0(item,n,sep=""), isolate(names(input)), value=TRUE)
+                    
+                    if(length(idn)>0){
+                      for(IDN in idn){
+                        these <- grep(IDN,names(Defaults))
+                        if(length(these)>1) for(thesei in these) Defaults[thesei] <<- NULL
+                        Defaults[[IDN]]<<-input[[IDN]]
+                      }
+                    }
+                    Defaults[[paste("priorExists", item, n, sep="")]]<<-TRUE
+                    
+                    isolate(autosave())
                     
                     if(item=="VPC"){
-                      dati <- vpcDataList[[paste0("VPC",n)]]
-                      if(!is.null(vpcDataList[[paste0("addl","VPC",n)]])){
-                        dati <- list(vpc=dati, addl=vpcDataList[[paste0("addl","VPC",n)]])
+                      dati <- isolate(vpcDataList[[paste0("VPC",n)]])
+                      if(!is.null(isolate(vpcDataList[[paste0("addl","VPC",n)]]))){
+                        dati <- list(vpc=dati, addl=isolate(vpcDataList[[paste0("addl","VPC",n)]]))
                       }else{
                         dati <- list(vpc=dati)
                       }
@@ -1646,17 +1670,10 @@ shinyServer(function(input, output, session) {
                         input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
                         names(input_vals) <- input_nms
                         
-                        save(message,argList, input_vals, idx, Defaults, file=file.path(debugDir,"setdefaults.rda"))
+                        save(message,argList, input_vals, Defaults, file=file.path(debugDir,"setdefaults.rda"))
                       } 
-                      if(length(idn)>0){
-                        for(IDN in idn){
-                          these <- grep(IDN,names(Defaults))
-                          if(length(these)>1) for(thesei in these) Defaults[[thesei]] <- NULL
-                          Defaults[[IDN]]<<-input[[IDN]]
-                        }
-                      }
-                      Defaults[[paste("priorExists", item, n, sep="")]]<<-TRUE
                       
+
                       if(debug){
                         message <- "DEBUG C"
                         save(message,file=file.path(debugDir,"message.rda"))
@@ -1664,7 +1681,7 @@ shinyServer(function(input, output, session) {
                       
                       
                       #insert an error block around the plotting
-                      pListPlot[[paste0(item,n)]]<<- tryCatch({
+                      p1List<- tryCatch({
                         if(debug) save(callType,argList,file=file.path(debugDir,"output.rda"))
                         do.call(callType,args=argList)
                       }, 
@@ -1680,7 +1697,7 @@ shinyServer(function(input, output, session) {
                       )
                       
                       
-                    }else pListPlot[[paste0(item,n)]]<<- ePlot(as.character(attr(argList,"condition")))#arrangeGrob(textGrob())
+                    }else p1List<- ePlot(as.character(attr(argList,"condition")))#arrangeGrob(textGrob())
                     
                     
                     if(debug){
@@ -1694,23 +1711,23 @@ shinyServer(function(input, output, session) {
                                    "observationExclusionsTab","subjectExclusionsTab",
                                    "observationExclusionsSummaryTab",
                                    "subjectExclusionsSummaryTab")){
-                      if("src" %in% names(pListPlot[[paste0(item,n)]])){
+                      if("src" %in% names(p1List)){
                         output[[paste("Plot",item,n,sep="")]] <<-
-                          renderImage(pListPlot[[paste0(item,n)]]$src,deleteFile=F)
+                          renderImage(p1List$src,deleteFile=F)
                       }else{
                         output[[paste("Plot",item,n,sep="")]] <<- 
-                          renderPrint({ print(head(pListPlot[[paste0(item,n)]]$preview,n=input[[paste0("previewhead",item,n)]]),row.names=F)})
+                          renderPrint({ print(head(p1List$preview,n=input[[paste0("previewhead",item,n)]]),row.names=F)})
                       }
                     }else if(item %nin% c("demogTabCont","demogTabCat","NMTab")) {
                       
                       output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
                         jsPrint('default print')
-                        do.call(pListPrint,pListPlot[[paste0(item,n)]])
+                        do.call(pListPrint,p1List)
                       })                      
                     }else{
                       # Probably one of demogTabCont, demogTabCat, NMTab
                       output[[paste("Plot",item,n,sep="")]]<<-renderImage(
-                        renderTex(obj=pListPlot[[paste0(item,n)]],item=paste0(item,n),
+                        renderTex(obj=p1List,item=paste0(item,n),
                                   margin=c(left=input[[paste0("leftmargin",item,n)]],
                                            top=input[[paste0("topmargin",item,n)]],
                                            bottom=input[[paste0("bottommargin",item,n)]],
@@ -1996,6 +2013,12 @@ shinyServer(function(input, output, session) {
                             }
                           }
                         )                       
+                      }else{
+                        #VPC
+                        if(debug){
+                          input_vals <- reactiveValuesToList(input,all.names=T)
+                          save(callType, useArgs, input_vals, n, argListManip, file=file.path(srcDir,"tmp","record_output_vpc.rda"))
+                        }
                       }
 
                     })
@@ -2227,7 +2250,50 @@ shinyServer(function(input, output, session) {
     
   })
   
-  
+  # Function to check invalidations ----
+  checkInvalidate <- function(input,item,n){
+    ##Check to see if the input has changed since the last time it was rendered
+    idx=grep(paste(item,n,sep=""), names(Defaults), value=TRUE)
+    idn=grep(paste(item,n,sep=""), isolate(names(input)), value=TRUE)
+
+    if(debug){
+      message <- "DEBUG AAA"
+      input_vals <- reactiveValuesToList(input)
+      save(message,idx,idn,Defaults,input_vals,file=file.path(debugDir,"message.rda"))
+    }
+
+    #some values don't exist as inputs, for example the priors variable to check for priors
+    idtest=idx[(idx %in% idn)]
+    if(paste0("button",item,n)%nin%idtest){
+      idtest <- unique(c(idtest,paste0("button",item,n)))
+      Defaults[[paste0("button",item,n)]] <<- 0
+      if(item=="VPC"){
+        if(paste0("updateVPCView",item,n)%nin%idtest){
+          idtest <- unique(c(idtest,paste0("updateVPCView",item,n)))
+          Defaults[[paste0("updateVPCView",item,n)]] <<- 0
+        }
+        if(paste0("updateAddlVPCView",item,n)%nin%idtest){
+          idtest <- unique(c(idtest,paste0("updateAddlVPCView",item,n)))
+          Defaults[[paste0("updateAddlVPCView",item,n)]] <<- 0
+        }
+      }
+    }
+
+
+    # #because of the reactive nature of 'input' comparisons have to be done one at a time
+    if(length(idtest)>0){
+      sameAsDefault=sum(sapply(idtest, function(X){all(input[[X]]==Defaults[X])}))/length(idtest)
+    }
+    if(sameAsDefault!=1 & debug){
+      tests <- lapply(idtest, function(X){ 
+        out <- all(input[[X]]==Defaults[X])
+        ifelse(length(out)==0,X,ifelse(out,out,list(input=input[[X]],Defaults=Defaults[[X]])))
+      })
+      names(tests) <- idtest
+      save(tests, file=file.path(srcDir,"tmp","sameAsDefault.rda"))
+    }
+    return(sameAsDefault)
+  }
   
   #End Shiny Server
 })
