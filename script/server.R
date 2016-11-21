@@ -423,7 +423,7 @@ shinyServer(function(input, output, session) {
     }
     
     if(!is.null(tableFile()) & !is.null(sourceFile())){
-      dat <- merge(sourceFile(), tableFile(), 
+      dat <- merge(isolate(sourceFile()), isolate(tableFile()), 
                    by=isolate(input[["mergeKey"]]),
                    all.x=isolate(input[["keepAllSource"]]),
                    all.y=isolate(input[["keepAllRun"]]),
@@ -2002,7 +2002,7 @@ shinyServer(function(input, output, session) {
                         message="recordGUI"
                         input_vals <- reactiveValuesToList(input,all.names=T)
                         save(message, argList, item, callType, useArgs, input_vals, n,
-                             argListManip, p1List=p1List, ordering,
+                             argListManip, p1List=p1List, ordering,Defaults,
                              file=file.path(srcDir,"tmp","recordGUI.rda"))
                       }
                       if(item!="VPC"){ ## YOU NEED TO WORK THIS OUT BEFORE V1.2
