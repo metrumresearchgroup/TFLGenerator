@@ -1,4 +1,4 @@
-debug <- T
+debug <- F
 
 #rm(list=ls(all=TRUE))
 Sys.setenv(PATH=paste0(Sys.getenv("PATH"),":/usr/bin:/usr/lib/rstudio-server/bin")) # Get pandoc and imagemagick
@@ -1415,7 +1415,7 @@ shinyServer(function(input, output, session) {
         # Autosave routine
         if(dir.exists(currentWD()) & input[["projectTitle"]]!=""){
           
-          cat(file=stderr(),paste0("LOG: ", Sys.time(), " Running autosave routine"))
+          cat(file=stderr(),paste0("LOG: ", Sys.time(), " Running autosave routine\n"))
           if(debug){
             input_vals <- reactiveValuesToList(input)
             save(Defaults, input_vals, file=file.path(srcDir,"tmp","autosave-debug-a.rda"))
@@ -1434,9 +1434,10 @@ shinyServer(function(input, output, session) {
               "recall"
             ))
             {
-              if(!is.null(input[[item]])){
-                Defaults.autosave[[item]]<-isolate(input[[item]])
-                Defaults[[item]]<<-isolate(input[[item]])
+              input_vals <- reactiveValuesToList(input)
+              if(!is.null(input_vals[[item]])){
+                Defaults.autosave[[item]]<-input_vals[[item]]
+                Defaults[[item]]<<-input_vals[[item]]
               }else{
                 # The subset selectize items may be removed to NULL
                 if(grepl("Subset",item)){
@@ -1446,26 +1447,26 @@ shinyServer(function(input, output, session) {
               }
             }
           }
-          # If someone has requested 0 plots of a type, clear out old plots
-          plots <- grep("Num",names(Defaults),value=T)
-          plotsN <- unlist(lapply(plots,function(i)as.character(Defaults[[i]])))
-          if(length(plots)==length(plotsN)){
-            plots <- plots[plotsN=="0"]
-            for(ploti in setdiff(plots,c("ConcvTimeNum","demogTabNum"))){
-              plotii <- gsub("Num","",ploti)
-              nullThese <- grep(plotii,names(Defaults),value=T)
-              nullThese <- nullThese[!grepl("Num",nullThese)]
-              for(nullThesei in nullThese){
-                Defaults[[nullThesei]] <<- NULL
-                Defaults.autosave[[nullThesei]] <- NULL
-              }
-            }
-          }else{
-            cat(file=stderr(),paste0("LOG: ",Sys.time(), "Defaults records cleanup error"))
-            if(debug){
-              save(Defaults,file=file.path(srcDir,"autosave-error.rda"))
-            }
-          }
+          # # If someone has requested 0 plots of a type, clear out old plots
+          # plots <- grep("Num",names(Defaults),value=T)
+          # plotsN <- unlist(lapply(plots,function(i)as.character(Defaults[[i]])))
+          # if(length(plots)==length(plotsN)){
+          #   plots <- plots[plotsN=="0"]
+          #   for(ploti in setdiff(plots,c("ConcvTimeNum","demogTabNum"))){
+          #     plotii <- gsub("Num","",ploti)
+          #     nullThese <- grep(plotii,names(Defaults),value=T)
+          #     nullThese <- nullThese[!grepl("Num",nullThese)]
+          #     for(nullThesei in nullThese){
+          #       Defaults[[nullThesei]] <<- NULL
+          #       Defaults.autosave[[nullThesei]] <- NULL
+          #     }
+          #   }
+          # }else{
+          #   cat(file=stderr(),paste0("LOG: ",Sys.time(), "Defaults records cleanup error"))
+          #   if(debug){
+          #     save(Defaults,file=file.path(srcDir,"autosave-error.rda"))
+          #   }
+          # }
         }
         
         if(debug){
@@ -1476,8 +1477,8 @@ shinyServer(function(input, output, session) {
                  warning=function(w) cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " autosave warning\n",w))),
                  error=function(e)  cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " autosave error\n",e)))
         )  
-        cat(file=stderr(), paste0("LOG: ", Sys.time(), " Exiting autosave routine"))
-
+        cat(file=stderr(), paste0("LOG: ", Sys.time(), " Exiting autosave routine\n"))
+        
       })
     })
   }
@@ -1612,7 +1613,7 @@ shinyServer(function(input, output, session) {
                   }
                   
                   if(sameAsDefault!=1){
-                  # if(T){
+                    # if(T){
                     cat(file=stderr(), paste(paste0("LOG: ", Sys.time(), " creating", item, n, "\n")))
                     
                     idn=grep(paste0(item,n,sep=""), isolate(names(input)), value=TRUE)
@@ -1624,9 +1625,9 @@ shinyServer(function(input, output, session) {
                     
                     if(length(idn)>0){
                       for(IDN in idn){
-                        these <- grep(IDN,names(Defaults))
-                        if(length(these)>1) for(thesei in these) Defaults[thesei] <<- NULL
-                        Defaults[[IDN]]<<-input[[IDN]]
+                        # these <- grep(IDN,names(Defaults))
+                        # if(length(these)>1) for(thesei in these) Defaults[thesei] <<- NULL
+                        Defaults[[IDN]]<<-isolate(input[[IDN]])
                       }
                     }
                     Defaults[[paste("priorExists", item, n, sep="")]]<<-TRUE
@@ -1641,7 +1642,7 @@ shinyServer(function(input, output, session) {
                         dati <- list(vpc=dati)
                       }
                     }else{
-                      dati <- dataFile()
+                      dati <- isolate(dataFile())
                     }
                     
                     argList=isolate(try(createArgList(input, item, n, dataFile=dati, currentWD=currentWD())))
@@ -1685,7 +1686,7 @@ shinyServer(function(input, output, session) {
                         save(message,argList, input_vals, Defaults, file=file.path(debugDir,"setdefaults.rda"))
                       } 
                       
-
+                      
                       if(debug){
                         message <- "DEBUG C"
                         save(message,file=file.path(debugDir,"message.rda"))
@@ -1864,7 +1865,7 @@ shinyServer(function(input, output, session) {
                         input_nms <- isolate(names(input))
                         input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
                         names(input_vals) <- input_nms
-                        save(message,input_vals,item,Dir,fileHead,callType, argList, file=file.path(debugDir,"message.rda"))
+                        save(message,input_vals,item,Dir,fileHead,callType, argList, Defaults,file=file.path(debugDir,"message.rda"))
                       }  
                       
                       dir.create(Dir,showWarning=FALSE)
@@ -2007,34 +2008,27 @@ shinyServer(function(input, output, session) {
                              argListManip, p1List=p1List, ordering,Defaults,
                              file=file.path(srcDir,"tmp","recordGUI.rda"))
                       }
-                      if(item!="VPC"){ ## YOU NEED TO WORK THIS OUT BEFORE V1.2
-                        cat(file=stderr(),paste("LOG: Writing", item, "to the reproducible R script\n"))
-                        tryCatch(
-                          recordGUI(doWhat=callType, 
-                                    toWhat=useArgs,
-                                    input=isolate(input),
-                                    item=item,
-                                    number=n,
-                                    manipArgs=argListManip,
-                                    currentWD=isolate(currentWD()),
-                                    grob=p1List,
-                                    ordering=ordering),
-                          error=function(e){
-                            cat(file=stderr(), sprintf("Record GUI failed with %s %s\n",item,n))
-                            if(debug){
-                              input_vals <- reactiveValuesToList(input,all.names=T)
-                              save(e,callType, useArgs, input_vals, n, argListManip, file=file.path(srcDir,"tmp","record_output.rda"))
-                            }
-                          }
-                        )                       
-                      }else{
-                        #VPC
-                        if(debug){
-                          input_vals <- reactiveValuesToList(input,all.names=T)
-                          save(callType, useArgs, input_vals, n, argListManip, file=file.path(srcDir,"tmp","record_output_vpc.rda"))
-                        }
-                      }
-
+                      cat(file=stderr(),paste("LOG: Writing", item, "to the reproducible R script\n"))
+                      # tryCatch(
+                      recordGUI(doWhat=callType, 
+                                toWhat=useArgs,
+                                input=isolate(input),
+                                item=item,
+                                number=n,
+                                manipArgs=argListManip,
+                                currentWD=currentWD(),
+                                grob=p1List,
+                                ordering=ordering)
+                      # ,
+                      # error=function(e){
+                      #   cat(file=stderr(), sprintf("Record GUI failed with %s %s\n",item,n))
+                      #   if(debug){
+                      #     input_vals <- reactiveValuesToList(input,all.names=T)
+                      #     save(e,callType, useArgs, input_vals, n, argListManip, file=file.path(srcDir,"tmp","record_output.rda"))
+                      #   }
+                      # }
+                      # )                       
+                      
                     })
                     
                   }
@@ -2103,8 +2097,9 @@ shinyServer(function(input, output, session) {
   observeEvent(input$newTemplateGo,{  
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " newTemplateGo\n"))
     if(input$saveTemplateAs!=""){
-      for(item in names(DefaultsFirst)){
-        #put in the non-plot related Defaults too
+      
+      for(item in names(Defaults)){
+        #take out some of these
         if (item %nin% c(
           "saveAll",
           "saveAs",
@@ -2113,31 +2108,21 @@ shinyServer(function(input, output, session) {
           "PNG",
           "RTF",
           "dataPath", 
-          "recall"))
+          "recall"
+        ))
         {
-          Defaults[[item]]<<-input[[item]]
-          
-          # If someone has requested 0 plots of a type, clear out old plots
-          plots <- grep("Num",names(Defaults),value=T)
-          plotsN <- unlist(lapply(plots,function(i)as.character(Defaults[[i]])))
-          if(length(plots)==length(plotsN)){
-            plots <- plots[plotsN=="0"]
-            for(ploti in plots){
-              plotii <- gsub("Num","",ploti)
-              nullThese <- grep(plotii,names(Defaults),value=T)
-              nullThese <- nullThese[!grepl("Num",nullThese)]
-              for(nullThesei in nullThese){
-                Defaults[[nullThesei]] <<- NULL
-              }
-            }
+          input_vals <- reactiveValuesToList(input)
+          if(!is.null(input_vals[[item]])){
+            Defaults[[item]]<<-input_vals[[item]]
           }else{
-            cat(file=stderr(),paste0("LOG: ",Sys.time(), "Defaults records cleanup error"))
-            if(debug){
-              save(Defaults,file=file.path(srcDir,"recordInput-error.rda"))
+            # The subset selectize items may be removed to NULL
+            if(grepl("Subset",item)){
+              Defaults[[item]]<-""
             }
           }
         }
       }
+      
       if(debug){
         input_nms <- isolate(names(input))
         input_vals <- lapply(input_nms, function(inputi) try(input[[inputi]]))
@@ -2212,70 +2197,70 @@ shinyServer(function(input, output, session) {
   observeEvent(input$fastForward,{
     
     runjs("function sleep (time) {
-                                    return new Promise((resolve) => setTimeout(resolve, time));
-            };
-            
-
-            $('a[data-value=\"tabProjectInfo\"]').tab('show');
-            
-            sleep(2000).then(() => {$('a[data-value=\"Model Info\"]').tab('show');
-                                      console.log('release 1');
-                                    });
-            
-            sleep(3000).then(() => {
-                                      $('a[data-value=\"tabDataInput\"]').tab('show');
-                                      console.log('release 2');
-                                    });
-            
-            sleep(5000).then(() => {
-                                      $('#updateSourceView').click();
-                                      console.log('release 3');
-                                    });
-            sleep(7000).then(() => {
-                                     $('a[data-value=\"Run Data\"]').tab('show');
-                                      console.log('release 4');
-                                    });
-            
-            sleep(9000).then(() => {
-                                      $('#updateRunView').click();
-                                      console.log('release 5');
-                                    });
-            sleep(13000).then(() => {
-                                      $('a[data-value=\"atabData\"]').tab('show');
-                                      console.log('release 6');
-                                    });
-            sleep(14000).then(() => {
-                                     $('#performMerge').click();
-                                      console.log('release 7');
-                                    });
-            sleep(15000).then(() => {
-                                      $('a[data-value=\"tabAnalysisSelection\"]').tab('show');
-                                      console.log('release 8');
-                                    });
-            sleep(16000).then(() => {
-                                      $('a[data-value=\"tabFigures\"]').tab('show');
-                                      console.log('release 9');
-                                    });
-            sleep(17000).then(() => {
-                                      $('#buttonConcvTime1').click();
-                                      console.log('release 10');
-                                    });
-            ")
+          return new Promise((resolve) => setTimeout(resolve, time));
+  };
+          
+          
+          $('a[data-value=\"tabProjectInfo\"]').tab('show');
+          
+          sleep(2000).then(() => {$('a[data-value=\"Model Info\"]').tab('show');
+          console.log('release 1');
+          });
+          
+          sleep(3000).then(() => {
+          $('a[data-value=\"tabDataInput\"]').tab('show');
+          console.log('release 2');
+          });
+          
+          sleep(5000).then(() => {
+          $('#updateSourceView').click();
+          console.log('release 3');
+          });
+          sleep(7000).then(() => {
+          $('a[data-value=\"Run Data\"]').tab('show');
+          console.log('release 4');
+          });
+          
+          sleep(9000).then(() => {
+          $('#updateRunView').click();
+          console.log('release 5');
+          });
+          sleep(13000).then(() => {
+          $('a[data-value=\"atabData\"]').tab('show');
+          console.log('release 6');
+          });
+          sleep(14000).then(() => {
+          $('#performMerge').click();
+          console.log('release 7');
+          });
+          sleep(15000).then(() => {
+          $('a[data-value=\"tabAnalysisSelection\"]').tab('show');
+          console.log('release 8');
+          });
+          sleep(16000).then(() => {
+          $('a[data-value=\"tabFigures\"]').tab('show');
+          console.log('release 9');
+          });
+          sleep(17000).then(() => {
+          $('#buttonConcvTime1').click();
+          console.log('release 10');
+          });
+          ")
     
-  })
+})
   
   # Function to check invalidations ----
   checkInvalidate <- function(input,item,n){
     ##Check to see if the input has changed since the last time it was rendered
     idx=grep(paste(item,n,sep=""), names(Defaults), value=TRUE)
     idn=grep(paste(item,n,sep=""), isolate(names(input)), value=TRUE)
-
+    
     if(debug){
       message <- "DEBUG AAA"
       input_vals <- reactiveValuesToList(input)
       save(message,idx,idn,Defaults,input_vals,file=file.path(debugDir,"message.rda"))
     }
-
+    
     #some values don't exist as inputs, for example the priors variable to check for priors
     idtest=idx[(idx %in% idn)]
     if(paste0("button",item,n)%nin%idtest){
@@ -2292,9 +2277,9 @@ shinyServer(function(input, output, session) {
         Defaults[[paste0("updateAddlVPCView",item,n)]] <<- 0
       }
     }
-
-
-
+    
+    
+    
     # #because of the reactive nature of 'input' comparisons have to be done one at a time
     if(length(idtest)>0){
       sameAsDefault=sum(sapply(idtest, function(X){all(input[[X]]==Defaults[X])}))/length(idtest)
