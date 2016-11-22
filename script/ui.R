@@ -1,14 +1,16 @@
 #rm(list=ls(all=TRUE))
-.libPaths("/data/tflgenerator/script/lib")
+
+if(dir.exists("/data/tflgenerator/script/lib")){ 
+  .libPaths("/data/tflgenerator/script/lib")
+}else{
+  .libPaths("/data/co/tflgenerator/script/lib")
+}
 library(GUI)
 library(TFL) # the Amgen Internal TFL package
 library(shiny)
 library(shinydashboard)
 library(shinyFiles)
-#library(shinyjs)
-
-
-
+library(shinyjs)
 
 # Defaults are used to keep the current entries in dynamic memory, 
 #   defaults first are the pre-defined defaults
@@ -19,6 +21,9 @@ library(shinyFiles)
 	  # Application title
       	dashboardHeader(title="Pharmacometrics TFL"),
       	dashboardSidebar(
+      	  actionButton('hardReset','Hard reset'),
+      	  h1(),
+      	  actionLink('fastForward','Fast Forward'),
       	  sidebarMenu(
       	     
       	      # selectInput(inputId="templateSelection", label="Open Template", choices=c("New Analysis"="Template_New","Template_V8"="Template_V8", "Template_Other"="Template_Other")),
@@ -41,10 +46,10 @@ library(shinyFiles)
       	      menuItem(text="Listings", tabName="tabListings", icon=icon("navicon")),
       	      menuItem(text="Current TFL", tabName="tabCurrentTFL", icon=icon("file-word-o")),
       	      menuItem(text="Save and Export", tabName="tabOutput", icon=icon("mail-forward"))
-      	      
       	  )
       	),
       	dashboardBody(
+      	  useShinyjs(),
       	  tabItems(
       	    tabItem(tabName="tabIntro",
       	            h2("User guide:",
@@ -52,14 +57,16 @@ library(shinyFiles)
       	            h1(""),
       	            tags$iframe(src="https://docs.google.com/document/d/1sGwrTt_rr2gX0X8Ifgaj1VcFWZkY4-Xo4FF4flzWkt8/pub?embedded=true",
       	                        height="600px", width="100%")
-      	            ,
+      	            # ,
       	            # h1(""),
       	            # h2("Source code:"),
       	            # verbatimTextOutput("sourceParseCode")
       	            # ,
-      	            h1(""),
-      	            h2("Debug:"),
-      	            code(verbatimTextOutput("readThis"))
+      	            # h1(""),
+      	            # h2("Debug:"),
+      	            # code(verbatimTextOutput("serverLogs")),
+      	            # code(verbatimTextOutput("readThis"))
+      	            
       	            # ,
       	            # h1(""),
       	            # h2("Client data:"),
@@ -96,7 +103,16 @@ library(shinyFiles)
       	    ),
       	    tabItem(tabName="tabFigures",
       	            h3("Figures"),
+      	            # column(width=3,actionLink("updateElem","Update Plot Layer")),
+      	            # column(width=3,actionLink("updateTheme","Update Plot Theme")),
+      	            # column(width=3,actionLink("SetThemeGrid",'Update Grid Theme')),
+      	            # column(width=3,actionLink("SetThemeGlobal",'Update Global Theme')),
       	            uiOutput("figuresTabset")
+      	            # uiOutput('popTheme')
+      	    ),
+      	    tabItem(tabName="tabFiguresEditor",
+      	            h3("Figures Editor"),
+      	            uiOutput("figuresEditorTabset")
       	    ),
       	    tabItem(tabName="tabTables",
       	            h3("Tables"),

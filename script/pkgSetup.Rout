@@ -1,0 +1,1080 @@
+
+R version 3.2.3 (2015-12-10) -- "Wooden Christmas-Tree"
+Copyright (C) 2015 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[Previously saved workspace restored]
+
+> # Expects to be run from script
+> author <- c("danp","polhamus")
+> pkgs <- c('metrumrg','shinyFiles','animation','gdata','shinydashboard',
++           'DT','rtf','lazyeval','dplyr','DBI','ggplot2','gridExtra',
++           'readr','shinyAce','shinyBS','TFL','GUI')
+> 
+> user <- Sys.info()["user"]
+> parentScriptDir <- getwd()  ## You may need to mod this to be in the top level of scriptDir
+> if(!exists("pkgDir")) pkgDir <- file.path(parentScriptDir, "pkg")
+> libDir <- file.path(parentScriptDir, "lib")
+> dir.create(libDir)
+> dir.create(pkgDir)
+Warning message:
+In dir.create(pkgDir) : '/data/co/tflgenerator/script/pkg' already exists
+> 
+> .libPaths(libDir)
+> mycran <- paste("file://", pkgDir, sep="")
+> library(tools)
+> if(file.exists(file.path(pkgDir,"PACKAGES"))){
++   available <- available.packages(contriburl=mycran)[,"Package"]
++ }else{
++   write_PACKAGES(pkgDir)
++   available <- available.packages(contriburl=mycran)[,"Package"]
++ }
+> 
+> 
+> ## Only authors can install from CRAN and write_PACKAGES
+> fromCRAN <- user %in% author
+> if(fromCRAN){
++     newpkgs <- setdiff(pkgs, available)
++     write_PACKAGES(pkgDir)
++    # We want the old version of gridExtra
++    if("gridExtra" %in% newpkgs){
++      download.file("https://cran.r-project.org/src/contrib/Archive/gridExtra/gridExtra_0.9.tar.gz",destfile=file.path(pkgDir,"gridExtra_0.9.tar.gz"))
++      write_PACKAGES(pkgDir)   		  
++    }
++    if("audited" %in% newpkgs){
++       download.file("https://metrumrg-soft.s3.amazonaws.com/audited/audited_1.9.tar.gz",destfile=file.path(pkgDir,"audited_1.9.tar.gz"))
++       write_PACKAGES(pkgDir)
++     }
++     if("fork" %in% newpkgs){
++       download.file("https://metrumrg-soft.s3.amazonaws.com/fork/fork_1.2.4.tar.gz",destfile=file.path(pkgDir,"fork_1.2.4.tar.gz"))
++       write_PACKAGES(pkgDir)
++     }
++     if("review" %in% newpkgs){
++       download.file("https://metrumrg-soft.s3.amazonaws.com/review/review_2.5.tar.gz",destfile=file.path(pkgDir,"review_2.5.tar.gz"))
++       write_PACKAGES(pkgDir)
++     }
++     if("metrumrg" %in% newpkgs){
++       download.file("http://download.r-forge.r-project.org/src/contrib/metrumrg_5.57.tar.gz", destfile="pkg/metrumrg_5.57.tar.gz")
++       write_PACKAGES(pkgDir)
++     }
++     if(length(newpkgs)>0){
++               install.packages(newpkgs,
++                                lib=libDir,
++                                contriburl=c(mycran,
++                                             contrib.url("http://r-forge.r-project.org","source"),
++                                             contrib.url("https://cran.rstudio.com/","source")),
++                                destdir=pkgDir,
++                                type="source",
++                                INSTALL_opts="--no-multiarch")
++               write_PACKAGES(pkgDir)
++             }
++     ## If multiple authors qcing each other, a package could be available but uninstalled.  Install from local.
++     uninstalled <- setdiff(pkgs, installed.packages(libDir))
++     if(length(uninstalled)>0){
++       install.packages(uninstalled,
++                        lib = libDir,
++                        contriburl = mycran,
++                        type = "source",
++                        INSTALL_opts="--no-multiarch")
++     }    
++   }
+> if(!fromCRAN){
++   installed <- row.names(installed.packages(libDir))
++   newpkgs <- setdiff(pkgs, installed)
++   if(length(newpkgs)>0){
++     if("metrumrg" %in% newpkgs){
++                                         # XML frequently fails to build from source.  Use the binary and place it in lib.
++       if(!"XML" %in% rownames(installed.packages())) install.packages("XML",lib=libDir,repos="https://cran.rstudio.com/",INSTALL_opts="--no-multiarch",destdir=pkgDir)
++       install.packages('metrumrg', repos=c('http://R-Forge.R-project.org','https://cran.rstudio.org'))
++     }
++     
++     install.packages(newpkgs,
++                      lib = libDir,
++                      contriburl = mycran,
++                      type = "source",
++                      INSTALL_opts="--no-multiarch")
++   }
++ }
+Installing package into ‘/data/co/tflgenerator/script/lib’
+(as ‘lib’ is unspecified)
+also installing the dependencies ‘reshape’, ‘RJSONIO’, ‘gtools’, ‘htmlwidgets’, ‘R.oo’, ‘R.methodsS3’, ‘assertthat’, ‘tibble’, ‘hms’
+
+* installing *source* package ‘reshape’ ...
+** package ‘reshape’ successfully unpacked and MD5 sums checked
+** R
+** data
+*** moving datasets to lazyload DB
+** inst
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded
+* DONE (reshape)
+* installing *source* package ‘RJSONIO’ ...
+** package ‘RJSONIO’ successfully unpacked and MD5 sums checked
+Trying to find libjson.h header file
+checking for gcc... gcc
+checking whether the C compiler works... yes
+checking for C compiler default output file name... a.out
+checking for suffix of executables... 
+checking whether we are cross compiling... no
+checking for suffix of object files... o
+checking whether we are using the GNU C compiler... yes
+checking whether gcc accepts -g... yes
+checking for gcc option to accept ISO C89... none needed
+USE_LOCAL = ""
+Minor Version: 6
+Using local libjson code. Copying files from src/libjson/Source
+/tmp/Rtmp1mcR7a/R.INSTALL438928e39ba4/RJSONIO
+JSONAllocator.cpp
+JSONChildren.cpp
+JSONDebug.cpp
+JSONIterators.cpp
+JSONMemory.cpp
+JSONNode.cpp
+JSONNode_Mutex.cpp
+JSONPreparse.cpp
+JSONStream.cpp
+JSONValidator.cpp
+JSONWorker.cpp
+JSONWriter.cpp
+internalJSONNode.cpp
+libjson.cpp
+configure: creating ./config.status
+config.status: creating src/Makevars
+config.status: creating cleanup
+** libs
+gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG -I. -Ilibjson -Ilibjson/Source -DNEW_JSON_NEW_STREAM -DNDEBUG=1 -DJSON_STREAM=1 -DJSON_VALIDATE -DJSON_READ_PRIORITY=1 -DJSON_LIBRARY=1  -DJSON_ISO_STRICT     -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c ConvertUTF.c -o ConvertUTF.o
+g++ -I/usr/share/R/include -DNDEBUG -I. -Ilibjson -Ilibjson/Source -DNEW_JSON_NEW_STREAM -DNDEBUG=1 -DJSON_STREAM=1 -DJSON_VALIDATE -DJSON_READ_PRIORITY=1 -DJSON_LIBRARY=1  -DJSON_ISO_STRICT     -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c JSONAllocator.cpp -o JSONAllocator.o
+g++ -I/usr/share/R/include -DNDEBUG -I. -Ilibjson -Ilibjson/Source -DNEW_JSON_NEW_STREAM -DNDEBUG=1 -DJSON_STREAM=1 -DJSON_VALIDATE -DJSON_READ_PRIORITY=1 -DJSON_LIBRARY=1  -DJSON_ISO_STRICT     -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c JSONChildren.cpp -o JSONChildren.o
+g++ -I/usr/share/R/include -DNDEBUG -I. -Ilibjson -Ilibjson/Source -DNEW_JSON_NEW_STREAM -DNDEBUG=1 -DJSON_STREAM=1 -DJSON_VALIDATE -DJSON_READ_PRIORITY=1 -DJSON_LIBRARY=1  -DJSON_ISO_STRICT     -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c JSONDebug.cpp -o JSONDebug.o
+g++ -I/usr/share/R/include -DNDEBUG -I. -Ilibjson -Ilibjson/Source -DNEW_JSON_NEW_STREAM -DNDEBUG=1 -DJSON_STREAM=1 -DJSON_VALIDATE -DJSON_READ_PRIORITY=1 -DJSON_LIBRARY=1  -DJSON_ISO_STRICT     -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c JSONIterators.cpp -o JSONIterators.o
+g++ -I/usr/share/R/include -DNDEBUG -I. -Ilibjson -Ilibjson/Source -DNEW_JSON_NEW_STREAM -DNDEBUG=1 -DJSON_STREAM=1 -DJSON_VALIDATE -DJSON_READ_PRIORITY=1 -DJSON_LIBRARY=1  -DJSON_ISO_STRICT     -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c JSONMemory.cpp -o JSONMemory.o
+g++ -I/usr/share/R/include -DNDEBUG -I. -Ilibjson -Ilibjson/Source -DNEW_JSON_NEW_STREAM -DNDEBUG=1 -DJSON_STREAM=1 -DJSON_VALIDATE -DJSON_READ_PRIORITY=1 -DJSON_LIBRARY=1  -DJSON_ISO_STRICT     -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c JSONNode.cpp -o JSONNode.o
+g++ -I/usr/share/R/include -DNDEBUG -I. -Ilibjson -Ilibjson/Source -DNEW_JSON_NEW_STREAM -DNDEBUG=1 -DJSON_STREAM=1 -DJSON_VALIDATE -DJSON_READ_PRIORITY=1 -DJSON_LIBRARY=1  -DJSON_ISO_STRICT     -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c JSONNode_Mutex.cpp -o JSONNode_Mutex.o
+g++ -I/usr/share/R/include -DNDEBUG -I. -Ilibjson -Ilibjson/Source -DNEW_JSON_NEW_STREAM -DNDEBUG=1 -DJSON_STREAM=1 -DJSON_VALIDATE -DJSON_READ_PRIORITY=1 -DJSON_LIBRARY=1  -DJSON_ISO_STRICT     -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c JSONPreparse.cpp -o JSONPreparse.o
+g++ -I/usr/share/R/include -DNDEBUG -I. -Ilibjson -Ilibjson/Source -DNEW_JSON_NEW_STREAM -DNDEBUG=1 -DJSON_STREAM=1 -DJSON_VALIDATE -DJSON_READ_PRIORITY=1 -DJSON_LIBRARY=1  -DJSON_ISO_STRICT     -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c JSONStream.cpp -o JSONStream.o
+g++ -I/usr/share/R/include -DNDEBUG -I. -Ilibjson -Ilibjson/Source -DNEW_JSON_NEW_STREAM -DNDEBUG=1 -DJSON_STREAM=1 -DJSON_VALIDATE -DJSON_READ_PRIORITY=1 -DJSON_LIBRARY=1  -DJSON_ISO_STRICT     -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c JSONValidator.cpp -o JSONValidator.o
+g++ -I/usr/share/R/include -DNDEBUG -I. -Ilibjson -Ilibjson/Source -DNEW_JSON_NEW_STREAM -DNDEBUG=1 -DJSON_STREAM=1 -DJSON_VALIDATE -DJSON_READ_PRIORITY=1 -DJSON_LIBRARY=1  -DJSON_ISO_STRICT     -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c JSONWorker.cpp -o JSONWorker.o
+g++ -I/usr/share/R/include -DNDEBUG -I. -Ilibjson -Ilibjson/Source -DNEW_JSON_NEW_STREAM -DNDEBUG=1 -DJSON_STREAM=1 -DJSON_VALIDATE -DJSON_READ_PRIORITY=1 -DJSON_LIBRARY=1  -DJSON_ISO_STRICT     -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c JSONWriter.cpp -o JSONWriter.o
+gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG -I. -Ilibjson -Ilibjson/Source -DNEW_JSON_NEW_STREAM -DNDEBUG=1 -DJSON_STREAM=1 -DJSON_VALIDATE -DJSON_READ_PRIORITY=1 -DJSON_LIBRARY=1  -DJSON_ISO_STRICT     -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c JSON_parser.c -o JSON_parser.o
+gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG -I. -Ilibjson -Ilibjson/Source -DNEW_JSON_NEW_STREAM -DNDEBUG=1 -DJSON_STREAM=1 -DJSON_VALIDATE -DJSON_READ_PRIORITY=1 -DJSON_LIBRARY=1  -DJSON_ISO_STRICT     -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c RJSON.c -o RJSON.o
+g++ -I/usr/share/R/include -DNDEBUG -I. -Ilibjson -Ilibjson/Source -DNEW_JSON_NEW_STREAM -DNDEBUG=1 -DJSON_STREAM=1 -DJSON_VALIDATE -DJSON_READ_PRIORITY=1 -DJSON_LIBRARY=1  -DJSON_ISO_STRICT     -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c internalJSONNode.cpp -o internalJSONNode.o
+g++ -I/usr/share/R/include -DNDEBUG -I. -Ilibjson -Ilibjson/Source -DNEW_JSON_NEW_STREAM -DNDEBUG=1 -DJSON_STREAM=1 -DJSON_VALIDATE -DJSON_READ_PRIORITY=1 -DJSON_LIBRARY=1  -DJSON_ISO_STRICT     -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c libjson.cpp -o libjson.o
+gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG -I. -Ilibjson -Ilibjson/Source -DNEW_JSON_NEW_STREAM -DNDEBUG=1 -DJSON_STREAM=1 -DJSON_VALIDATE -DJSON_READ_PRIORITY=1 -DJSON_LIBRARY=1  -DJSON_ISO_STRICT     -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c rlibjson.c -o rlibjson.o
+rlibjson.c: In function ‘R_fromJSON’:
+rlibjson.c:49:9: note: #pragma message: activate the debug_callback
+ #pragma message("activate the debug_callback")
+         ^
+gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG -I. -Ilibjson -Ilibjson/Source -DNEW_JSON_NEW_STREAM -DNDEBUG=1 -DJSON_STREAM=1 -DJSON_VALIDATE -DJSON_READ_PRIORITY=1 -DJSON_LIBRARY=1  -DJSON_ISO_STRICT     -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c rparser.c -o rparser.o
+g++ -shared -L/usr/lib/R/lib -Wl,-Bsymbolic-functions -Wl,-z,relro -o RJSONIO.so ConvertUTF.o JSONAllocator.o JSONChildren.o JSONDebug.o JSONIterators.o JSONMemory.o JSONNode.o JSONNode_Mutex.o JSONPreparse.o JSONStream.o JSONValidator.o JSONWorker.o JSONWriter.o JSON_parser.o RJSON.o internalJSONNode.o libjson.o rlibjson.o rparser.o -L/usr/lib/R/lib -lR
+installing to /data/co/tflgenerator/script/lib/RJSONIO/libs
+** R
+** inst
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded
+* DONE (RJSONIO)
+* installing *source* package ‘gtools’ ...
+** package ‘gtools’ successfully unpacked and MD5 sums checked
+** libs
+gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG      -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c roman2int.c -o roman2int.o
+gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG      -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c setTCPNoDelay.c -o setTCPNoDelay.o
+gcc -std=gnu99 -shared -L/usr/lib/R/lib -Wl,-Bsymbolic-functions -Wl,-z,relro -o gtools.so roman2int.o setTCPNoDelay.o -L/usr/lib/R/lib -lR
+installing to /data/co/tflgenerator/script/lib/gtools/libs
+** R
+** data
+** inst
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded
+* DONE (gtools)
+* installing *source* package ‘htmlwidgets’ ...
+** package ‘htmlwidgets’ successfully unpacked and MD5 sums checked
+** R
+** inst
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded
+* DONE (htmlwidgets)
+* installing *source* package ‘R.methodsS3’ ...
+** package ‘R.methodsS3’ successfully unpacked and MD5 sums checked
+** R
+** inst
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded
+* DONE (R.methodsS3)
+* installing *source* package ‘assertthat’ ...
+** package ‘assertthat’ successfully unpacked and MD5 sums checked
+** R
+** inst
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded
+* DONE (assertthat)
+* installing *source* package ‘hms’ ...
+** package ‘hms’ successfully unpacked and MD5 sums checked
+** R
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded
+* DONE (hms)
+* installing *source* package ‘animation’ ...
+** package ‘animation’ successfully unpacked and MD5 sums checked
+** R
+** data
+*** moving datasets to lazyload DB
+** demo
+** inst
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded
+* DONE (animation)
+* installing *source* package ‘shinydashboard’ ...
+** package ‘shinydashboard’ successfully unpacked and MD5 sums checked
+** R
+** inst
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded
+* DONE (shinydashboard)
+* installing *source* package ‘lazyeval’ ...
+** package ‘lazyeval’ successfully unpacked and MD5 sums checked
+** libs
+gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG      -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c lazy.c -o lazy.o
+gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG      -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c make_call.c -o make_call.o
+gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG      -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c promises.c -o promises.o
+gcc -std=gnu99 -shared -L/usr/lib/R/lib -Wl,-Bsymbolic-functions -Wl,-z,relro -o lazyeval.so lazy.o make_call.o promises.o -L/usr/lib/R/lib -lR
+installing to /data/co/tflgenerator/script/lib/lazyeval/libs
+** R
+** inst
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded
+* DONE (lazyeval)
+* installing *source* package ‘DBI’ ...
+** package ‘DBI’ successfully unpacked and MD5 sums checked
+** R
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded
+* DONE (DBI)
+* installing *source* package ‘ggplot2’ ...
+** package ‘ggplot2’ successfully unpacked and MD5 sums checked
+** R
+** data
+*** moving datasets to lazyload DB
+** inst
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded
+* DONE (ggplot2)
+* installing *source* package ‘gridExtra’ ...
+** package ‘gridExtra’ successfully unpacked and MD5 sums checked
+** R
+** inst
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded
+* DONE (gridExtra)
+* installing *source* package ‘shinyAce’ ...
+** package ‘shinyAce’ successfully unpacked and MD5 sums checked
+** R
+** inst
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded
+* DONE (shinyAce)
+* installing *source* package ‘shinyBS’ ...
+** package ‘shinyBS’ successfully unpacked and MD5 sums checked
+** R
+** inst
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded
+* DONE (shinyBS)
+* installing *source* package ‘R.oo’ ...
+** package ‘R.oo’ successfully unpacked and MD5 sums checked
+** R
+** inst
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded
+* DONE (R.oo)
+* installing *source* package ‘tibble’ ...
+** package ‘tibble’ successfully unpacked and MD5 sums checked
+** libs
+g++ -I/usr/share/R/include -DNDEBUG   -I"/usr/local/lib/R/site-library/Rcpp/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c RcppExports.cpp -o RcppExports.o
+g++ -I/usr/share/R/include -DNDEBUG   -I"/usr/local/lib/R/site-library/Rcpp/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c matrixToDataFrame.cpp -o matrixToDataFrame.o
+g++ -shared -L/usr/lib/R/lib -Wl,-Bsymbolic-functions -Wl,-z,relro -o tibble.so RcppExports.o matrixToDataFrame.o -L/usr/lib/R/lib -lR
+installing to /data/co/tflgenerator/script/lib/tibble/libs
+** R
+** inst
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded
+* DONE (tibble)
+* installing *source* package ‘metrumrg’ ...
+** R
+** inst
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded
+* DONE (metrumrg)
+* installing *source* package ‘shinyFiles’ ...
+** package ‘shinyFiles’ successfully unpacked and MD5 sums checked
+** R
+** inst
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded
+* DONE (shinyFiles)
+* installing *source* package ‘gdata’ ...
+** R
+** data
+** inst
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded
+* DONE (gdata)
+* installing *source* package ‘DT’ ...
+** package ‘DT’ successfully unpacked and MD5 sums checked
+** R
+** inst
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded
+* DONE (DT)
+* installing *source* package ‘dplyr’ ...
+** package ‘dplyr’ successfully unpacked and MD5 sums checked
+** libs
+g++ -I/usr/share/R/include -DNDEBUG -I../inst/include -DCOMPILING_DPLYR  -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c RcppExports.cpp -o RcppExports.o
+g++ -I/usr/share/R/include -DNDEBUG -I../inst/include -DCOMPILING_DPLYR  -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c address.cpp -o address.o
+g++ -I/usr/share/R/include -DNDEBUG -I../inst/include -DCOMPILING_DPLYR  -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c api.cpp -o api.o
+g++ -I/usr/share/R/include -DNDEBUG -I../inst/include -DCOMPILING_DPLYR  -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c arrange.cpp -o arrange.o
+g++ -I/usr/share/R/include -DNDEBUG -I../inst/include -DCOMPILING_DPLYR  -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c between.cpp -o between.o
+g++ -I/usr/share/R/include -DNDEBUG -I../inst/include -DCOMPILING_DPLYR  -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c bind.cpp -o bind.o
+g++ -I/usr/share/R/include -DNDEBUG -I../inst/include -DCOMPILING_DPLYR  -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c combine_variables.cpp -o combine_variables.o
+g++ -I/usr/share/R/include -DNDEBUG -I../inst/include -DCOMPILING_DPLYR  -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c distinct.cpp -o distinct.o
+g++ -I/usr/share/R/include -DNDEBUG -I../inst/include -DCOMPILING_DPLYR  -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c dplyr.cpp -o dplyr.o
+g++ -I/usr/share/R/include -DNDEBUG -I../inst/include -DCOMPILING_DPLYR  -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c filter.cpp -o filter.o
+g++ -I/usr/share/R/include -DNDEBUG -I../inst/include -DCOMPILING_DPLYR  -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c group_indices.cpp -o group_indices.o
+g++ -I/usr/share/R/include -DNDEBUG -I../inst/include -DCOMPILING_DPLYR  -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c init.cpp -o init.o
+g++ -I/usr/share/R/include -DNDEBUG -I../inst/include -DCOMPILING_DPLYR  -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c join.cpp -o join.o
+g++ -I/usr/share/R/include -DNDEBUG -I../inst/include -DCOMPILING_DPLYR  -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c select.cpp -o select.o
+g++ -I/usr/share/R/include -DNDEBUG -I../inst/include -DCOMPILING_DPLYR  -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c strings_addresses.cpp -o strings_addresses.o
+g++ -I/usr/share/R/include -DNDEBUG -I../inst/include -DCOMPILING_DPLYR  -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c summarise.cpp -o summarise.o
+g++ -I/usr/share/R/include -DNDEBUG -I../inst/include -DCOMPILING_DPLYR  -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c test.cpp -o test.o
+g++ -I/usr/share/R/include -DNDEBUG -I../inst/include -DCOMPILING_DPLYR  -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c window.cpp -o window.o
+g++ -shared -L/usr/lib/R/lib -Wl,-Bsymbolic-functions -Wl,-z,relro -o dplyr.so RcppExports.o address.o api.o arrange.o between.o bind.o combine_variables.o distinct.o dplyr.o filter.o group_indices.o init.o join.o select.o strings_addresses.o summarise.o test.o window.o -L/usr/lib/R/lib -lR
+installing to /data/co/tflgenerator/script/lib/dplyr/libs
+** R
+** data
+*** moving datasets to lazyload DB
+** demo
+** inst
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded
+* DONE (dplyr)
+* installing *source* package ‘rtf’ ...
+** package ‘rtf’ successfully unpacked and MD5 sums checked
+** R
+** inst
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded
+* DONE (rtf)
+* installing *source* package ‘readr’ ...
+** package ‘readr’ successfully unpacked and MD5 sums checked
+** libs
+g++ -I/usr/share/R/include -DNDEBUG   -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c Collector.cpp -o Collector.o
+In file included from /usr/lib/R/library/BH/include/boost/iostreams/detail/is_dereferenceable.hpp:12:0,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/resolve.hpp:26,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/push.hpp:24,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/streambuf/indirect_streambuf.hpp:31,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream_buffer.hpp:22,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream.hpp:21,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/detail/iterator_source.hpp:14,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/stream.hpp:16,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream.hpp:15,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi.hpp:30,
+                 from /usr/lib/R/library/BH/include/boost/spirit/include/qi.hpp:16,
+                 from boost.h:14,
+                 from Source.h:5,
+                 from Token.h:6,
+                 from Collector.h:8,
+                 from Collector.cpp:4:
+/usr/lib/R/library/BH/include/boost/type_traits/detail/bool_trait_def.hpp:18:79: note: #pragma message: NOTE: Use of this header (bool_trait_def.hpp) is deprecated
+ # pragma message("NOTE: Use of this header (bool_trait_def.hpp) is deprecated")
+                                                                               ^
+In file included from /usr/lib/R/library/BH/include/boost/type_traits/detail/bool_trait_def.hpp:21:0,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/is_dereferenceable.hpp:12,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/resolve.hpp:26,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/push.hpp:24,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/streambuf/indirect_streambuf.hpp:31,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream_buffer.hpp:22,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream.hpp:21,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/detail/iterator_source.hpp:14,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/stream.hpp:16,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream.hpp:15,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi.hpp:30,
+                 from /usr/lib/R/library/BH/include/boost/spirit/include/qi.hpp:16,
+                 from boost.h:14,
+                 from Source.h:5,
+                 from Token.h:6,
+                 from Collector.h:8,
+                 from Collector.cpp:4:
+/usr/lib/R/library/BH/include/boost/type_traits/detail/template_arity_spec.hpp:13:84: note: #pragma message: NOTE: Use of this header (template_arity_spec.hpp) is deprecated
+ # pragma message("NOTE: Use of this header (template_arity_spec.hpp) is deprecated")
+                                                                                    ^
+In file included from /usr/lib/R/library/BH/include/boost/iostreams/detail/is_dereferenceable.hpp:13:0,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/resolve.hpp:26,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/push.hpp:24,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/streambuf/indirect_streambuf.hpp:31,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream_buffer.hpp:22,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream.hpp:21,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/detail/iterator_source.hpp:14,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/stream.hpp:16,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream.hpp:15,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi.hpp:30,
+                 from /usr/lib/R/library/BH/include/boost/spirit/include/qi.hpp:16,
+                 from boost.h:14,
+                 from Source.h:5,
+                 from Token.h:6,
+                 from Collector.h:8,
+                 from Collector.cpp:4:
+/usr/lib/R/library/BH/include/boost/type_traits/detail/template_arity_spec.hpp:13:84: note: #pragma message: NOTE: Use of this header (template_arity_spec.hpp) is deprecated
+ # pragma message("NOTE: Use of this header (template_arity_spec.hpp) is deprecated")
+                                                                                    ^
+g++ -I/usr/share/R/include -DNDEBUG   -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c CollectorGuess.cpp -o CollectorGuess.o
+In file included from /usr/lib/R/library/BH/include/boost/iostreams/detail/is_dereferenceable.hpp:12:0,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/resolve.hpp:26,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/push.hpp:24,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/streambuf/indirect_streambuf.hpp:31,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream_buffer.hpp:22,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream.hpp:21,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/detail/iterator_source.hpp:14,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/stream.hpp:16,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream.hpp:15,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi.hpp:30,
+                 from /usr/lib/R/library/BH/include/boost/spirit/include/qi.hpp:16,
+                 from boost.h:14,
+                 from DateTimeParser.h:5,
+                 from CollectorGuess.cpp:5:
+/usr/lib/R/library/BH/include/boost/type_traits/detail/bool_trait_def.hpp:18:79: note: #pragma message: NOTE: Use of this header (bool_trait_def.hpp) is deprecated
+ # pragma message("NOTE: Use of this header (bool_trait_def.hpp) is deprecated")
+                                                                               ^
+In file included from /usr/lib/R/library/BH/include/boost/type_traits/detail/bool_trait_def.hpp:21:0,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/is_dereferenceable.hpp:12,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/resolve.hpp:26,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/push.hpp:24,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/streambuf/indirect_streambuf.hpp:31,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream_buffer.hpp:22,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream.hpp:21,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/detail/iterator_source.hpp:14,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/stream.hpp:16,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream.hpp:15,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi.hpp:30,
+                 from /usr/lib/R/library/BH/include/boost/spirit/include/qi.hpp:16,
+                 from boost.h:14,
+                 from DateTimeParser.h:5,
+                 from CollectorGuess.cpp:5:
+/usr/lib/R/library/BH/include/boost/type_traits/detail/template_arity_spec.hpp:13:84: note: #pragma message: NOTE: Use of this header (template_arity_spec.hpp) is deprecated
+ # pragma message("NOTE: Use of this header (template_arity_spec.hpp) is deprecated")
+                                                                                    ^
+In file included from /usr/lib/R/library/BH/include/boost/iostreams/detail/is_dereferenceable.hpp:13:0,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/resolve.hpp:26,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/push.hpp:24,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/streambuf/indirect_streambuf.hpp:31,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream_buffer.hpp:22,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream.hpp:21,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/detail/iterator_source.hpp:14,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/stream.hpp:16,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream.hpp:15,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi.hpp:30,
+                 from /usr/lib/R/library/BH/include/boost/spirit/include/qi.hpp:16,
+                 from boost.h:14,
+                 from DateTimeParser.h:5,
+                 from CollectorGuess.cpp:5:
+/usr/lib/R/library/BH/include/boost/type_traits/detail/template_arity_spec.hpp:13:84: note: #pragma message: NOTE: Use of this header (template_arity_spec.hpp) is deprecated
+ # pragma message("NOTE: Use of this header (template_arity_spec.hpp) is deprecated")
+                                                                                    ^
+g++ -I/usr/share/R/include -DNDEBUG   -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c DateTime.cpp -o DateTime.o
+g++ -I/usr/share/R/include -DNDEBUG   -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c Iconv.cpp -o Iconv.o
+g++ -I/usr/share/R/include -DNDEBUG   -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c LocaleInfo.cpp -o LocaleInfo.o
+g++ -I/usr/share/R/include -DNDEBUG   -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c RcppExports.cpp -o RcppExports.o
+g++ -I/usr/share/R/include -DNDEBUG   -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c Reader.cpp -o Reader.o
+In file included from /usr/lib/R/library/BH/include/boost/iostreams/detail/is_dereferenceable.hpp:12:0,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/resolve.hpp:26,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/push.hpp:24,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/streambuf/indirect_streambuf.hpp:31,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream_buffer.hpp:22,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream.hpp:21,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/detail/iterator_source.hpp:14,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/stream.hpp:16,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream.hpp:15,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi.hpp:30,
+                 from /usr/lib/R/library/BH/include/boost/spirit/include/qi.hpp:16,
+                 from boost.h:14,
+                 from Source.h:5,
+                 from Token.h:6,
+                 from Collector.h:8,
+                 from Reader.h:2,
+                 from Reader.cpp:1:
+/usr/lib/R/library/BH/include/boost/type_traits/detail/bool_trait_def.hpp:18:79: note: #pragma message: NOTE: Use of this header (bool_trait_def.hpp) is deprecated
+ # pragma message("NOTE: Use of this header (bool_trait_def.hpp) is deprecated")
+                                                                               ^
+In file included from /usr/lib/R/library/BH/include/boost/type_traits/detail/bool_trait_def.hpp:21:0,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/is_dereferenceable.hpp:12,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/resolve.hpp:26,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/push.hpp:24,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/streambuf/indirect_streambuf.hpp:31,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream_buffer.hpp:22,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream.hpp:21,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/detail/iterator_source.hpp:14,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/stream.hpp:16,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream.hpp:15,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi.hpp:30,
+                 from /usr/lib/R/library/BH/include/boost/spirit/include/qi.hpp:16,
+                 from boost.h:14,
+                 from Source.h:5,
+                 from Token.h:6,
+                 from Collector.h:8,
+                 from Reader.h:2,
+                 from Reader.cpp:1:
+/usr/lib/R/library/BH/include/boost/type_traits/detail/template_arity_spec.hpp:13:84: note: #pragma message: NOTE: Use of this header (template_arity_spec.hpp) is deprecated
+ # pragma message("NOTE: Use of this header (template_arity_spec.hpp) is deprecated")
+                                                                                    ^
+In file included from /usr/lib/R/library/BH/include/boost/iostreams/detail/is_dereferenceable.hpp:13:0,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/resolve.hpp:26,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/push.hpp:24,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/streambuf/indirect_streambuf.hpp:31,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream_buffer.hpp:22,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream.hpp:21,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/detail/iterator_source.hpp:14,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/stream.hpp:16,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream.hpp:15,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi.hpp:30,
+                 from /usr/lib/R/library/BH/include/boost/spirit/include/qi.hpp:16,
+                 from boost.h:14,
+                 from Source.h:5,
+                 from Token.h:6,
+                 from Collector.h:8,
+                 from Reader.h:2,
+                 from Reader.cpp:1:
+/usr/lib/R/library/BH/include/boost/type_traits/detail/template_arity_spec.hpp:13:84: note: #pragma message: NOTE: Use of this header (template_arity_spec.hpp) is deprecated
+ # pragma message("NOTE: Use of this header (template_arity_spec.hpp) is deprecated")
+                                                                                    ^
+g++ -I/usr/share/R/include -DNDEBUG   -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c Source.cpp -o Source.o
+In file included from /usr/lib/R/library/BH/include/boost/iostreams/detail/is_dereferenceable.hpp:12:0,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/resolve.hpp:26,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/push.hpp:24,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/streambuf/indirect_streambuf.hpp:31,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream_buffer.hpp:22,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream.hpp:21,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/detail/iterator_source.hpp:14,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/stream.hpp:16,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream.hpp:15,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi.hpp:30,
+                 from /usr/lib/R/library/BH/include/boost/spirit/include/qi.hpp:16,
+                 from boost.h:14,
+                 from Source.h:5,
+                 from Source.cpp:4:
+/usr/lib/R/library/BH/include/boost/type_traits/detail/bool_trait_def.hpp:18:79: note: #pragma message: NOTE: Use of this header (bool_trait_def.hpp) is deprecated
+ # pragma message("NOTE: Use of this header (bool_trait_def.hpp) is deprecated")
+                                                                               ^
+In file included from /usr/lib/R/library/BH/include/boost/type_traits/detail/bool_trait_def.hpp:21:0,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/is_dereferenceable.hpp:12,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/resolve.hpp:26,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/push.hpp:24,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/streambuf/indirect_streambuf.hpp:31,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream_buffer.hpp:22,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream.hpp:21,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/detail/iterator_source.hpp:14,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/stream.hpp:16,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream.hpp:15,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi.hpp:30,
+                 from /usr/lib/R/library/BH/include/boost/spirit/include/qi.hpp:16,
+                 from boost.h:14,
+                 from Source.h:5,
+                 from Source.cpp:4:
+/usr/lib/R/library/BH/include/boost/type_traits/detail/template_arity_spec.hpp:13:84: note: #pragma message: NOTE: Use of this header (template_arity_spec.hpp) is deprecated
+ # pragma message("NOTE: Use of this header (template_arity_spec.hpp) is deprecated")
+                                                                                    ^
+In file included from /usr/lib/R/library/BH/include/boost/iostreams/detail/is_dereferenceable.hpp:13:0,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/resolve.hpp:26,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/push.hpp:24,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/streambuf/indirect_streambuf.hpp:31,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream_buffer.hpp:22,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream.hpp:21,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/detail/iterator_source.hpp:14,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/stream.hpp:16,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream.hpp:15,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi.hpp:30,
+                 from /usr/lib/R/library/BH/include/boost/spirit/include/qi.hpp:16,
+                 from boost.h:14,
+                 from Source.h:5,
+                 from Source.cpp:4:
+/usr/lib/R/library/BH/include/boost/type_traits/detail/template_arity_spec.hpp:13:84: note: #pragma message: NOTE: Use of this header (template_arity_spec.hpp) is deprecated
+ # pragma message("NOTE: Use of this header (template_arity_spec.hpp) is deprecated")
+                                                                                    ^
+g++ -I/usr/share/R/include -DNDEBUG   -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c Tokenizer.cpp -o Tokenizer.o
+In file included from /usr/lib/R/library/BH/include/boost/iostreams/detail/is_dereferenceable.hpp:12:0,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/resolve.hpp:26,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/push.hpp:24,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/streambuf/indirect_streambuf.hpp:31,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream_buffer.hpp:22,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream.hpp:21,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/detail/iterator_source.hpp:14,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/stream.hpp:16,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream.hpp:15,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi.hpp:30,
+                 from /usr/lib/R/library/BH/include/boost/spirit/include/qi.hpp:16,
+                 from boost.h:14,
+                 from Tokenizer.h:5,
+                 from Tokenizer.cpp:4:
+/usr/lib/R/library/BH/include/boost/type_traits/detail/bool_trait_def.hpp:18:79: note: #pragma message: NOTE: Use of this header (bool_trait_def.hpp) is deprecated
+ # pragma message("NOTE: Use of this header (bool_trait_def.hpp) is deprecated")
+                                                                               ^
+In file included from /usr/lib/R/library/BH/include/boost/type_traits/detail/bool_trait_def.hpp:21:0,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/is_dereferenceable.hpp:12,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/resolve.hpp:26,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/push.hpp:24,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/streambuf/indirect_streambuf.hpp:31,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream_buffer.hpp:22,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream.hpp:21,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/detail/iterator_source.hpp:14,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/stream.hpp:16,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream.hpp:15,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi.hpp:30,
+                 from /usr/lib/R/library/BH/include/boost/spirit/include/qi.hpp:16,
+                 from boost.h:14,
+                 from Tokenizer.h:5,
+                 from Tokenizer.cpp:4:
+/usr/lib/R/library/BH/include/boost/type_traits/detail/template_arity_spec.hpp:13:84: note: #pragma message: NOTE: Use of this header (template_arity_spec.hpp) is deprecated
+ # pragma message("NOTE: Use of this header (template_arity_spec.hpp) is deprecated")
+                                                                                    ^
+In file included from /usr/lib/R/library/BH/include/boost/iostreams/detail/is_dereferenceable.hpp:13:0,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/resolve.hpp:26,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/push.hpp:24,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/streambuf/indirect_streambuf.hpp:31,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream_buffer.hpp:22,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream.hpp:21,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/detail/iterator_source.hpp:14,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/stream.hpp:16,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream.hpp:15,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi.hpp:30,
+                 from /usr/lib/R/library/BH/include/boost/spirit/include/qi.hpp:16,
+                 from boost.h:14,
+                 from Tokenizer.h:5,
+                 from Tokenizer.cpp:4:
+/usr/lib/R/library/BH/include/boost/type_traits/detail/template_arity_spec.hpp:13:84: note: #pragma message: NOTE: Use of this header (template_arity_spec.hpp) is deprecated
+ # pragma message("NOTE: Use of this header (template_arity_spec.hpp) is deprecated")
+                                                                                    ^
+g++ -I/usr/share/R/include -DNDEBUG   -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c TokenizerDelim.cpp -o TokenizerDelim.o
+In file included from /usr/lib/R/library/BH/include/boost/iostreams/detail/is_dereferenceable.hpp:12:0,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/resolve.hpp:26,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/push.hpp:24,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/streambuf/indirect_streambuf.hpp:31,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream_buffer.hpp:22,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream.hpp:21,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/detail/iterator_source.hpp:14,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/stream.hpp:16,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream.hpp:15,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi.hpp:30,
+                 from /usr/lib/R/library/BH/include/boost/spirit/include/qi.hpp:16,
+                 from boost.h:14,
+                 from Source.h:5,
+                 from Token.h:6,
+                 from TokenizerDelim.h:5,
+                 from TokenizerDelim.cpp:4:
+/usr/lib/R/library/BH/include/boost/type_traits/detail/bool_trait_def.hpp:18:79: note: #pragma message: NOTE: Use of this header (bool_trait_def.hpp) is deprecated
+ # pragma message("NOTE: Use of this header (bool_trait_def.hpp) is deprecated")
+                                                                               ^
+In file included from /usr/lib/R/library/BH/include/boost/type_traits/detail/bool_trait_def.hpp:21:0,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/is_dereferenceable.hpp:12,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/resolve.hpp:26,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/push.hpp:24,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/streambuf/indirect_streambuf.hpp:31,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream_buffer.hpp:22,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream.hpp:21,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/detail/iterator_source.hpp:14,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/stream.hpp:16,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream.hpp:15,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi.hpp:30,
+                 from /usr/lib/R/library/BH/include/boost/spirit/include/qi.hpp:16,
+                 from boost.h:14,
+                 from Source.h:5,
+                 from Token.h:6,
+                 from TokenizerDelim.h:5,
+                 from TokenizerDelim.cpp:4:
+/usr/lib/R/library/BH/include/boost/type_traits/detail/template_arity_spec.hpp:13:84: note: #pragma message: NOTE: Use of this header (template_arity_spec.hpp) is deprecated
+ # pragma message("NOTE: Use of this header (template_arity_spec.hpp) is deprecated")
+                                                                                    ^
+In file included from /usr/lib/R/library/BH/include/boost/iostreams/detail/is_dereferenceable.hpp:13:0,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/resolve.hpp:26,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/push.hpp:24,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/streambuf/indirect_streambuf.hpp:31,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream_buffer.hpp:22,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream.hpp:21,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/detail/iterator_source.hpp:14,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/stream.hpp:16,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream.hpp:15,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi.hpp:30,
+                 from /usr/lib/R/library/BH/include/boost/spirit/include/qi.hpp:16,
+                 from boost.h:14,
+                 from Source.h:5,
+                 from Token.h:6,
+                 from TokenizerDelim.h:5,
+                 from TokenizerDelim.cpp:4:
+/usr/lib/R/library/BH/include/boost/type_traits/detail/template_arity_spec.hpp:13:84: note: #pragma message: NOTE: Use of this header (template_arity_spec.hpp) is deprecated
+ # pragma message("NOTE: Use of this header (template_arity_spec.hpp) is deprecated")
+                                                                                    ^
+g++ -I/usr/share/R/include -DNDEBUG   -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c TokenizerFwf.cpp -o TokenizerFwf.o
+In file included from /usr/lib/R/library/BH/include/boost/iostreams/detail/is_dereferenceable.hpp:12:0,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/resolve.hpp:26,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/push.hpp:24,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/streambuf/indirect_streambuf.hpp:31,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream_buffer.hpp:22,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream.hpp:21,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/detail/iterator_source.hpp:14,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/stream.hpp:16,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream.hpp:15,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi.hpp:30,
+                 from /usr/lib/R/library/BH/include/boost/spirit/include/qi.hpp:16,
+                 from boost.h:14,
+                 from Source.h:5,
+                 from TokenizerFwf.cpp:4:
+/usr/lib/R/library/BH/include/boost/type_traits/detail/bool_trait_def.hpp:18:79: note: #pragma message: NOTE: Use of this header (bool_trait_def.hpp) is deprecated
+ # pragma message("NOTE: Use of this header (bool_trait_def.hpp) is deprecated")
+                                                                               ^
+In file included from /usr/lib/R/library/BH/include/boost/type_traits/detail/bool_trait_def.hpp:21:0,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/is_dereferenceable.hpp:12,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/resolve.hpp:26,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/push.hpp:24,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/streambuf/indirect_streambuf.hpp:31,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream_buffer.hpp:22,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream.hpp:21,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/detail/iterator_source.hpp:14,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/stream.hpp:16,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream.hpp:15,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi.hpp:30,
+                 from /usr/lib/R/library/BH/include/boost/spirit/include/qi.hpp:16,
+                 from boost.h:14,
+                 from Source.h:5,
+                 from TokenizerFwf.cpp:4:
+/usr/lib/R/library/BH/include/boost/type_traits/detail/template_arity_spec.hpp:13:84: note: #pragma message: NOTE: Use of this header (template_arity_spec.hpp) is deprecated
+ # pragma message("NOTE: Use of this header (template_arity_spec.hpp) is deprecated")
+                                                                                    ^
+In file included from /usr/lib/R/library/BH/include/boost/iostreams/detail/is_dereferenceable.hpp:13:0,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/resolve.hpp:26,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/push.hpp:24,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/streambuf/indirect_streambuf.hpp:31,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream_buffer.hpp:22,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream.hpp:21,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/detail/iterator_source.hpp:14,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/stream.hpp:16,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream.hpp:15,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi.hpp:30,
+                 from /usr/lib/R/library/BH/include/boost/spirit/include/qi.hpp:16,
+                 from boost.h:14,
+                 from Source.h:5,
+                 from TokenizerFwf.cpp:4:
+/usr/lib/R/library/BH/include/boost/type_traits/detail/template_arity_spec.hpp:13:84: note: #pragma message: NOTE: Use of this header (template_arity_spec.hpp) is deprecated
+ # pragma message("NOTE: Use of this header (template_arity_spec.hpp) is deprecated")
+                                                                                    ^
+g++ -I/usr/share/R/include -DNDEBUG   -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c connection.cpp -o connection.o
+gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG   -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c grisu3.c -o grisu3.o
+gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG   -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c localtime.c -o localtime.o
+g++ -I/usr/share/R/include -DNDEBUG   -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c parse.cpp -o parse.o
+In file included from /usr/lib/R/library/BH/include/boost/iostreams/detail/is_dereferenceable.hpp:12:0,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/resolve.hpp:26,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/push.hpp:24,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/streambuf/indirect_streambuf.hpp:31,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream_buffer.hpp:22,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream.hpp:21,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/detail/iterator_source.hpp:14,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/stream.hpp:16,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream.hpp:15,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi.hpp:30,
+                 from /usr/lib/R/library/BH/include/boost/spirit/include/qi.hpp:16,
+                 from boost.h:14,
+                 from Source.h:5,
+                 from Token.h:6,
+                 from Collector.h:8,
+                 from parse.cpp:4:
+/usr/lib/R/library/BH/include/boost/type_traits/detail/bool_trait_def.hpp:18:79: note: #pragma message: NOTE: Use of this header (bool_trait_def.hpp) is deprecated
+ # pragma message("NOTE: Use of this header (bool_trait_def.hpp) is deprecated")
+                                                                               ^
+In file included from /usr/lib/R/library/BH/include/boost/type_traits/detail/bool_trait_def.hpp:21:0,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/is_dereferenceable.hpp:12,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/resolve.hpp:26,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/push.hpp:24,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/streambuf/indirect_streambuf.hpp:31,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream_buffer.hpp:22,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream.hpp:21,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/detail/iterator_source.hpp:14,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/stream.hpp:16,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream.hpp:15,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi.hpp:30,
+                 from /usr/lib/R/library/BH/include/boost/spirit/include/qi.hpp:16,
+                 from boost.h:14,
+                 from Source.h:5,
+                 from Token.h:6,
+                 from Collector.h:8,
+                 from parse.cpp:4:
+/usr/lib/R/library/BH/include/boost/type_traits/detail/template_arity_spec.hpp:13:84: note: #pragma message: NOTE: Use of this header (template_arity_spec.hpp) is deprecated
+ # pragma message("NOTE: Use of this header (template_arity_spec.hpp) is deprecated")
+                                                                                    ^
+In file included from /usr/lib/R/library/BH/include/boost/iostreams/detail/is_dereferenceable.hpp:13:0,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/resolve.hpp:26,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/push.hpp:24,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/streambuf/indirect_streambuf.hpp:31,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream_buffer.hpp:22,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream.hpp:21,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/detail/iterator_source.hpp:14,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/stream.hpp:16,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream.hpp:15,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi.hpp:30,
+                 from /usr/lib/R/library/BH/include/boost/spirit/include/qi.hpp:16,
+                 from boost.h:14,
+                 from Source.h:5,
+                 from Token.h:6,
+                 from Collector.h:8,
+                 from parse.cpp:4:
+/usr/lib/R/library/BH/include/boost/type_traits/detail/template_arity_spec.hpp:13:84: note: #pragma message: NOTE: Use of this header (template_arity_spec.hpp) is deprecated
+ # pragma message("NOTE: Use of this header (template_arity_spec.hpp) is deprecated")
+                                                                                    ^
+g++ -I/usr/share/R/include -DNDEBUG   -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c read.cpp -o read.o
+In file included from /usr/lib/R/library/BH/include/boost/iostreams/detail/is_dereferenceable.hpp:12:0,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/resolve.hpp:26,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/push.hpp:24,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/streambuf/indirect_streambuf.hpp:31,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream_buffer.hpp:22,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream.hpp:21,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/detail/iterator_source.hpp:14,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/stream.hpp:16,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream.hpp:15,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi.hpp:30,
+                 from /usr/lib/R/library/BH/include/boost/spirit/include/qi.hpp:16,
+                 from boost.h:14,
+                 from Source.h:5,
+                 from read.cpp:5:
+/usr/lib/R/library/BH/include/boost/type_traits/detail/bool_trait_def.hpp:18:79: note: #pragma message: NOTE: Use of this header (bool_trait_def.hpp) is deprecated
+ # pragma message("NOTE: Use of this header (bool_trait_def.hpp) is deprecated")
+                                                                               ^
+In file included from /usr/lib/R/library/BH/include/boost/type_traits/detail/bool_trait_def.hpp:21:0,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/is_dereferenceable.hpp:12,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/resolve.hpp:26,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/push.hpp:24,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/streambuf/indirect_streambuf.hpp:31,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream_buffer.hpp:22,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream.hpp:21,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/detail/iterator_source.hpp:14,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/stream.hpp:16,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream.hpp:15,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi.hpp:30,
+                 from /usr/lib/R/library/BH/include/boost/spirit/include/qi.hpp:16,
+                 from boost.h:14,
+                 from Source.h:5,
+                 from read.cpp:5:
+/usr/lib/R/library/BH/include/boost/type_traits/detail/template_arity_spec.hpp:13:84: note: #pragma message: NOTE: Use of this header (template_arity_spec.hpp) is deprecated
+ # pragma message("NOTE: Use of this header (template_arity_spec.hpp) is deprecated")
+                                                                                    ^
+In file included from /usr/lib/R/library/BH/include/boost/iostreams/detail/is_dereferenceable.hpp:13:0,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/resolve.hpp:26,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/push.hpp:24,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/streambuf/indirect_streambuf.hpp:31,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream_buffer.hpp:22,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream.hpp:21,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/detail/iterator_source.hpp:14,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/stream.hpp:16,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream.hpp:15,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi.hpp:30,
+                 from /usr/lib/R/library/BH/include/boost/spirit/include/qi.hpp:16,
+                 from boost.h:14,
+                 from Source.h:5,
+                 from read.cpp:5:
+/usr/lib/R/library/BH/include/boost/type_traits/detail/template_arity_spec.hpp:13:84: note: #pragma message: NOTE: Use of this header (template_arity_spec.hpp) is deprecated
+ # pragma message("NOTE: Use of this header (template_arity_spec.hpp) is deprecated")
+                                                                                    ^
+g++ -I/usr/share/R/include -DNDEBUG   -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c type_convert.cpp -o type_convert.o
+In file included from /usr/lib/R/library/BH/include/boost/iostreams/detail/is_dereferenceable.hpp:12:0,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/resolve.hpp:26,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/push.hpp:24,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/streambuf/indirect_streambuf.hpp:31,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream_buffer.hpp:22,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream.hpp:21,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/detail/iterator_source.hpp:14,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/stream.hpp:16,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream.hpp:15,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi.hpp:30,
+                 from /usr/lib/R/library/BH/include/boost/spirit/include/qi.hpp:16,
+                 from boost.h:14,
+                 from Source.h:5,
+                 from Token.h:6,
+                 from Collector.h:8,
+                 from type_convert.cpp:4:
+/usr/lib/R/library/BH/include/boost/type_traits/detail/bool_trait_def.hpp:18:79: note: #pragma message: NOTE: Use of this header (bool_trait_def.hpp) is deprecated
+ # pragma message("NOTE: Use of this header (bool_trait_def.hpp) is deprecated")
+                                                                               ^
+In file included from /usr/lib/R/library/BH/include/boost/type_traits/detail/bool_trait_def.hpp:21:0,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/is_dereferenceable.hpp:12,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/resolve.hpp:26,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/push.hpp:24,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/streambuf/indirect_streambuf.hpp:31,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream_buffer.hpp:22,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream.hpp:21,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/detail/iterator_source.hpp:14,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/stream.hpp:16,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream.hpp:15,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi.hpp:30,
+                 from /usr/lib/R/library/BH/include/boost/spirit/include/qi.hpp:16,
+                 from boost.h:14,
+                 from Source.h:5,
+                 from Token.h:6,
+                 from Collector.h:8,
+                 from type_convert.cpp:4:
+/usr/lib/R/library/BH/include/boost/type_traits/detail/template_arity_spec.hpp:13:84: note: #pragma message: NOTE: Use of this header (template_arity_spec.hpp) is deprecated
+ # pragma message("NOTE: Use of this header (template_arity_spec.hpp) is deprecated")
+                                                                                    ^
+In file included from /usr/lib/R/library/BH/include/boost/iostreams/detail/is_dereferenceable.hpp:13:0,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/resolve.hpp:26,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/push.hpp:24,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/detail/streambuf/indirect_streambuf.hpp:31,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream_buffer.hpp:22,
+                 from /usr/lib/R/library/BH/include/boost/iostreams/stream.hpp:21,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/detail/iterator_source.hpp:14,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream/stream.hpp:16,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi/stream.hpp:15,
+                 from /usr/lib/R/library/BH/include/boost/spirit/home/qi.hpp:30,
+                 from /usr/lib/R/library/BH/include/boost/spirit/include/qi.hpp:16,
+                 from boost.h:14,
+                 from Source.h:5,
+                 from Token.h:6,
+                 from Collector.h:8,
+                 from type_convert.cpp:4:
+/usr/lib/R/library/BH/include/boost/type_traits/detail/template_arity_spec.hpp:13:84: note: #pragma message: NOTE: Use of this header (template_arity_spec.hpp) is deprecated
+ # pragma message("NOTE: Use of this header (template_arity_spec.hpp) is deprecated")
+                                                                                    ^
+g++ -I/usr/share/R/include -DNDEBUG   -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c write.cpp -o write.o
+g++ -I/usr/share/R/include -DNDEBUG   -I"/usr/local/lib/R/site-library/Rcpp/include" -I"/usr/lib/R/library/BH/include"   -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c write_delim.cpp -o write_delim.o
+g++ -shared -L/usr/lib/R/lib -Wl,-Bsymbolic-functions -Wl,-z,relro -o readr.so Collector.o CollectorGuess.o DateTime.o Iconv.o LocaleInfo.o RcppExports.o Reader.o Source.o Tokenizer.o TokenizerDelim.o TokenizerFwf.o connection.o grisu3.o localtime.o parse.o read.o type_convert.o write.o write_delim.o -L/usr/lib/R/lib -lR
+installing to /data/co/tflgenerator/script/lib/readr/libs
+** R
+** inst
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded
+* DONE (readr)
+* installing *source* package ‘TFL’ ...
+** R
+** data
+*** moving datasets to lazyload DB
+Loading required package: proto
+Error in as.environment("package:gridExtra") : 
+  no item called "package:gridExtra" on the search list
+Warning: namespace ‘TFL’ is not available and has been replaced
+by .GlobalEnv when processing object ‘cleanScales’
+Error in as.environment("package:gridExtra") : 
+  no item called "package:gridExtra" on the search list
+Warning: namespace ‘TFL’ is not available and has been replaced
+by .GlobalEnv when processing object ‘cleanScales’
+** preparing package for lazy loading
+Warning: 'package:gridExtra' may not be available when loading
+** help
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded
+* DONE (TFL)
+* installing *source* package ‘GUI’ ...
+** R
+** data
+*** moving datasets to lazyload DB
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded
+* DONE (GUI)
+Warning message:
+package ‘metrumrg’ is not available (for R version 3.2.3) 
+> 
+> 
+> 
+> 
+> proc.time()
+   user  system elapsed 
+335.388  45.046 409.387 

@@ -1,8 +1,9 @@
 # Expects to be run from script
-author <- c("danp","polhamus")
-pkgs <- c('fork','metrumrg','shinyFiles','animation','gdata','shinydashboard',
+
+author <- c('yonis','danp')
+pkgs <- c('metrumrg','shinyFiles','animation','gdata','shinydashboard',
           'DT','rtf','lazyeval','dplyr','DBI','ggplot2','gridExtra',
-          'readr','shinyAce','shinyBS','TFL','GUI')
+          'readr','shinyAce','shinyBS','TFL','GUI','colourpicker')
 
 user <- Sys.info()["user"]
 parentScriptDir <- getwd()  ## You may need to mod this to be in the top level of scriptDir
@@ -28,10 +29,10 @@ if(fromCRAN){
     newpkgs <- setdiff(pkgs, available)
     write_PACKAGES(pkgDir)
    # We want the old version of gridExtra
-   if("gridExtra" %in% newpkgs){
-     download.file("https://cran.r-project.org/src/contrib/Archive/gridExtra/gridExtra_0.9.tar.gz",destfile=file.path(pkgDir,"gridExtra_0.9.tar.gz"))
-     write_PACKAGES(pkgDir)   		  
-   }
+   # if("gridExtra" %in% newpkgs){
+   #   download.file("https://cran.r-project.org/src/contrib/Archive/gridExtra/gridExtra_0.9.tar.gz",destfile=file.path(pkgDir,"gridExtra_0.9.tar.gz"))
+   #   write_PACKAGES(pkgDir)   		  
+   # }
    if("audited" %in% newpkgs){
       download.file("https://metrumrg-soft.s3.amazonaws.com/audited/audited_1.9.tar.gz",destfile=file.path(pkgDir,"audited_1.9.tar.gz"))
       write_PACKAGES(pkgDir)
