@@ -49,8 +49,6 @@ library(shinyjs)
 # on.exit(stopCluster(cl))
 
 cat(file=stderr(), paste0("LOG: ", Sys.time(), " Finished preamble\n"))
-#pListGlobal=new.env()
-
 
 
 # Define server logic required to summarize and view the selected dataset
@@ -1738,7 +1736,7 @@ shinyServer(function(input, output, session) {
                       pSize<-plotDims(grob = dummyList)
                       jsPrint(paste0('default print,',pSize$height[[1]],",",pSize$width[[1]]))
                       output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
-                        do.call(pListPrint,p1List)
+                        print(p1List)
                       },height=pSize$height[[1]]*72,width=pSize$width[[1]]*72)
                     }else{
                       # Probably one of demogTabCont, demogTabCat, NMTab
