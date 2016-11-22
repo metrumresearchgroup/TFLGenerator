@@ -1,9 +1,0 @@
-#!/bin/bash
-
-# Run as root
-service nginx stop
-aptitude install python-software-properties
-add-apt-repository ppa:nginx/stable
-aptitude update
-aptitude safe-upgrade nginx
-service nginx restart
