@@ -1512,7 +1512,6 @@ shinyServer(function(input, output, session) {
                 # Observer for VPC data display ----
                 observeEvent(input[[paste0("updateVPCView",item,n)]],{
                   cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_vpcdata called\n"))
-                  isolate(autosave())
                   sameAsDefault <- isolate(checkInvalidate(input,item,n))
                   if(sameAsDefault!=1){
                     # output$contentsHead_vpcdata <- DT::renderDataTable({
@@ -1533,7 +1532,9 @@ shinyServer(function(input, output, session) {
                           Defaults[[IDN]]<<-input[[IDN]]
                         }
                       }
+                      isolate(autosave())
                     })
+
                     if(debug){
                       input_vals <- isolate(reactiveValuesToList(input))
                       vpcDataList_vals <- isolate(vpcDataList)
