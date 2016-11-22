@@ -1905,6 +1905,8 @@ shinyServer(function(input, output, session) {
                       p1Name=paste(item,n, sep="")
                       #if(callType=="ConcvTimeMult") p1List$Plot <- p1$src
                       
+                      # Write the PNG's ----
+                      
                       if(grepl("Exclusion",item)){
                         copy <- try(file.copy(from=p1$file,to=file.path(Dir,"PNG")))
                         if(class(copy)=="try-error"){
@@ -2008,6 +2010,8 @@ shinyServer(function(input, output, session) {
                              argListManip, p1List=p1List, ordering,Defaults,
                              file=file.path(srcDir,"tmp","recordGUI.rda"))
                       }
+                      
+                      # Record the GUI ----
                       cat(file=stderr(),paste("LOG: Writing", item, "to the reproducible R script\n"))
                       # tryCatch(
                       recordGUI(doWhat=callType, 
