@@ -1010,8 +1010,9 @@ shinyServer(function(input, output, session) {
                  #textInput(inputId="numModel", label="Number of Models", value="1"),
                  textInput(inputId="ext", label="File Extensions:", value=Defaults$ext),
                  checkboxInput('header', 'Header?', value=Defaults$header),
-                 numericInput("skipLines", "Skip Lines:", value=Defaults$skipLines),
-                 actionButton("clearDataCache","Clear cached data")
+                 numericInput("skipLines", "Skip Lines:", value=Defaults$skipLines)
+                 # ,
+                 # actionButton("clearDataCache","Clear cached data")
                  #,
                  #textInput(inputId="baseModel", label="Base Model #", value="")
                )
