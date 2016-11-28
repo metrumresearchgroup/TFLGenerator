@@ -1,0 +1,157 @@
+\documentclass{article}
+\usepackage[parfill]{parskip}
+\usepackage[absolute]{textpos}
+\usepackage{graphicx}
+\usepackage[T1]{fontenc}
+\usepackage[scaled]{helvet}
+\usepackage[final]{pdfpages}
+%\usepackage[scaled]{helvet}
+
+\usepackage{lscape}
+\usepackage{courier}
+\renewcommand*\familydefault{\sfdefault}
+\usepackage[left=1in,top=1in,bottom=1.25in,right=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyhdr,lastpage}
+\pagestyle{fancy}
+\rhead{\scriptsize \opnum:  \optitle}
+%\chead{Middle top}
+\newenvironment{changemargin}[2]{%
+\begin{list}{}{%
+\setlength{\topsep}{0pt}%
+\setlength{\leftmargin}{#1}%
+\setlength{\rightmargin}{#2}%
+\setlength{\listparindent}{\parindent}%
+\setlength{\itemindent}{\parindent}%
+\setlength{\parsep}{\parskip}%
+}%
+\item[]}{\end{list}}
+\lhead{\includegraphics[scale=.6]{logonew.pdf}\\\smallskip\scriptsize Qualification}
+\setlength{\headsep}{.75in}
+\fancyfoot[C]{Page \thepage\ of \pageref{LastPage}}
+\usepackage[colorlinks=true,linkcolor=black,urlcolor=blue]{hyperref}
+
+%\newcommand{\opnum}{Release 2} 
+\newcommand{\optitle}{Pharmacometrics TFL Generator Requirements}
+\newcommand{\opnum}{Release 1.2.0} 
+\newcommand{\tfl}{Pharmacometrics TFL Generator}
+\newcommand{\topic}{Functionality update to Pharmacometrics TFL Generator}
+\newcommand{\testinglog}{cr_testinglog.pdf}
+
+\begin{document}
+
+\begin{center}
+{\large CONFIDENTIAL} 
+
+
+\vspace*{1cm}
+
+
+\vspace*{1cm}
+
+{\huge CR: \topic}
+\vspace{3.0cm}
+
+\begin{tabular}{|l|l|}\hline
+Submitted to: & Author:\\\hline
+Jeff Hane, PhD & Daniel G. Polhamus, PhD \\
+&Senior Scientist\\
+Metrum Research Group LLC & Metrum Research Group LLC\\
+ & 2 Tunxis Road, Suite 112\\
+  & Tariffville, CT\\
+  & Phone: 860-372-7988 \\
+ & Fax: 860-760-6014 \\
+  & Email: danp@metrumrg.com \\\hline
+
+  Initiator Submitted to QA  / Date & \\
+  
+ (Sign and print name) & \\
+  & \\
+  & \\\hline
+  
+QA Approval to Proceed / Date & \\
+
+ (Sign and print name) & \\
+  & \\
+ & \\\hline
+
+Assigned CR number: & \\
+& \\
+& \\\hline
+
+\end{tabular}
+
+\end{center}
+
+\newpage
+\vspace{3in}
+\section*{Definitions}
+
+
+\section*{Purpose}
+To validate \topic\ requirement of the \tfl\ app.
+
+\subsection*{Figure updates}
+
+{\bf Verification that ggplot2 udpates have been implemented successfully}
+
+The application includes numerous figures for exploratory analysis and model evaluation.  All graphics are rendered using the current R:::ggplot2 package which has had a major version change since the original validation of the \tfl\ app.  Because of this change, all figures will undergo exhaustive testing for response to inputs provided by the \tfl\ app. Screenshots are used to document evidence of this.
+
+Additionally, three new plots have been added: a multipanel distribution plot, barcharts describing frequencies, and VPC plots to describe model fit.  All three will be validated as proposed in the attached testing log, following the same validation approach as used in version 1.0.0 for the original set of figures.
+
+{\bf Theme modification works as expected}
+
+This version of the application allows users to specify background color, text size, tick length, and other theme elements via the GUI interface.  As part of the procedure for validating the fidelity of the figures under the new ggplot2 plotting package, new functionality around theme modification is tested as well.  
+
+\subsection*{Usability enhancements}
+
+{\bf The hard reset button returns the app to the initial state}
+
+As extensive use of objects in the global environment of a user's instance of the \tfl\ app occurs during use of the app, the ability to return to an initial state of the application (not retaining any prior inputs) is not trivial.  A ``hard reset'' button has been added to the application to allow users to reset the session to the initial state and will be tested as outlined in the testing log.
+
+\subsection*{Reporting}
+
+{\bf The app creates RTF output for all specified figures, tables, and listings}
+
+As a critical feature of the \tfl, the ability to create a report consisting of objects (TFL's) that have already undergone QC will be checked to validate completeness as well as responsiveness to user defined ordering of TFL's.
+
+{\bf The app creates an R script that can reproduce the analysis outside of the app}
+
+In addition to a report ready document, the \tfl\ generates an R script that allows the user complete reproducibility of the analysis, including the R packages used to developed the TFL.  This step compares the output from the R script to the doc file generated in the previous step to assure that this critical functionality remains intact.
+
+
+\subsection*{Deployment}
+
+{\bf The app is under version control}
+
+The application was developed using git version control.  The tagged release will exist on the master branch of git@gitlab.metrumrg.com:danp/TFLgenerator.git.  The release commit ID will be logged as part of the validation, and will serve as proof that the app's development cycle has a valid commit history.
+
+{\bf Installation package and instructions work to create new app on a new Envision workflow}
+
+The \verb=deliv= directory of the git repository contains a README and installation package for instaling and configuring the application. Tests performed under this task will verify that the installation steps are adequate when using a Metworx Envision workflow, as is expected for all deployments of the \tfl\ app.
+
+
+\section*{Testing procedures}
+
+Testing procedures are outlined in the attached testing document.  Testing will be performed by Jonathan Sidi and Dan Polhamus.
+
+
+\section*{Testing log}
+
+\subsection*{Overview}
+\includepdf[pages=1]{\testinglog}
+
+\subsection*{Figures}
+\includepdf[pages=2-5]{\testinglog}
+
+\subsection*{Usability}
+\includepdf[pages=6]{\testinglog}
+
+\subsection*{Reporting}
+\includepdf[pages=7]{\testinglog}
+
+\subsection*{Deployment}
+
+\includepdf[pages=8]{\testinglog}
+
+\end{document}
