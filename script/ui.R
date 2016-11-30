@@ -23,7 +23,7 @@ library(shinyjs)
       	dashboardSidebar(
       	  h1(),
       	  actionButton('hardReset','Hard reset'),
-      	  # actionLink('fastForward','Fast Forward'),
+      	  #actionLink('fastForward','Fast Forward'),
       	  sidebarMenu(
       	     
       	      # selectInput(inputId="templateSelection", label="Open Template", choices=c("New Analysis"="Template_New","Template_V8"="Template_V8", "Template_Other"="Template_Other")),

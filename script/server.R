@@ -2245,9 +2245,25 @@ shinyServer(function(input, output, session) {
           $('a[data-value=\"tabFigures\"]').tab('show');
           console.log('release 9');
           });
-          sleep(17000).then(() => {
-          $('#buttonConcvTime1').click();
+          sleep(18000).then(() => {
+          $('#updateVPCViewVPC1').click();
           console.log('release 10');
+          });
+          sleep(19000).then(() => {
+          $('a[data-value=\"Additional data specification\"]').tab('show');
+          console.log('release 11');
+          });
+          sleep(21000).then(() => {
+          $('#updateAddlVPCViewVPC1').click();
+          console.log('release 12');
+          });
+          sleep(22000).then(() => {
+          $('a[data-value=\"Figure\"]').tab('show');
+          console.log('release 13');
+          });
+          sleep(24000).then(() => {
+          $('#buttonVPC1').click();
+          console.log('release 14');
           });
           ")
     

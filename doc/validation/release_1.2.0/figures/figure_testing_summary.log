@@ -1,0 +1,1535 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2016.3.1)  30 NOV 2016 20:16
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**figure_testing_summary.tex
+(./figure_testing_summary.tex
+LaTeX2e <2016/02/01>
+Babel <3.9q> and hyphenation patterns for 80 language(s) loaded.
+(/usr/local/texlive/2013/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2014/09/29 v1.4h Standard LaTeX document class
+(/usr/local/texlive/2013/texmf-dist/tex/latex/base/size10.clo
+File: size10.clo 2014/09/29 v1.4h Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@section=\count80
+\c@subsection=\count81
+\c@subsubsection=\count82
+\c@paragraph=\count83
+\c@subparagraph=\count84
+\c@figure=\count85
+\c@table=\count86
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/parskip/parskip.sty
+Package: parskip 2001/04/09 non-zero parskip adjustments
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/textpos/textpos.sty
+Package: textpos 2014/01/03 v1.7j
+
+Package: textpos 2014/01/03 1.7j, absolute positioning of text on the page
+(/usr/local/texlive/2013/texmf-dist/tex/latex/ms/everyshi.sty
+Package: everyshi 2001/05/15 v3.00 EveryShipout Package (MS)
+)
+\TP@textbox=\box26
+\TP@holdbox=\box27
+\TPHorizModule=\dimen103
+\TPVertModule=\dimen104
+\TP@margin=\dimen105
+\TP@absmargin=\dimen106
+
+Grid set 16 x 16 = 38.39343pt x 49.68562pt
+\TPboxrulesize=\dimen107
+\TP@ox=\dimen108
+\TP@oy=\dimen109
+\TP@tbargs=\toks14
+\TP@prevdepth=\dimen110
+TextBlockOrigin set to 0pt x 0pt
+) (/usr/local/texlive/2013/texmf-dist/tex/latex/float/float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count87
+\float@exts=\toks15
+\float@box=\box28
+\@float@everytoks=\toks16
+\@floatcapt=\box29
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 2014/10/28 v1.0g Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
+\KV@toks@=\toks17
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2016/01/03 v1.0q Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/latexconfig/graphics.cfg
+File: graphics.cfg 2010/04/23 v1.9 graphics configuration of TeX Live
+)
+Package graphics Info: Driver file: pdftex.def on input line 95.
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/pdftex-def/pdftex.def
+File: pdftex.def 2011/05/27 v0.06d Graphics/color for pdfTeX
+
+(/usr/local/texlive/2013/texmf-dist/tex/generic/oberdiek/infwarerr.sty
+Package: infwarerr 2010/04/08 v1.3 Providing info/warning/error messages (HO)
+)
+(/usr/local/texlive/2013/texmf-dist/tex/generic/oberdiek/ltxcmds.sty
+Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
+)
+\Gread@gobject=\count88
+))
+\Gin@req@height=\dimen111
+\Gin@req@width=\dimen112
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/base/fontenc.sty
+Package: fontenc 2005/09/27 v1.99g Standard LaTeX package
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/base/t1enc.def
+File: t1enc.def 2005/09/27 v1.99g Standard LaTeX file
+LaTeX Font Info:    Redeclaring font encoding T1 on input line 48.
+))
+(/usr/local/texlive/2013/texmf-dist/tex/latex/psnfss/helvet.sty
+Package: helvet 2005/04/12 PSNFSS-v9.2a (WaS) 
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/graphics/lscape.sty
+Package: lscape 2000/10/22 v3.01 Landscape Pages (DPC)
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/psnfss/courier.sty
+Package: courier 2005/04/12 PSNFSS-v9.2a (WaS) 
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/geometry/geometry.sty
+Package: geometry 2010/09/12 v5.6 Page Geometry
+
+(/usr/local/texlive/2013/texmf-dist/tex/generic/oberdiek/ifpdf.sty
+Package: ifpdf 2011/01/30 v2.3 Provides the ifpdf switch (HO)
+Package ifpdf Info: pdfTeX in PDF mode is detected.
+)
+(/usr/local/texlive/2013/texmf-dist/tex/generic/oberdiek/ifvtex.sty
+Package: ifvtex 2010/03/01 v1.5 Detect VTeX and its facilities (HO)
+Package ifvtex Info: VTeX not detected.
+)
+(/usr/local/texlive/2013/texmf-dist/tex/generic/ifxetex/ifxetex.sty
+Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
+)
+\Gm@cnth=\count89
+\Gm@cntv=\count90
+\c@Gm@tempcnt=\count91
+\Gm@bindingoffset=\dimen113
+\Gm@wd@mp=\dimen114
+\Gm@odd@mp=\dimen115
+\Gm@even@mp=\dimen116
+\Gm@layoutwidth=\dimen117
+\Gm@layoutheight=\dimen118
+\Gm@layouthoffset=\dimen119
+\Gm@layoutvoffset=\dimen120
+\Gm@dimlist=\toks18
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/graphics/color.sty
+Package: color 2016/01/03 v1.1b Standard LaTeX Color (DPC)
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/latexconfig/color.cfg
+File: color.cfg 2007/01/18 v1.5 color configuration of teTeX/TeXLive
+)
+Package color Info: Driver file: pdftex.def on input line 143.
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
+\fancy@headwidth=\skip43
+\f@ncyO@elh=\skip44
+\f@ncyO@erh=\skip45
+\f@ncyO@olh=\skip46
+\f@ncyO@orh=\skip47
+\f@ncyO@elf=\skip48
+\f@ncyO@erf=\skip49
+\f@ncyO@olf=\skip50
+\f@ncyO@orf=\skip51
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/lastpage/lastpage.sty
+Package: lastpage 2015/03/29 v1.2m Refers to last page's name (HMM; JPG)
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/listings/listings.sty
+\lst@mode=\count92
+\lst@gtempboxa=\box30
+\lst@token=\toks19
+\lst@length=\count93
+\lst@currlwidth=\dimen121
+\lst@column=\count94
+\lst@pos=\count95
+\lst@lostspace=\dimen122
+\lst@width=\dimen123
+\lst@newlines=\count96
+\lst@lineno=\count97
+\lst@maxwidth=\dimen124
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/listings/lstmisc.sty
+File: lstmisc.sty 2015/06/04 1.6 (Carsten Heinz)
+\c@lstnumber=\count98
+\lst@skipnumbers=\count99
+\lst@framebox=\box31
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/listings/listings.cfg
+File: listings.cfg 2015/06/04 1.6 listings configuration
+))
+Package: listings 2015/06/04 1.6 (Carsten Heinz)
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/tools/verbatim.sty
+Package: verbatim 2014/10/28 v1.5q LaTeX2e package for verbatim enhancements
+\every@verbatim=\toks20
+\verbatim@line=\toks21
+\verbatim@in@stream=\read1
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/hyperref/hyperref.sty
+Package: hyperref 2012/11/06 v6.83m Hypertext links for LaTeX
+
+(/usr/local/texlive/2013/texmf-dist/tex/generic/oberdiek/hobsub-hyperref.sty
+Package: hobsub-hyperref 2012/05/28 v1.13 Bundle oberdiek, subset hyperref (HO)
+
+
+(/usr/local/texlive/2013/texmf-dist/tex/generic/oberdiek/hobsub-generic.sty
+Package: hobsub-generic 2012/05/28 v1.13 Bundle oberdiek, subset generic (HO)
+Package: hobsub 2012/05/28 v1.13 Construct package bundles (HO)
+Package hobsub Info: Skipping package `infwarerr' (already loaded).
+Package hobsub Info: Skipping package `ltxcmds' (already loaded).
+Package: ifluatex 2010/03/01 v1.3 Provides the ifluatex switch (HO)
+Package ifluatex Info: LuaTeX not detected.
+Package hobsub Info: Skipping package `ifvtex' (already loaded).
+Package: intcalc 2007/09/27 v1.1 Expandable calculations with integers (HO)
+Package hobsub Info: Skipping package `ifpdf' (already loaded).
+Package: etexcmds 2011/02/16 v1.5 Avoid name clashes with e-TeX commands (HO)
+Package etexcmds Info: Could not find \expanded.
+(etexcmds)             That can mean that you are not using pdfTeX 1.50 or
+(etexcmds)             that some package has redefined \expanded.
+(etexcmds)             In the latter case, load this package earlier.
+Package: kvsetkeys 2012/04/25 v1.16 Key value parser (HO)
+Package: kvdefinekeys 2011/04/07 v1.3 Define keys (HO)
+Package: pdftexcmds 2011/11/29 v0.20 Utility functions of pdfTeX for LuaTeX (HO
+)
+Package pdftexcmds Info: LuaTeX not detected.
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+Package: pdfescape 2011/11/25 v1.13 Implements pdfTeX's escape features (HO)
+Package: bigintcalc 2012/04/08 v1.3 Expandable calculations on big integers (HO
+)
+Package: bitset 2011/01/30 v1.1 Handle bit-vector datatype (HO)
+Package: uniquecounter 2011/01/30 v1.2 Provide unlimited unique counter (HO)
+)
+Package hobsub Info: Skipping package `hobsub' (already loaded).
+Package: letltxmacro 2010/09/02 v1.4 Let assignment for LaTeX macros (HO)
+Package: hopatch 2012/05/28 v1.2 Wrapper for package hooks (HO)
+Package: xcolor-patch 2011/01/30 xcolor patch
+Package: atveryend 2011/06/30 v1.8 Hooks at the very end of document (HO)
+Package atveryend Info: \enddocument detected (standard20110627).
+Package: atbegshi 2011/10/05 v1.16 At begin shipout hook (HO)
+Package: refcount 2011/10/16 v3.4 Data extraction from label references (HO)
+Package: hycolor 2011/01/30 v1.7 Color options for hyperref/bookmark (HO)
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/oberdiek/auxhook.sty
+Package: auxhook 2011/03/04 v1.3 Hooks for auxiliary files (HO)
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/oberdiek/kvoptions.sty
+Package: kvoptions 2011/06/30 v3.11 Key value format for package options (HO)
+)
+\@linkdim=\dimen125
+\Hy@linkcounter=\count100
+\Hy@pagecounter=\count101
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/hyperref/pd1enc.def
+File: pd1enc.def 2012/11/06 v6.83m Hyperref: PDFDocEncoding definition (HO)
+)
+\Hy@SavedSpaceFactor=\count102
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/latexconfig/hyperref.cfg
+File: hyperref.cfg 2002/06/06 v1.2 hyperref configuration of TeXLive
+)
+Package hyperref Info: Option `colorlinks' set `true' on input line 4319.
+Package hyperref Info: Hyper figures OFF on input line 4443.
+Package hyperref Info: Link nesting OFF on input line 4448.
+Package hyperref Info: Hyper index ON on input line 4451.
+Package hyperref Info: Plain pages OFF on input line 4458.
+Package hyperref Info: Backreferencing OFF on input line 4463.
+Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
+Package hyperref Info: Bookmarks ON on input line 4688.
+\c@Hy@tempcnt=\count103
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/url/url.sty
+\Urlmuskip=\muskip10
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+LaTeX Info: Redefining \url on input line 5041.
+\XeTeXLinkMargin=\dimen126
+\Fld@menulength=\count104
+\Field@Width=\dimen127
+\Fld@charsize=\dimen128
+Package hyperref Info: Hyper figures OFF on input line 6295.
+Package hyperref Info: Link nesting OFF on input line 6300.
+Package hyperref Info: Hyper index ON on input line 6303.
+Package hyperref Info: backreferencing OFF on input line 6310.
+Package hyperref Info: Link coloring ON on input line 6313.
+Package hyperref Info: Link coloring with OCG OFF on input line 6320.
+Package hyperref Info: PDF/A mode OFF on input line 6325.
+LaTeX Info: Redefining \ref on input line 6365.
+LaTeX Info: Redefining \pageref on input line 6369.
+\Hy@abspage=\count105
+\c@Item=\count106
+\c@Hfootnote=\count107
+)
+
+Package hyperref Message: Driver (autodetected): hpdftex.
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/hyperref/hpdftex.def
+File: hpdftex.def 2012/11/06 v6.83m Hyperref driver for pdfTeX
+\Fld@listcount=\count108
+\c@bookmark@seq@number=\count109
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/oberdiek/rerunfilecheck.sty
+Package: rerunfilecheck 2011/04/15 v1.7 Rerun checks for auxiliary files (HO)
+Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
+82.
+)
+\Hy@SectionHShift=\skip52
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/pdfpages/pdfpages.sty
+Package: pdfpages 2015/09/18 v0.5d Insert pages of external PDF documents (AM)
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/base/ifthen.sty
+Package: ifthen 2014/09/29 v1.1c Standard LaTeX ifthen package (DPC)
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/tools/calc.sty
+Package: calc 2014/10/28 v4.3 Infix arithmetic (KKT,FJ)
+\calc@Acount=\count110
+\calc@Bcount=\count111
+\calc@Adimen=\dimen129
+\calc@Bdimen=\dimen130
+\calc@Askip=\skip53
+\calc@Bskip=\skip54
+LaTeX Info: Redefining \setlength on input line 80.
+LaTeX Info: Redefining \addtolength on input line 81.
+\calc@Ccount=\count112
+\calc@Cskip=\skip55
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/eso-pic/eso-pic.sty
+Package: eso-pic 2015/07/21 v2.0g eso-pic (RN)
+)
+\AM@pagewidth=\dimen131
+\AM@pageheight=\dimen132
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/pdfpages/pppdftex.def
+File: pppdftex.def 2015/09/18 v0.5d Pdfpages driver for pdfTeX (AM)
+)
+\AM@pagebox=\box32
+\AM@toc@title=\toks22
+\c@AM@survey=\count113
+\AM@templatesizebox=\box33
+)
+(./figure_testing_summary.aux)
+\openout1 = `figure_testing_summary.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Try loading font information for T1+phv on input line 58.
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/psnfss/t1phv.fd
+File: t1phv.fd 2001/06/04 scalable font definitions for T1/phv.
+)
+LaTeX Font Info:    Font shape `T1/phv/m/n' will be
+(Font)              scaled to size 9.49997pt on input line 58.
+
+ABD: EveryShipout initializing macros
+(/usr/local/texlive/2013/texmf-dist/tex/context/base/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count114
+\scratchdimen=\dimen133
+\scratchbox=\box34
+\nofMPsegments=\count115
+\nofMParguments=\count116
+\everyMPshowfont=\toks23
+\MPscratchCnt=\count117
+\MPscratchDim=\dimen134
+\MPnumerator=\count118
+\makeMPintoPDFobject=\count119
+\everyMPtoPDFconversion=\toks24
+) (/usr/local/texlive/2013/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
+Package: epstopdf-base 2010/02/09 v2.5 Base part for package epstopdf
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/oberdiek/grfext.sty
+Package: grfext 2010/08/19 v1.1 Manage graphics extensions (HO)
+)
+Package grfext Info: Graphics extension search list:
+(grfext)             [.png,.pdf,.jpg,.mps,.jpeg,.jbig2,.jb2,.PNG,.PDF,.JPG,.JPE
+G,.JBIG2,.JB2,.eps]
+(grfext)             \AppendGraphicsExtensions on input line 452.
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
+))
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+*geometry* verbose mode - [ preamble ] result:
+* driver: pdftex
+* paper: <default>
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: 
+* h-part:(L,W,R)=(72.26999pt, 469.75502pt, 72.26999pt)
+* v-part:(T,H,B)=(72.26999pt, 632.3625pt, 90.3375pt)
+* \paperwidth=614.295pt
+* \paperheight=794.96999pt
+* \textwidth=469.75502pt
+* \textheight=632.3625pt
+* \oddsidemargin=0.0pt
+* \evensidemargin=0.0pt
+* \topmargin=-37.0pt
+* \headheight=45.0pt
+* \headsep=25.0pt
+* \topskip=10.0pt
+* \footskip=30.0pt
+* \marginparwidth=65.0pt
+* \marginparsep=11.0pt
+* \columnsep=10.0pt
+* \skip\footins=9.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+Package lastpage Info: Please have a look at the pageslts package at
+(lastpage)             https://www.ctan.org/pkg/pageslts
+(lastpage)             ! on input line 58.
+\c@lstlisting=\count120
+\AtBeginShipoutBox=\box35
+Package hyperref Info: Link coloring ON on input line 58.
+(/usr/local/texlive/2013/texmf-dist/tex/latex/hyperref/nameref.sty
+Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
+
+(/usr/local/texlive/2013/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
+Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
+)
+\c@section@level=\count121
+)
+LaTeX Info: Redefining \ref on input line 58.
+LaTeX Info: Redefining \pageref on input line 58.
+LaTeX Info: Redefining \nameref on input line 58.
+
+(./figure_testing_summary.out) (./figure_testing_summary.out)
+\@outlinefile=\write3
+\openout3 = `figure_testing_summary.out'.
+
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/oberdiek/pdflscape.sty
+Package: pdflscape 2008/08/11 v0.10 Display of landscape pages in PDF (HO)
+Package pdflscape Info: Auto-detected driver: pdftex on input line 80.
+)
+LaTeX Font Info:    Font shape `T1/phv/m/n' will be
+(Font)              scaled to size 11.39996pt on input line 62.
+LaTeX Font Info:    Font shape `T1/phv/m/n' will be
+(Font)              scaled to size 13.67995pt on input line 70.
+
+
+pdfTeX warning: /usr/local/texlive/2013/bin/x86_64-linux/pdflatex (file ./logon
+ew.pdf): PDF inclusion: found PDF version <1.7>, but at most version <1.5> allo
+wed
+<logonew.pdf, id=4, 301.11296pt x 57.71582pt>
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 74.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+LaTeX Font Info:    Font shape `T1/phv/m/n' will be
+(Font)              scaled to size 6.64998pt on input line 74.
+ [1{/usr/local/texlive/2013/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
+
+ <./logonew.pdf>]
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 79.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 79.
+File: logonew.pdf Graphic file (type pdf)
+
+<use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 99.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [2]
+LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <14.4> not available
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 101.
+LaTeX Font Info:    Font shape `T1/phv/b/n' will be
+(Font)              scaled to size 13.67995pt on input line 101.
+
+<figures-testing-log-complete.pdf, id=22, 794.97pt x 614.295pt>
+File: figures-testing-log-complete.pdf Graphic file (type pdf)
+
+<use figures-testing-log-complete.pdf>
+Package pdftex.def Info: figures-testing-log-complete.pdf used on input line 10
+3.
+(pdftex.def)             Requested size: 794.96806pt x 614.29349pt.
+File: figures-testing-log-complete.pdf Graphic file (type pdf)
+ <use figures-testing-log-complete.pdf>
+Package pdftex.def Info: figures-testing-log-complete.pdf used on input line 10
+3.
+(pdftex.def)             Requested size: 794.96806pt x 614.29349pt.
+
+<figures-testing-log-complete.pdf, id=25, page=1, 794.97pt x 614.295pt>
+File: figures-testing-log-complete.pdf Graphic file (type pdf)
+
+<use figures-testing-log-complete.pdf, page 1>
+Package pdftex.def Info: figures-testing-log-complete.pdf, page1 used on input 
+line 103.
+(pdftex.def)             Requested size: 794.96806pt x 614.29349pt.
+File: figures-testing-log-complete.pdf Graphic file (type pdf)
+
+<use figures-testing-log-complete.pdf, page 1>
+Package pdftex.def Info: figures-testing-log-complete.pdf, page1 used on input 
+line 103.
+(pdftex.def)             Requested size: 615.04005pt x 475.25821pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 103.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [3]
+File: figures-testing-log-complete.pdf Graphic file (type pdf)
+
+<use figures-testing-log-complete.pdf, page 1>
+Package pdftex.def Info: figures-testing-log-complete.pdf, page1 used on input 
+line 103.
+(pdftex.def)             Requested size: 615.04005pt x 475.25821pt.
+File: figures-testing-log-complete.pdf Graphic file (type pdf)
+
+<use figures-testing-log-complete.pdf, page 1>
+Package pdftex.def Info: figures-testing-log-complete.pdf, page1 used on input 
+line 103.
+(pdftex.def)             Requested size: 615.04005pt x 475.25821pt.
+File: figures-testing-log-complete.pdf Graphic file (type pdf)
+
+<use figures-testing-log-complete.pdf, page 1>
+Package pdftex.def Info: figures-testing-log-complete.pdf, page1 used on input 
+line 103.
+(pdftex.def)             Requested size: 615.04005pt x 475.25821pt.
+ [4 <./figures-testing-log-complete.pdf>]
+<figures-testing-log-complete.pdf, id=55, page=2, 794.97pt x 614.295pt>
+File: figures-testing-log-complete.pdf Graphic file (type pdf)
+
+<use figures-testing-log-complete.pdf, page 2>
+Package pdftex.def Info: figures-testing-log-complete.pdf, page2 used on input 
+line 103.
+(pdftex.def)             Requested size: 615.04005pt x 475.25821pt.
+File: figures-testing-log-complete.pdf Graphic file (type pdf)
+
+<use figures-testing-log-complete.pdf, page 2>
+Package pdftex.def Info: figures-testing-log-complete.pdf, page2 used on input 
+line 103.
+(pdftex.def)             Requested size: 615.04005pt x 475.25821pt.
+File: figures-testing-log-complete.pdf Graphic file (type pdf)
+
+<use figures-testing-log-complete.pdf, page 2>
+Package pdftex.def Info: figures-testing-log-complete.pdf, page2 used on input 
+line 103.
+(pdftex.def)             Requested size: 615.04005pt x 475.25821pt.
+ [5 <./figures-testing-log-complete.pdf>]
+<figures-testing-log-complete.pdf, id=61, page=3, 794.97pt x 614.295pt>
+File: figures-testing-log-complete.pdf Graphic file (type pdf)
+
+<use figures-testing-log-complete.pdf, page 3>
+Package pdftex.def Info: figures-testing-log-complete.pdf, page3 used on input 
+line 103.
+(pdftex.def)             Requested size: 615.04005pt x 475.25821pt.
+File: figures-testing-log-complete.pdf Graphic file (type pdf)
+
+<use figures-testing-log-complete.pdf, page 3>
+Package pdftex.def Info: figures-testing-log-complete.pdf, page3 used on input 
+line 103.
+(pdftex.def)             Requested size: 615.04005pt x 475.25821pt.
+File: figures-testing-log-complete.pdf Graphic file (type pdf)
+
+<use figures-testing-log-complete.pdf, page 3>
+Package pdftex.def Info: figures-testing-log-complete.pdf, page3 used on input 
+line 103.
+(pdftex.def)             Requested size: 615.04005pt x 475.25821pt.
+ [6 <./figures-testing-log-complete.pdf>]
+<figures-testing-log-complete.pdf, id=67, page=4, 794.97pt x 614.295pt>
+File: figures-testing-log-complete.pdf Graphic file (type pdf)
+
+<use figures-testing-log-complete.pdf, page 4>
+Package pdftex.def Info: figures-testing-log-complete.pdf, page4 used on input 
+line 103.
+(pdftex.def)             Requested size: 615.04005pt x 475.25821pt.
+File: figures-testing-log-complete.pdf Graphic file (type pdf)
+
+<use figures-testing-log-complete.pdf, page 4>
+Package pdftex.def Info: figures-testing-log-complete.pdf, page4 used on input 
+line 103.
+(pdftex.def)             Requested size: 615.04005pt x 475.25821pt.
+File: figures-testing-log-complete.pdf Graphic file (type pdf)
+
+<use figures-testing-log-complete.pdf, page 4>
+Package pdftex.def Info: figures-testing-log-complete.pdf, page4 used on input 
+line 103.
+(pdftex.def)             Requested size: 615.04005pt x 475.25821pt.
+ [7 <./figures-testing-log-complete.pdf>]
+LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <12> not available
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 110.
+LaTeX Font Info:    Font shape `T1/phv/b/n' will be
+(Font)              scaled to size 11.39996pt on input line 110.
+ (./include.tex
+<screencaps/01-01-1.png, id=74, 1432.35126pt x 835.12pt>
+File: screencaps/01-01-1.png Graphic file (type png)
+
+<use screencaps/01-01-1.png>
+Package pdftex.def Info: screencaps/01-01-1.png used on input line 2.
+(pdftex.def)             Requested size: 375.80544pt x 219.10123pt.
+
+<screencaps/01-02-1.png, id=76, 1479.5275pt x 849.1725pt>
+File: screencaps/01-02-1.png Graphic file (type png)
+
+<use screencaps/01-02-1.png>
+Package pdftex.def Info: screencaps/01-02-1.png used on input line 6.
+(pdftex.def)             Requested size: 375.80544pt x 215.68741pt.
+
+<screencaps/01-03-1.png, id=77, 1477.52pt x 846.16125pt>
+File: screencaps/01-03-1.png Graphic file (type png)
+
+<use screencaps/01-03-1.png>
+Package pdftex.def Info: screencaps/01-03-1.png used on input line 10.
+(pdftex.def)             Requested size: 375.80544pt x 215.21953pt.
+
+<screencaps/01-04-1.png, id=78, 1480.53125pt x 849.1725pt>
+File: screencaps/01-04-1.png Graphic file (type png)
+
+<use screencaps/01-04-1.png>
+Package pdftex.def Info: screencaps/01-04-1.png used on input line 14.
+(pdftex.def)             Requested size: 375.80544pt x 215.54489pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 16.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [8 <./screencaps/01-01-1.png> <./screencaps/01-02-1.png>]
+<screencaps/01-05-1.png, id=90, 1477.52pt x 845.1575pt>
+File: screencaps/01-05-1.png Graphic file (type png)
+
+<use screencaps/01-05-1.png>
+Package pdftex.def Info: screencaps/01-05-1.png used on input line 18.
+(pdftex.def)             Requested size: 375.80544pt x 214.96423pt.
+
+<screencaps/01-06-1.png, id=91, 1477.52pt x 803.0pt>
+File: screencaps/01-06-1.png Graphic file (type png)
+
+<use screencaps/01-06-1.png>
+Package pdftex.def Info: screencaps/01-06-1.png used on input line 22.
+(pdftex.def)             Requested size: 375.80544pt x 204.24155pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 24.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [9 <./screencaps/01-03-1.png> <./screencaps/01-04-1.png>]
+<screencaps/02-01-1.png, id=101, 2682.02pt x 1491.5725pt>
+File: screencaps/02-01-1.png Graphic file (type png)
+
+<use screencaps/02-01-1.png>
+Package pdftex.def Info: screencaps/02-01-1.png used on input line 26.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/02-02-1.png, id=102, 2682.02pt x 1491.5725pt>
+File: screencaps/02-02-1.png Graphic file (type png)
+
+<use screencaps/02-02-1.png>
+Package pdftex.def Info: screencaps/02-02-1.png used on input line 30.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 32.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [10 <./screencaps/01-05-1.png> <./screencaps/01-06-1.png>]
+<screencaps/02-03-1.png, id=112, 2682.02pt x 1491.5725pt>
+File: screencaps/02-03-1.png Graphic file (type png)
+
+<use screencaps/02-03-1.png>
+Package pdftex.def Info: screencaps/02-03-1.png used on input line 34.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/02-04-1.png, id=113, 2682.02pt x 1491.5725pt>
+File: screencaps/02-04-1.png Graphic file (type png)
+
+<use screencaps/02-04-1.png>
+Package pdftex.def Info: screencaps/02-04-1.png used on input line 38.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 40.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [11 <./screencaps/02-01-1.png> <./screencaps/02-02-1.png>]
+<screencaps/02-05-1.png, id=123, 2682.02pt x 1491.5725pt>
+File: screencaps/02-05-1.png Graphic file (type png)
+
+<use screencaps/02-05-1.png>
+Package pdftex.def Info: screencaps/02-05-1.png used on input line 42.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/02-06-1.png, id=124, 2682.02pt x 1491.5725pt>
+File: screencaps/02-06-1.png Graphic file (type png)
+
+<use screencaps/02-06-1.png>
+Package pdftex.def Info: screencaps/02-06-1.png used on input line 46.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 48.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [12 <./screencaps/02-03-1.png> <./screencaps/02-04-1.png>]
+<screencaps/02-07-1.png, id=134, 2682.02pt x 1491.5725pt>
+File: screencaps/02-07-1.png Graphic file (type png)
+
+<use screencaps/02-07-1.png>
+Package pdftex.def Info: screencaps/02-07-1.png used on input line 50.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/02-08-1.png, id=135, 2682.02pt x 1491.5725pt>
+File: screencaps/02-08-1.png Graphic file (type png)
+
+<use screencaps/02-08-1.png>
+Package pdftex.def Info: screencaps/02-08-1.png used on input line 54.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 56.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [13 <./screencaps/02-05-1.png> <./screencaps/02-06-1.png>]
+<screencaps/02-09-1.png, id=146, 2682.02pt x 1491.5725pt>
+File: screencaps/02-09-1.png Graphic file (type png)
+
+<use screencaps/02-09-1.png>
+Package pdftex.def Info: screencaps/02-09-1.png used on input line 58.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/02-10-1.png, id=147, 2682.02pt x 1491.5725pt>
+File: screencaps/02-10-1.png Graphic file (type png)
+
+<use screencaps/02-10-1.png>
+Package pdftex.def Info: screencaps/02-10-1.png used on input line 62.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 64.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [14 <./screencaps/02-07-1.png> <./screencaps/02-08-1.png>]
+<screencaps/02-11-1.png, id=157, 2682.02pt x 1491.5725pt>
+File: screencaps/02-11-1.png Graphic file (type png)
+
+<use screencaps/02-11-1.png>
+Package pdftex.def Info: screencaps/02-11-1.png used on input line 66.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/02-12-1.png, id=158, 2682.02pt x 1491.5725pt>
+File: screencaps/02-12-1.png Graphic file (type png)
+
+<use screencaps/02-12-1.png>
+Package pdftex.def Info: screencaps/02-12-1.png used on input line 70.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 72.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [15 <./screencaps/02-09-1.png> <./screencaps/02-10-1.png>]
+<screencaps/02-13-1.png, id=168, 2682.02pt x 1491.5725pt>
+File: screencaps/02-13-1.png Graphic file (type png)
+
+<use screencaps/02-13-1.png>
+Package pdftex.def Info: screencaps/02-13-1.png used on input line 74.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/02-15-1.png, id=169, 2682.02pt x 1491.5725pt>
+File: screencaps/02-15-1.png Graphic file (type png)
+
+<use screencaps/02-15-1.png>
+Package pdftex.def Info: screencaps/02-15-1.png used on input line 78.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 80.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [16 <./screencaps/02-11-1.png> <./screencaps/02-12-1.png>]
+<screencaps/03-01-1.png, id=180, 2682.02pt x 1491.5725pt>
+File: screencaps/03-01-1.png Graphic file (type png)
+
+<use screencaps/03-01-1.png>
+Package pdftex.def Info: screencaps/03-01-1.png used on input line 82.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/03-02-1.png, id=181, 2682.02pt x 1491.5725pt>
+File: screencaps/03-02-1.png Graphic file (type png)
+
+<use screencaps/03-02-1.png>
+Package pdftex.def Info: screencaps/03-02-1.png used on input line 86.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 88.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [17 <./screencaps/02-13-1.png> <./screencaps/02-15-1.png>]
+<screencaps/03-03-1.png, id=191, 2682.02pt x 1491.5725pt>
+File: screencaps/03-03-1.png Graphic file (type png)
+
+<use screencaps/03-03-1.png>
+Package pdftex.def Info: screencaps/03-03-1.png used on input line 90.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/03-04-1.png, id=192, 2682.02pt x 1491.5725pt>
+File: screencaps/03-04-1.png Graphic file (type png)
+
+<use screencaps/03-04-1.png>
+Package pdftex.def Info: screencaps/03-04-1.png used on input line 94.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 96.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [18 <./screencaps/03-01-1.png> <./screencaps/03-02-1.png>]
+<screencaps/03-05-1.png, id=202, 2682.02pt x 1491.5725pt>
+File: screencaps/03-05-1.png Graphic file (type png)
+
+<use screencaps/03-05-1.png>
+Package pdftex.def Info: screencaps/03-05-1.png used on input line 98.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/03-06-1.png, id=203, 2682.02pt x 1491.5725pt>
+File: screencaps/03-06-1.png Graphic file (type png)
+
+<use screencaps/03-06-1.png>
+Package pdftex.def Info: screencaps/03-06-1.png used on input line 102.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 104.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [19 <./screencaps/03-03-1.png> <./screencaps/03-04-1.png>]
+<screencaps/03-07-1.png, id=214, 2682.02pt x 1491.5725pt>
+File: screencaps/03-07-1.png Graphic file (type png)
+
+<use screencaps/03-07-1.png>
+Package pdftex.def Info: screencaps/03-07-1.png used on input line 106.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/03-08-1.png, id=215, 2682.02pt x 1491.5725pt>
+File: screencaps/03-08-1.png Graphic file (type png)
+
+<use screencaps/03-08-1.png>
+Package pdftex.def Info: screencaps/03-08-1.png used on input line 110.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 112.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [20 <./screencaps/03-05-1.png> <./screencaps/03-06-1.png>]
+<screencaps/03-09-1.png, id=225, 2682.02pt x 1491.5725pt>
+File: screencaps/03-09-1.png Graphic file (type png)
+
+<use screencaps/03-09-1.png>
+Package pdftex.def Info: screencaps/03-09-1.png used on input line 114.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/03-10-1.png, id=226, 2682.02pt x 1491.5725pt>
+File: screencaps/03-10-1.png Graphic file (type png)
+
+<use screencaps/03-10-1.png>
+Package pdftex.def Info: screencaps/03-10-1.png used on input line 118.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 120.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [21 <./screencaps/03-07-1.png> <./screencaps/03-08-1.png>]
+<screencaps/04-01-1.png, id=236, 2682.02pt x 1491.5725pt>
+File: screencaps/04-01-1.png Graphic file (type png)
+
+<use screencaps/04-01-1.png>
+Package pdftex.def Info: screencaps/04-01-1.png used on input line 122.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/04-02-1.png, id=237, 2682.02pt x 1491.5725pt>
+File: screencaps/04-02-1.png Graphic file (type png)
+
+<use screencaps/04-02-1.png>
+Package pdftex.def Info: screencaps/04-02-1.png used on input line 126.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 128.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [22 <./screencaps/03-09-1.png> <./screencaps/03-10-1.png>]
+<screencaps/04-03-1.png, id=247, 2682.02pt x 1491.5725pt>
+File: screencaps/04-03-1.png Graphic file (type png)
+
+<use screencaps/04-03-1.png>
+Package pdftex.def Info: screencaps/04-03-1.png used on input line 130.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/04-04-1.png, id=248, 2682.02pt x 1491.5725pt>
+File: screencaps/04-04-1.png Graphic file (type png)
+
+<use screencaps/04-04-1.png>
+Package pdftex.def Info: screencaps/04-04-1.png used on input line 134.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 136.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [23 <./screencaps/04-01-1.png> <./screencaps/04-02-1.png>]
+<screencaps/04-05-1.png, id=258, 2682.02pt x 1491.5725pt>
+File: screencaps/04-05-1.png Graphic file (type png)
+
+<use screencaps/04-05-1.png>
+Package pdftex.def Info: screencaps/04-05-1.png used on input line 138.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/04-06-1.png, id=259, 2682.02pt x 1491.5725pt>
+File: screencaps/04-06-1.png Graphic file (type png)
+
+<use screencaps/04-06-1.png>
+Package pdftex.def Info: screencaps/04-06-1.png used on input line 142.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 144.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [24 <./screencaps/04-03-1.png> <./screencaps/04-04-1.png>]
+<screencaps/05-01-1.png, id=269, 2682.02pt x 1491.5725pt>
+File: screencaps/05-01-1.png Graphic file (type png)
+
+<use screencaps/05-01-1.png>
+Package pdftex.def Info: screencaps/05-01-1.png used on input line 146.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/05-02-1.png, id=270, 2682.02pt x 1491.5725pt>
+File: screencaps/05-02-1.png Graphic file (type png)
+
+<use screencaps/05-02-1.png>
+Package pdftex.def Info: screencaps/05-02-1.png used on input line 150.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 152.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [25 <./screencaps/04-05-1.png> <./screencaps/04-06-1.png>]
+<screencaps/05-03-1.png, id=281, 2682.02pt x 1491.5725pt>
+File: screencaps/05-03-1.png Graphic file (type png)
+
+<use screencaps/05-03-1.png>
+Package pdftex.def Info: screencaps/05-03-1.png used on input line 154.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/05-04-1.png, id=282, 2682.02pt x 1491.5725pt>
+File: screencaps/05-04-1.png Graphic file (type png)
+
+<use screencaps/05-04-1.png>
+Package pdftex.def Info: screencaps/05-04-1.png used on input line 158.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 160.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [26 <./screencaps/05-01-1.png> <./screencaps/05-02-1.png>]
+<screencaps/06-01-1.png, id=292, 2682.02pt x 1491.5725pt>
+File: screencaps/06-01-1.png Graphic file (type png)
+
+<use screencaps/06-01-1.png>
+Package pdftex.def Info: screencaps/06-01-1.png used on input line 162.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/06-02-1.png, id=293, 2682.02pt x 1491.5725pt>
+File: screencaps/06-02-1.png Graphic file (type png)
+
+<use screencaps/06-02-1.png>
+Package pdftex.def Info: screencaps/06-02-1.png used on input line 166.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 168.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [27 <./screencaps/05-03-1.png> <./screencaps/05-04-1.png>]
+<screencaps/06-03-1.png, id=303, 2682.02pt x 1491.5725pt>
+File: screencaps/06-03-1.png Graphic file (type png)
+
+<use screencaps/06-03-1.png>
+Package pdftex.def Info: screencaps/06-03-1.png used on input line 170.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/06-04-1.png, id=304, 2682.02pt x 1491.5725pt>
+File: screencaps/06-04-1.png Graphic file (type png)
+
+<use screencaps/06-04-1.png>
+Package pdftex.def Info: screencaps/06-04-1.png used on input line 174.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 176.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [28 <./screencaps/06-01-1.png> <./screencaps/06-02-1.png>]
+<screencaps/06-05-1.png, id=314, 2682.02pt x 1491.5725pt>
+File: screencaps/06-05-1.png Graphic file (type png)
+
+<use screencaps/06-05-1.png>
+Package pdftex.def Info: screencaps/06-05-1.png used on input line 178.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/07-01-1.png, id=315, 2682.02pt x 1491.5725pt>
+File: screencaps/07-01-1.png Graphic file (type png)
+
+<use screencaps/07-01-1.png>
+Package pdftex.def Info: screencaps/07-01-1.png used on input line 182.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 184.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [29 <./screencaps/06-03-1.png> <./screencaps/06-04-1.png>]
+<screencaps/07-02-1.png, id=325, 2682.02pt x 1491.5725pt>
+File: screencaps/07-02-1.png Graphic file (type png)
+
+<use screencaps/07-02-1.png>
+Package pdftex.def Info: screencaps/07-02-1.png used on input line 186.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/07-03-1.png, id=326, 2682.02pt x 1491.5725pt>
+File: screencaps/07-03-1.png Graphic file (type png)
+
+<use screencaps/07-03-1.png>
+Package pdftex.def Info: screencaps/07-03-1.png used on input line 190.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 192.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [30 <./screencaps/06-05-1.png> <./screencaps/07-01-1.png>]
+<screencaps/07-04-1.png, id=336, 2682.02pt x 1491.5725pt>
+File: screencaps/07-04-1.png Graphic file (type png)
+
+<use screencaps/07-04-1.png>
+Package pdftex.def Info: screencaps/07-04-1.png used on input line 194.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/07-05-1.png, id=337, 2682.02pt x 1491.5725pt>
+File: screencaps/07-05-1.png Graphic file (type png)
+
+<use screencaps/07-05-1.png>
+Package pdftex.def Info: screencaps/07-05-1.png used on input line 198.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 200.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [31 <./screencaps/07-02-1.png> <./screencaps/07-03-1.png>]
+<screencaps/08-01-1.png, id=348, 2682.02pt x 1491.5725pt>
+File: screencaps/08-01-1.png Graphic file (type png)
+
+<use screencaps/08-01-1.png>
+Package pdftex.def Info: screencaps/08-01-1.png used on input line 202.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/08-02-1.png, id=349, 2682.02pt x 1491.5725pt>
+File: screencaps/08-02-1.png Graphic file (type png)
+
+<use screencaps/08-02-1.png>
+Package pdftex.def Info: screencaps/08-02-1.png used on input line 206.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 208.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [32 <./screencaps/07-04-1.png> <./screencaps/07-05-1.png>]
+<screencaps/08-03-1.png, id=359, 2682.02pt x 1491.5725pt>
+File: screencaps/08-03-1.png Graphic file (type png)
+
+<use screencaps/08-03-1.png>
+Package pdftex.def Info: screencaps/08-03-1.png used on input line 210.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/08-04-1.png, id=360, 2682.02pt x 1491.5725pt>
+File: screencaps/08-04-1.png Graphic file (type png)
+
+<use screencaps/08-04-1.png>
+Package pdftex.def Info: screencaps/08-04-1.png used on input line 214.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 216.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [33 <./screencaps/08-01-1.png> <./screencaps/08-02-1.png>]
+<screencaps/08-05-1.png, id=371, 2682.02pt x 1491.5725pt>
+File: screencaps/08-05-1.png Graphic file (type png)
+
+<use screencaps/08-05-1.png>
+Package pdftex.def Info: screencaps/08-05-1.png used on input line 218.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/08-06-1.png, id=372, 2682.02pt x 1491.5725pt>
+File: screencaps/08-06-1.png Graphic file (type png)
+
+<use screencaps/08-06-1.png>
+Package pdftex.def Info: screencaps/08-06-1.png used on input line 222.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 224.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [34 <./screencaps/08-03-1.png> <./screencaps/08-04-1.png>]
+<screencaps/09-01-1.png, id=382, 2682.02pt x 1491.5725pt>
+File: screencaps/09-01-1.png Graphic file (type png)
+
+<use screencaps/09-01-1.png>
+Package pdftex.def Info: screencaps/09-01-1.png used on input line 226.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/09-02-1.png, id=383, 2682.02pt x 1491.5725pt>
+File: screencaps/09-02-1.png Graphic file (type png)
+
+<use screencaps/09-02-1.png>
+Package pdftex.def Info: screencaps/09-02-1.png used on input line 230.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 232.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [35 <./screencaps/08-05-1.png> <./screencaps/08-06-1.png>]
+<screencaps/09-03-1.png, id=393, 2682.02pt x 1491.5725pt>
+File: screencaps/09-03-1.png Graphic file (type png)
+
+<use screencaps/09-03-1.png>
+Package pdftex.def Info: screencaps/09-03-1.png used on input line 234.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/09-04-1.png, id=394, 2682.02pt x 1491.5725pt>
+File: screencaps/09-04-1.png Graphic file (type png)
+
+<use screencaps/09-04-1.png>
+Package pdftex.def Info: screencaps/09-04-1.png used on input line 238.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 240.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [36 <./screencaps/09-01-1.png> <./screencaps/09-02-1.png>]
+<screencaps/09-05-1.png, id=404, 2682.02pt x 1491.5725pt>
+File: screencaps/09-05-1.png Graphic file (type png)
+
+<use screencaps/09-05-1.png>
+Package pdftex.def Info: screencaps/09-05-1.png used on input line 242.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/09-06-1.png, id=405, 2682.02pt x 1491.5725pt>
+File: screencaps/09-06-1.png Graphic file (type png)
+
+<use screencaps/09-06-1.png>
+Package pdftex.def Info: screencaps/09-06-1.png used on input line 246.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 248.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [37 <./screencaps/09-03-1.png> <./screencaps/09-04-1.png>]
+<screencaps/09-07-1.png, id=416, 2682.02pt x 1491.5725pt>
+File: screencaps/09-07-1.png Graphic file (type png)
+
+<use screencaps/09-07-1.png>
+Package pdftex.def Info: screencaps/09-07-1.png used on input line 250.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/09-08-1.png, id=417, 2682.02pt x 1491.5725pt>
+File: screencaps/09-08-1.png Graphic file (type png)
+
+<use screencaps/09-08-1.png>
+Package pdftex.def Info: screencaps/09-08-1.png used on input line 254.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 256.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [38 <./screencaps/09-05-1.png> <./screencaps/09-06-1.png>]
+<screencaps/09-09-1.png, id=427, 2682.02pt x 1491.5725pt>
+File: screencaps/09-09-1.png Graphic file (type png)
+
+<use screencaps/09-09-1.png>
+Package pdftex.def Info: screencaps/09-09-1.png used on input line 258.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/09-10-1.png, id=428, 2682.02pt x 1491.5725pt>
+File: screencaps/09-10-1.png Graphic file (type png)
+
+<use screencaps/09-10-1.png>
+Package pdftex.def Info: screencaps/09-10-1.png used on input line 262.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 264.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [39 <./screencaps/09-07-1.png> <./screencaps/09-08-1.png>]
+<screencaps/09-11-1.png, id=438, 2682.02pt x 1491.5725pt>
+File: screencaps/09-11-1.png Graphic file (type png)
+
+<use screencaps/09-11-1.png>
+Package pdftex.def Info: screencaps/09-11-1.png used on input line 266.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/09-12-1.png, id=439, 2682.02pt x 1491.5725pt>
+File: screencaps/09-12-1.png Graphic file (type png)
+
+<use screencaps/09-12-1.png>
+Package pdftex.def Info: screencaps/09-12-1.png used on input line 270.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 272.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [40 <./screencaps/09-09-1.png> <./screencaps/09-10-1.png>]
+<screencaps/10-01-1.png, id=449, 2682.02pt x 1491.5725pt>
+File: screencaps/10-01-1.png Graphic file (type png)
+
+<use screencaps/10-01-1.png>
+Package pdftex.def Info: screencaps/10-01-1.png used on input line 274.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/10-02-1.png, id=450, 2682.02pt x 1491.5725pt>
+File: screencaps/10-02-1.png Graphic file (type png)
+
+<use screencaps/10-02-1.png>
+Package pdftex.def Info: screencaps/10-02-1.png used on input line 278.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 280.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [41 <./screencaps/09-11-1.png> <./screencaps/09-12-1.png>]
+<screencaps/10-03-1.png, id=460, 2682.02pt x 1491.5725pt>
+File: screencaps/10-03-1.png Graphic file (type png)
+
+<use screencaps/10-03-1.png>
+Package pdftex.def Info: screencaps/10-03-1.png used on input line 282.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/10-04-1.png, id=461, 2682.02pt x 1491.5725pt>
+File: screencaps/10-04-1.png Graphic file (type png)
+
+<use screencaps/10-04-1.png>
+Package pdftex.def Info: screencaps/10-04-1.png used on input line 286.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 288.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [42 <./screencaps/10-01-1.png> <./screencaps/10-02-1.png>]
+<screencaps/11-01-1.png, id=471, 2682.02pt x 1491.5725pt>
+File: screencaps/11-01-1.png Graphic file (type png)
+
+<use screencaps/11-01-1.png>
+Package pdftex.def Info: screencaps/11-01-1.png used on input line 290.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/11-02-1.png, id=472, 2682.02pt x 1491.5725pt>
+File: screencaps/11-02-1.png Graphic file (type png)
+
+<use screencaps/11-02-1.png>
+Package pdftex.def Info: screencaps/11-02-1.png used on input line 294.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 296.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [43 <./screencaps/10-03-1.png> <./screencaps/10-04-1.png>]
+<screencaps/11-03-1.png, id=483, 2682.02pt x 1491.5725pt>
+File: screencaps/11-03-1.png Graphic file (type png)
+
+<use screencaps/11-03-1.png>
+Package pdftex.def Info: screencaps/11-03-1.png used on input line 298.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/11-04-1.png, id=484, 2682.02pt x 1491.5725pt>
+File: screencaps/11-04-1.png Graphic file (type png)
+
+<use screencaps/11-04-1.png>
+Package pdftex.def Info: screencaps/11-04-1.png used on input line 302.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 304.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [44 <./screencaps/11-01-1.png> <./screencaps/11-02-1.png>]
+<screencaps/12-01-1.png, id=494, 2682.02pt x 1491.5725pt>
+File: screencaps/12-01-1.png Graphic file (type png)
+
+<use screencaps/12-01-1.png>
+Package pdftex.def Info: screencaps/12-01-1.png used on input line 306.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/12-02-1.png, id=495, 2682.02pt x 1491.5725pt>
+File: screencaps/12-02-1.png Graphic file (type png)
+
+<use screencaps/12-02-1.png>
+Package pdftex.def Info: screencaps/12-02-1.png used on input line 310.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 312.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [45 <./screencaps/11-03-1.png> <./screencaps/11-04-1.png>]
+<screencaps/12-03-1.png, id=505, 2682.02pt x 1491.5725pt>
+File: screencaps/12-03-1.png Graphic file (type png)
+
+<use screencaps/12-03-1.png>
+Package pdftex.def Info: screencaps/12-03-1.png used on input line 314.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/12-03-2.png, id=506, 2682.02pt x 1491.5725pt>
+File: screencaps/12-03-2.png Graphic file (type png)
+
+<use screencaps/12-03-2.png>
+Package pdftex.def Info: screencaps/12-03-2.png used on input line 318.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 320.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [46 <./screencaps/12-01-1.png> <./screencaps/12-02-1.png>]
+<screencaps/12-03-4.png, id=516, 2682.02pt x 1491.5725pt>
+File: screencaps/12-03-4.png Graphic file (type png)
+
+<use screencaps/12-03-4.png>
+Package pdftex.def Info: screencaps/12-03-4.png used on input line 322.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/12-03-5.png, id=517, 2682.02pt x 1491.5725pt>
+File: screencaps/12-03-5.png Graphic file (type png)
+
+<use screencaps/12-03-5.png>
+Package pdftex.def Info: screencaps/12-03-5.png used on input line 326.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 328.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [47 <./screencaps/12-03-1.png> <./screencaps/12-03-2.png>]
+<screencaps/12-03-6.png, id=527, 2682.02pt x 1491.5725pt>
+File: screencaps/12-03-6.png Graphic file (type png)
+
+<use screencaps/12-03-6.png>
+Package pdftex.def Info: screencaps/12-03-6.png used on input line 330.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/12-04-1.png, id=528, 2682.02pt x 1491.5725pt>
+File: screencaps/12-04-1.png Graphic file (type png)
+
+<use screencaps/12-04-1.png>
+Package pdftex.def Info: screencaps/12-04-1.png used on input line 334.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 336.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [48 <./screencaps/12-03-4.png> <./screencaps/12-03-5.png>]
+<screencaps/12-04-2.png, id=538, 2682.02pt x 1491.5725pt>
+File: screencaps/12-04-2.png Graphic file (type png)
+
+<use screencaps/12-04-2.png>
+Package pdftex.def Info: screencaps/12-04-2.png used on input line 338.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/12-04-3.png, id=539, 2682.02pt x 1491.5725pt>
+File: screencaps/12-04-3.png Graphic file (type png)
+
+<use screencaps/12-04-3.png>
+Package pdftex.def Info: screencaps/12-04-3.png used on input line 342.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 344.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [49 <./screencaps/12-03-6.png> <./screencaps/12-04-1.png>]
+<screencaps/12-04-4.png, id=551, 2682.02pt x 1491.5725pt>
+File: screencaps/12-04-4.png Graphic file (type png)
+
+<use screencaps/12-04-4.png>
+Package pdftex.def Info: screencaps/12-04-4.png used on input line 346.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/12-04-5.png, id=552, 2682.02pt x 1491.5725pt>
+File: screencaps/12-04-5.png Graphic file (type png)
+
+<use screencaps/12-04-5.png>
+Package pdftex.def Info: screencaps/12-04-5.png used on input line 350.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 352.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [50 <./screencaps/12-04-2.png> <./screencaps/12-04-3.png>]
+<screencaps/12-04-6.png, id=562, 2682.02pt x 1491.5725pt>
+File: screencaps/12-04-6.png Graphic file (type png)
+
+<use screencaps/12-04-6.png>
+Package pdftex.def Info: screencaps/12-04-6.png used on input line 354.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/12-05-1.png, id=563, 2682.02pt x 1491.5725pt>
+File: screencaps/12-05-1.png Graphic file (type png)
+
+<use screencaps/12-05-1.png>
+Package pdftex.def Info: screencaps/12-05-1.png used on input line 358.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 360.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [51 <./screencaps/12-04-4.png> <./screencaps/12-04-5.png>]
+<screencaps/12-05-2.png, id=573, 2682.02pt x 1491.5725pt>
+File: screencaps/12-05-2.png Graphic file (type png)
+
+<use screencaps/12-05-2.png>
+Package pdftex.def Info: screencaps/12-05-2.png used on input line 362.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/12-05-3.png, id=574, 2682.02pt x 1491.5725pt>
+File: screencaps/12-05-3.png Graphic file (type png)
+
+<use screencaps/12-05-3.png>
+Package pdftex.def Info: screencaps/12-05-3.png used on input line 366.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 368.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [52 <./screencaps/12-04-6.png> <./screencaps/12-05-1.png>]
+<screencaps/12-05-4.png, id=584, 2682.02pt x 1491.5725pt>
+File: screencaps/12-05-4.png Graphic file (type png)
+
+<use screencaps/12-05-4.png>
+Package pdftex.def Info: screencaps/12-05-4.png used on input line 370.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/12-05-5.png, id=585, 2682.02pt x 1491.5725pt>
+File: screencaps/12-05-5.png Graphic file (type png)
+
+<use screencaps/12-05-5.png>
+Package pdftex.def Info: screencaps/12-05-5.png used on input line 374.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 376.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [53 <./screencaps/12-05-2.png> <./screencaps/12-05-3.png>]
+<screencaps/12-05-6.png, id=595, 2682.02pt x 1491.5725pt>
+File: screencaps/12-05-6.png Graphic file (type png)
+
+<use screencaps/12-05-6.png>
+Package pdftex.def Info: screencaps/12-05-6.png used on input line 378.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/12-06-1.png, id=596, 2682.02pt x 1491.5725pt>
+File: screencaps/12-06-1.png Graphic file (type png)
+
+<use screencaps/12-06-1.png>
+Package pdftex.def Info: screencaps/12-06-1.png used on input line 382.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 384.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [54 <./screencaps/12-05-4.png> <./screencaps/12-05-5.png>]
+<screencaps/12-06-2.png, id=606, 2682.02pt x 1491.5725pt>
+File: screencaps/12-06-2.png Graphic file (type png)
+
+<use screencaps/12-06-2.png>
+Package pdftex.def Info: screencaps/12-06-2.png used on input line 386.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/12-06-3.png, id=607, 2682.02pt x 1491.5725pt>
+File: screencaps/12-06-3.png Graphic file (type png)
+
+<use screencaps/12-06-3.png>
+Package pdftex.def Info: screencaps/12-06-3.png used on input line 390.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 392.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [55 <./screencaps/12-05-6.png> <./screencaps/12-06-1.png>]
+<screencaps/12-06-4.png, id=618, 2682.02pt x 1491.5725pt>
+File: screencaps/12-06-4.png Graphic file (type png)
+
+<use screencaps/12-06-4.png>
+Package pdftex.def Info: screencaps/12-06-4.png used on input line 394.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+
+<screencaps/12-06-5.png, id=619, 2682.02pt x 1491.5725pt>
+File: screencaps/12-06-5.png Graphic file (type png)
+
+<use screencaps/12-06-5.png>
+Package pdftex.def Info: screencaps/12-06-5.png used on input line 398.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 400.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [56 <./screencaps/12-06-2.png> <./screencaps/12-06-3.png>]
+<screencaps/12-08-1.png, id=629, 2682.02pt x 1491.5725pt>
+File: screencaps/12-08-1.png Graphic file (type png)
+
+<use screencaps/12-08-1.png>
+Package pdftex.def Info: screencaps/12-08-1.png used on input line 402.
+(pdftex.def)             Requested size: 375.80544pt x 208.97804pt.
+)
+File: logonew.pdf Graphic file (type pdf)
+ <use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 113.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [57 <./screencaps/12-06-4.png> <./screencaps/12-06-5.png>] 
+AED: lastpage setting LastPage
+File: logonew.pdf Graphic file (type pdf)
+<use logonew.pdf>
+Package pdftex.def Info: logonew.pdf used on input line 128.
+(pdftex.def)             Requested size: 165.61263pt x 31.74379pt.
+ [58 <./screencaps/12-08-1.png>]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 128.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 128.
+ (./figure_testing_summary.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 128.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 128.
+Package rerunfilecheck Info: File `figure_testing_summary.out' has not changed.
+
+(rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 128.
+ ) 
+Here is how much of TeX's memory you used:
+ 8702 strings out of 493042
+ 133229 string characters out of 6134738
+ 216370 words of memory out of 5000000
+ 11864 multiletter control sequences out of 15000+600000
+ 21423 words of font info for 27 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 40i,18n,46p,258b,446s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/local/texlive/2013/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
+exlive/2013/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/
+2013/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb>
+Output written on figure_testing_summary.pdf (58 pages, 17438194 bytes).
+PDF statistics:
+ 693 PDF objects out of 1000 (max. 8388607)
+ 411 compressed objects within 5 object streams
+ 163 named destinations out of 1000 (max. 500000)
+ 546 words of extra memory for PDF output out of 10000 (max. 10000000)
+
