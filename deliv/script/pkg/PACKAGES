@@ -13,6 +13,16 @@ License: GPL-3
 MD5sum: 59f9d7f7c00077ea54d763b78eeb5798
 NeedsCompilation: no
 
+Package: colourpicker
+Version: 0.2
+Depends: R (>= 3.1.0)
+Imports: htmltools, htmlwidgets (>= 0.7), miniUI (>= 0.1.1), shiny (>=
+        0.11.1), shinyjs
+Suggests: knitr (>= 1.7), rmarkdown, rstudioapi (>= 0.5)
+License: MIT + file LICENSE
+MD5sum: dfcd66ae3fff27018ba8f6e68a9ce8d1
+NeedsCompilation: no
+
 Package: DBI
 Version: 0.3.1
 Depends: R (>= 2.15.0), methods
@@ -56,6 +66,13 @@ License: GPL-3 | file LICENSE
 MD5sum: 5c8df984921fa484784ec4b8a4fb6f3c
 NeedsCompilation: no
 
+Package: fork
+Version: 1.2.4
+License: GPL-2
+OS_type: unix
+MD5sum: b51cc81fafc2ea21209d5bfb59141dab
+NeedsCompilation: yes
+
 Package: gdata
 Version: 2.17.0
 Depends: R (>= 2.3.0)
@@ -66,23 +83,24 @@ MD5sum: bcbffd84a796a969b5445e1c86fd6273
 NeedsCompilation: no
 
 Package: ggplot2
-Version: 1.0.1
-Depends: R (>= 2.14), stats, methods
-Imports: plyr (>= 1.7.1), digest, grid, gtable (>= 0.1.1), reshape2,
-        scales (>= 0.2.3), proto, MASS
-Suggests: quantreg, Hmisc, mapproj, maps, hexbin, maptools, multcomp,
-        nlme, testthat, knitr, mgcv
+Version: 2.2.0
+Depends: R (>= 3.1)
+Imports: digest, grid, gtable (>= 0.1.1), MASS, plyr (>= 1.7.1),
+        reshape2, scales (>= 0.4.1), stats, tibble, lazyeval
+Suggests: covr, ggplot2movies, hexbin, Hmisc, lattice, mapproj, maps,
+        maptools, mgcv, multcomp, nlme, testthat (>= 0.11.0), quantreg,
+        knitr, rpart, rmarkdown, svglite
 Enhances: sp
-License: GPL-2
-MD5sum: e287a45fee45b0cc22c8d4c1c0318d97
+License: GPL-2 | file LICENSE
+MD5sum: af42e7ac71e9bf566f03ef0ce7b2d56c
 NeedsCompilation: no
 
 Package: gridExtra
-Version: 0.9
-Depends: R(>= 2.4.0), grid
-Suggests: RGraphics, pixmap, EBImage, ggplot2, lattice
+Version: 2.2.1
+Imports: gtable, grid, grDevices, graphics, utils
+Suggests: ggplot2, lattice, knitr, testthat
 License: GPL (>= 2)
-MD5sum: fd6a6503977c9e22d90334b3a4de0c35
+MD5sum: 7076c2122d387c7ef3add69a1c4fc1b2
 NeedsCompilation: no
 
 Package: gtools
@@ -91,15 +109,6 @@ Depends: R (>= 2.10)
 License: GPL-2
 MD5sum: 45f8800c0336d35046641fbacc56bdbb
 NeedsCompilation: yes
-
-Package: GUI
-Version: 1.0.2
-Depends: R (>= 2.3.0), grid, gridExtra (<= 0.9), ggplot2 (<= 1.0.1),
-        gdata, boot, plyr, stringr, scales, Hmisc, shinydashboard,
-        shinyFiles, DT, dplyr, reshape2, rtf, metrumrg, gtools,
-        animation
-MD5sum: df8f6752b3d97a0df388373eb5db6f60
-NeedsCompilation: no
 
 Package: Hmisc
 Version: 3.17-0
@@ -120,20 +129,20 @@ MD5sum: fec1f417999695a76ada2f65076703d9
 NeedsCompilation: no
 
 Package: htmlwidgets
-Version: 0.5
-Imports: htmltools (>= 0.2.6), jsonlite (>= 0.9.16), yaml
+Version: 0.7
+Imports: htmltools (>= 0.3), jsonlite (>= 0.9.16), yaml
 Suggests: knitr (>= 1.8)
 Enhances: shiny (>= 0.12)
 License: MIT + file LICENSE
-MD5sum: 21a71a36225acc3202390dea611b0a31
+MD5sum: 2f64c9bfcd2876c4c796b4d44a0e9b78
 NeedsCompilation: no
 
 Package: lazyeval
-Version: 0.1.10
+Version: 0.2.0
 Depends: R (>= 3.1.0)
-Suggests: knitr, rmarkdown (>= 0.2.65), microbenchmark, testthat
+Suggests: knitr, rmarkdown (>= 0.2.65), testthat, covr
 License: GPL-3
-MD5sum: a3e40488f509df5a6bfd74c1546a4b4a
+MD5sum: df1daac908dcf02ae7e12f4335b1b13b
 NeedsCompilation: yes
 
 Package: metrumrg
@@ -209,6 +218,17 @@ License: GPL (>= 2)
 MD5sum: b7055a0888b9a0aafe7b684cdbdbca83
 NeedsCompilation: no
 
+Package: scales
+Version: 0.4.1
+Depends: R (>= 2.13)
+Imports: RColorBrewer, dichromat, plyr, munsell (>= 0.2), labeling,
+        methods, Rcpp
+LinkingTo: Rcpp
+Suggests: testthat (>= 0.8), covr, hms
+License: MIT + file LICENSE
+MD5sum: 3fb2218866a7fe4c1f6e66790876f85a
+NeedsCompilation: yes
+
 Package: shinyAce
 Version: 0.2.1
 Depends: R (>= 2.15.0)
@@ -240,13 +260,15 @@ License: GPL (>= 2)
 MD5sum: 98dabc2ee70ac32a12e180dd227c01d3
 NeedsCompilation: no
 
-Package: TFL
-Version: 1.0.2
-Depends: R (>= 2.3.0), grid, gridExtra (<= 0.9), ggplot2 (<= 1.0.1),
-        gdata, boot, plyr, stringr, scales, Hmisc, shinydashboard,
-        shinyFiles, DT, dplyr, reshape2, rtf, metrumrg, gtools,
-        animation
-MD5sum: 831edfc1f36a81b5ce5d9549a1602f81
+Package: shinyjs
+Version: 0.7
+Depends: R (>= 3.1.0)
+Imports: digest (>= 0.6.8), htmltools (>= 0.2.6), miniUI (>= 0.1.1),
+        shiny (>= 0.11.1), stats
+Suggests: knitr (>= 1.7), rmarkdown, rstudioapi (>= 0.5), testthat (>=
+        0.9.1), V8 (>= 0.6)
+License: MIT + file LICENSE
+MD5sum: fdf5b5ebf56c1ce3b8512cefdac67bf8
 NeedsCompilation: no
 
 Package: tibble

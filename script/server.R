@@ -1637,7 +1637,9 @@ shinyServer(function(input, output, session) {
                     if(item=="VPC"){
                       dati <- isolate(vpcDataList[[paste0("VPC",n)]])
                       if(!is.null(isolate(vpcDataList[[paste0("addl","VPC",n)]]))){
-                        dati <- list(vpc=dati, addl=isolate(vpcDataList[[paste0("addl","VPC",n)]]))
+                        if(any(class(isolate(vpcDataList[[paste0("addl","VPC",n)]]))=="data.frame")){
+                          dati <- list(vpc=dati, addl=isolate(vpcDataList[[paste0("addl","VPC",n)]]))
+                        }
                       }else{
                         dati <- list(vpc=dati)
                       }
@@ -1963,10 +1965,11 @@ shinyServer(function(input, output, session) {
                       #Save only the non-default arguments unless the user asks for a verbose script
                       
                       useArgs=argList
-                      if(input$verbose){useArgs=isolate(createArgList(input,item,n,dati,currentWD=currentWD(),complete=T))}
+                      complete=isolate(createArgList(input,item,n,dati,currentWD=currentWD(),complete=T))
+                      if(input$verbose){useArgs=complete}
                       
                       #reduce argList to arguments used in the dataManip
-                      argListManip=useArgs[names(useArgs) %in% names(formals(manipDat))]
+                      argListManip=complete[names(complete) %in% names(formals(manipDat))]
                       
                       #reduce argList to non-default arguments 
                       for(this_name in names(argListManip)){
@@ -2004,11 +2007,13 @@ shinyServer(function(input, output, session) {
                       
                       ordering <- c(tableOrder, figureOrder, listingOrder)
                       if(debug){
-                        message="recordGUI"
-                        input_vals <- reactiveValuesToList(input,all.names=T)
-                        save(message, argList, item, callType, useArgs, input_vals, n,
-                             argListManip, p1List=p1List, ordering,Defaults,
-                             file=file.path(srcDir,"tmp","recordGUI.rda"))
+                        if(item == "ConcvTimeGroup"){
+                          message="recordGUI"
+                          input_vals <- reactiveValuesToList(input,all.names=T)
+                          save(message, argList, item, callType, useArgs, complete, input_vals, n,
+                               argListManip, p1List=p1List, ordering,Defaults,
+                               file=file.path(srcDir,"tmp","recordGUI.rda"))
+                        }
                       }
                       
                       # Record the GUI ----

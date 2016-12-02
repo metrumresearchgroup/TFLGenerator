@@ -50,6 +50,8 @@ update_deliv:
 	cp script/pkg/* deliv/script/pkg/
 	cp script/server.R script/ui.R deliv/script/
 	cp script/shiny-server.conf deliv/script/shiny-server.conf
+	cp -R script/nginx deliv/nginx
+	cp script/nginx_update.sh deliv/nginx_update.sh
 	cp -R deliv tflgenerator 
 	zip -r tflgenerator-$(GUI_VERSION).zip tflgenerator
 	rm -fr tflgenerator
