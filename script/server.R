@@ -97,7 +97,7 @@ shinyServer(function(input, output, session) {
       return(NULL)
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " loading template file\n"))
     source(inFile$datapath, local=T)
-    # For backward compatibility, impute Default values that are new
+    # For backward compatibility, impute DefaultsFirst values that are new
     missingvars <- pool(names(Defaults),names(DefaultsFirst))$y
     for(nm in missingvars) Defaults[[nm]] <- DefaultsFirst[[nm]]
     Defaults <<- Defaults
@@ -869,6 +869,7 @@ shinyServer(function(input, output, session) {
       req(input$runno, isolate(tableFile()))
       return(DT::datatable(isolate(tableFile()),filter="top"))
     })
+    output$contentsSummary_tabledata <- renderPrint({isolate(summarizeContents(tableFile()))})
   })
   observeEvent(input[["updateSourceView"]],{
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_sourcedata called\n"))
@@ -877,6 +878,7 @@ shinyServer(function(input, output, session) {
       req(input$srcData,isolate(sourceFile()))
       return(DT::datatable(isolate(sourceFile()), filter="top"))
     })  
+    output$contentsSummary_sourcedata <- renderPrint({isolate(summarizeContents(sourceFile()))})
   })
   observeEvent(input[["performMerge"]],{
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_analysisdata called\n"))
@@ -884,6 +886,7 @@ shinyServer(function(input, output, session) {
     output$contentsHead_analysisdata <- DT::renderDataTable({
       return(DT::datatable(isolate(dataFile()), filter="top"))
     })  
+    output$contentsSummary_analysisdata <- renderPrint({isolate(summarizeContents(dataFile()))})
   })
   
   
@@ -909,9 +912,9 @@ shinyServer(function(input, output, session) {
     dimnames(fakeData)[[2]] <- sprintf("%s (%s)",str_trim(dimnames(fakeData)[[2]]),classes)
     return(fakeData)
   }
-  output$contentsSummary_tabledata <- renderPrint({isolate(summarizeContents(tableFile()))})
-  output$contentsSummary_sourcedata <- renderPrint({isolate(summarizeContents(sourceFile()))})
-  output$contentsSummary_analysisdata <- renderPrint({isolate(summarizeContents(dataFile()))})
+  # output$contentsSummary_tabledata <- renderPrint({isolate(summarizeContents(tableFile()))})
+  # output$contentsSummary_sourcedata <- renderPrint({isolate(summarizeContents(sourceFile()))})
+  # output$contentsSummary_analysisdata <- renderPrint({isolate(summarizeContents(dataFile()))})
   
   observeEvent(input$generatesubjectExclusions,{
     cat(file=stderr(),paste0("LOG: ", Sys.time(), " contentsHead_subjectExclusions called\n"))
