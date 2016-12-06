@@ -1820,16 +1820,11 @@ shinyServer(function(input, output, session) {
                       
                       
                       if(item=="VPC"){
-                        if(is.null(isolate(vpcDataList[[paste0("VPC",n)]]))){
-                          cat(file=stderr(), "LOG: You need to load the VPC data in the preview section in this version of the TFL generator. \n")
-                        }
                         dati <- isolate(vpcDataList[[paste0("VPC",n)]])
-                        if(debug){
-                          input_vals <- reactiveValuesToList(input)
-                          save(vpcDataList, input_vals, item, n, file=file.path(srcDir,"vpcDebug.rda"))
-                        }
                         if(!is.null(isolate(vpcDataList[[paste0("addl","VPC",n)]]))){
-                          dati <- list(vpc=dati, addl=isolate(vpcDataList[[paste0("addl","VPC",n)]]))
+                          if(any(class(isolate(vpcDataList[[paste0("addl","VPC",n)]]))=="data.frame")){
+                            dati <- list(vpc=dati, addl=isolate(vpcDataList[[paste0("addl","VPC",n)]]))
+                          }
                         }else{
                           dati <- list(vpc=dati)
                         }
