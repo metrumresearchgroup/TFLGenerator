@@ -96,13 +96,23 @@ shinyServer(function(input, output, session) {
     if (is.null(inFile))
       return(NULL)
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " loading template file\n"))
-    source(inFile$datapath, local=T)
+    # session$reload()
+    source(inFile$datapath)
     # For backward compatibility, impute DefaultsFirst values that are new
     missingvars <- pool(names(Defaults),names(DefaultsFirst))$y
     for(nm in missingvars) Defaults[[nm]] <- DefaultsFirst[[nm]]
     Defaults <<- Defaults
     # Now we need to reset all input, force a refresh
-    session$reload()
+    # if(dir.exists("/opt/NMStorage_uslv")) session$reload(); Sys.sleep(3)
+    runjs("
+          function sleep (time) {
+            return new Promise((resolve) => setTimeout(resolve, time));
+          };
+          $('a[data-value=\"tabProjectInfo\"]').tab('show');
+          sleep(2000).then(() => {$('a[data-value=\"Model Info\"]').tab('show');
+    });")
+    # session$reload()
+    
   })
   
   
