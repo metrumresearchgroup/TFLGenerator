@@ -80,7 +80,9 @@ tableOrder =                                    "" ,
 listingOrder =                                  "" ,
 sortBy =                                       TRUE,
 sourceNA =                                       "",
-tableNA =                                        ""
+tableNA =                                        "",
+reloadSource =                                FALSE,
+reloadTable =                                FALSE
 )
 
 save(DefaultsFirst,file=file.path(getwd(),"GUI","data","DefaultsFirst.rda")) # Expects to run from top of repo
