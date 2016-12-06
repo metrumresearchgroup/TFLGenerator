@@ -96,13 +96,22 @@ shinyServer(function(input, output, session) {
     if (is.null(inFile))
       return(NULL)
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " loading template file\n"))
-    source(inFile$datapath, local=T)
-    # For backward compatibility, impute Default values that are new
+    # session$reload()
+    source(inFile$datapath)
+    # For backward compatibility, impute DefaultsFirst values that are new
     missingvars <- pool(names(Defaults),names(DefaultsFirst))$y
     for(nm in missingvars) Defaults[[nm]] <- DefaultsFirst[[nm]]
     Defaults <<- Defaults
     # Now we need to reset all input, force a refresh
-    session$reload()
+    # if(dir.exists("/opt/NMStorage_uslv")) session$reload(); Sys.sleep(3)
+    runjs("
+          function sleep (time) {
+            return new Promise((resolve) => setTimeout(resolve, time));
+          };
+          sleep(500).then(() =>{$('a[data-value=\"tabProjectInfo\"]').tab('show');})
+    ")
+    # session$reload()
+    
   })
   
   
@@ -226,7 +235,7 @@ shinyServer(function(input, output, session) {
         runs=unlist(str_split(input$runno, ","))
         runs=gsub("[[:space:]]*", "", runs)
         
-        if(!exists("originalTableData",envir=.GlobalEnv)){
+        if(!exists("originalTableData",envir=.GlobalEnv) | input$reloadTable){
           dat=matrix()
           for(irun in runs) {
             for(iext in extensions){
@@ -329,7 +338,7 @@ shinyServer(function(input, output, session) {
       if(!file.exists(srcDatFile)){
         return()
       }
-      if(!exists("originalSourceData",envir=.GlobalEnv)){
+      if(!exists("originalSourceData",envir=.GlobalEnv) | input$reloadSource){
         originalSourceData <<- try(as.best(read_csv(srcDatFile)))
         if(any(class(originalSourceData)=="try-error")){
           rm("originalSourceData",envir = .GlobalEnv)
@@ -601,7 +610,7 @@ shinyServer(function(input, output, session) {
     if(debug){
       input_vals <- reactiveValuesToList(input)
       revals_vals <- reactiveValuesToList(revals)
-      if(!exists("subjectExclusions",.GlobalEnv)) subjectExclusions <- NULL
+      if(!exists("subjectExclusions",.GlobalEnv) ) subjectExclusions <- NULL
       if(!exists("observationExclusions",.GlobalEnv)) observationExclusions <- NULL
       try(save(n,item,title,vpcRun,input_vals,subjectExclusions,observationExclusions,revals,file=file.path(srcDir,"tmp","vpcFile.rda")))
     }
@@ -754,7 +763,7 @@ shinyServer(function(input, output, session) {
     
     
     
-    if(exists("subjectExclusions",envir=.GlobalEnv)){
+    if(exists("subjectExclusions",envir=.GlobalEnv) ){
       if(("NMID" %in% names(dat)) & ("NMID" %in% names(subjectExclusions))){
         dat <- filter(dat, NMID %nin% subjectExclusions$NMID)
       }
@@ -869,6 +878,7 @@ shinyServer(function(input, output, session) {
       req(input$runno, isolate(tableFile()))
       return(DT::datatable(isolate(tableFile()),filter="top"))
     })
+    output$contentsSummary_tabledata <- renderPrint({isolate(summarizeContents(tableFile()))})
   })
   observeEvent(input[["updateSourceView"]],{
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_sourcedata called\n"))
@@ -877,6 +887,7 @@ shinyServer(function(input, output, session) {
       req(input$srcData,isolate(sourceFile()))
       return(DT::datatable(isolate(sourceFile()), filter="top"))
     })  
+    output$contentsSummary_sourcedata <- renderPrint({isolate(summarizeContents(sourceFile()))})
   })
   observeEvent(input[["performMerge"]],{
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_analysisdata called\n"))
@@ -884,6 +895,7 @@ shinyServer(function(input, output, session) {
     output$contentsHead_analysisdata <- DT::renderDataTable({
       return(DT::datatable(isolate(dataFile()), filter="top"))
     })  
+    output$contentsSummary_analysisdata <- renderPrint({isolate(summarizeContents(dataFile()))})
   })
   
   
@@ -909,9 +921,9 @@ shinyServer(function(input, output, session) {
     dimnames(fakeData)[[2]] <- sprintf("%s (%s)",str_trim(dimnames(fakeData)[[2]]),classes)
     return(fakeData)
   }
-  output$contentsSummary_tabledata <- renderPrint({isolate(summarizeContents(tableFile()))})
-  output$contentsSummary_sourcedata <- renderPrint({isolate(summarizeContents(sourceFile()))})
-  output$contentsSummary_analysisdata <- renderPrint({isolate(summarizeContents(dataFile()))})
+  # output$contentsSummary_tabledata <- renderPrint({isolate(summarizeContents(tableFile()))})
+  # output$contentsSummary_sourcedata <- renderPrint({isolate(summarizeContents(sourceFile()))})
+  # output$contentsSummary_analysisdata <- renderPrint({isolate(summarizeContents(dataFile()))})
   
   observeEvent(input$generatesubjectExclusions,{
     cat(file=stderr(),paste0("LOG: ", Sys.time(), " contentsHead_subjectExclusions called\n"))
@@ -1036,6 +1048,8 @@ shinyServer(function(input, output, session) {
                  column(width = 6, title="Subsetting",
                         h2(""),
                         actionButton("updateSourceView", "View/refresh data"),
+                        h2(""),
+                        checkboxInput("reloadSource","Force reload from disk",value=Defaults[["reloadSource"]]),
                         # selectizeInput("sourceSubset", "Choose source columns to drop",
                         #                choices= isolate(names(sourceFile())),
                         #                selected=Defaults[["sourceSubset"]],
@@ -1065,6 +1079,8 @@ shinyServer(function(input, output, session) {
                  column(width = 6, title="Subsetting (table)",
                         h2(""),
                         actionButton("updateRunView", "View / refresh data"),
+                        h2(""),
+                        checkboxInput("reloadTable","Force reload from disk",value=Defaults[["reloadTable"]]),
                         # selectizeInput("tableSubset", "Choose run columns to drop",
                         #                choices= isolate(names(tableFile())),
                         #                selected=Defaults[["tableSubset"]],
