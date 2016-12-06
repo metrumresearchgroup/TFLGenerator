@@ -21,20 +21,20 @@ library(shinyjs)
 	  # Application title
       	dashboardHeader(title="Pharmacometrics TFL"),
       	dashboardSidebar(
-      	  h1(),
-      	  actionButton('hardReset','Hard reset'),
+      	  # h1(),
       	  #actionLink('fastForward','Fast Forward'),
       	  sidebarMenu(
       	     
       	      # selectInput(inputId="templateSelection", label="Open Template", choices=c("New Analysis"="Template_New","Template_V8"="Template_V8", "Template_Other"="Template_Other")),
-      	    selectInput(inputId="templateSelection", label="Open Template", choices=c("New Analysis"="Template_New")),
+      	    # selectInput(inputId="templateSelection", label="Open Template", choices=c("New Analysis"="Template_New")),
       	    
       	      fileInput(inputId="templatePath", label="Select Personal Template", multiple=FALSE),
       	      h1(""),
-      	      actionButton("templateGo", "Go"),
-      	      h1(""),
+      	      actionButton('hardReset','Hard reset'),
+      	      # actionButton("templateGo", "Go"),
+      	      # h1(""),
       	      # shinyDirButton(id="dataPath", label='Set working directory', title='Please select a working directory'),
-      	      h1(""),
+      	      # h1(""),
       	      menuItem(text="Pharmacometrics TFL", tabName = "tabIntro", icon=icon("clock")),
          	    menuItem(text="Project info", tabName="tabProjectInfo", icon=icon("sliders")),
       	      menuItem(text="Data input", tabName="tabDataInput", icon=icon("sliders")),
