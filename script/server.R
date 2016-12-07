@@ -1087,7 +1087,7 @@ shinyServer(function(input, output, session) {
                         #                multiple=T),
                         selectizeInput("tableSubset", "Columns to drop", choices=Defaults[["tableSubset"]], selected=Defaults[["tableSubset"]], multiple=T),
                         h2(""),
-                        textInput("tableNA",label="Comma separated list of quoted missingness identifiers",
+                        textInput("tableNA",label="Comma separated list of missingness identifiers",
                                   value=Defaults$tableNA)
                  )
                ),
@@ -2319,17 +2319,20 @@ shinyServer(function(input, output, session) {
     # #because of the reactive nature of 'input' comparisons have to be done one at a time
     if(length(idtest)>0){
       sameAsDefault=sum(sapply(idtest, function(X){all(input[[X]]==Defaults[X])}))/length(idtest)
-    }
-    if(sameAsDefault!=1 & debug){
-      tests <- lapply(idtest, function(X){ 
-        out <- all(input[[X]]==Defaults[X])
-        out[length(out)==0] <- X
-        out
-      })
-      names(tests) <- idtest
-      input_vals <- reactiveValuesToList(input)
-      comparators<-list(Defaults=Defaults[idtest], input=input_vals[idtest])
-      save(tests, comparators,file=file.path(srcDir,"tmp","sameAsDefault.rda"))
+      if(sameAsDefault!=1 & debug){
+        tests <- lapply(idtest, function(X){ 
+          out <- all(input[[X]]==Defaults[X])
+          out[length(out)==0] <- X
+          out
+        })
+        names(tests) <- idtest
+        input_vals <- reactiveValuesToList(input)
+        comparators<-list(Defaults=Defaults[idtest], input=input_vals[idtest])
+        save(tests, comparators,file=file.path(srcDir,"tmp","sameAsDefault.rda"))
+      }
+    }else{
+      cat(file=stderr(), "LOG: No comparisons to be made between Defaults and input!\n")
+      sameAsDefault <- .1
     }
     return(sameAsDefault)
   }
