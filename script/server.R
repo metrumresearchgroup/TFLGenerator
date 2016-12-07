@@ -2016,7 +2016,7 @@ shinyServer(function(input, output, session) {
                       listingOrder <- tryCatch(sapply(input[["listingOrder"]], getObj),
                                                error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","ListingOrderError.rda")) )
                       
-                      ordering <- c(tableOrder, figureOrder, listingOrder)
+                      ordering <- as.character(c(tableOrder, figureOrder, listingOrder))
                       if(debug){
                         if(item == "ConcvTimeGroup"){
                           message="recordGUI"
@@ -2091,7 +2091,7 @@ shinyServer(function(input, output, session) {
                                  error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","tableOrderError.rda")))
           listingOrder <- tryCatch(sapply(input[["listingOrder"]], getObj),
                                    error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","ListingOrderError.rda")) )
-          ordering <- c(tableOrder, figureOrder, listingOrder)
+          ordering <- as.character(c(tableOrder, figureOrder, listingOrder))
           guiGrobs <- tryCatch(guiGrobs[ordering],
                                error=function(e) if(debug) save(e,ordering,file=file.path(srcDir,"tmp","guiGrobsOrderError.rda")))
           
