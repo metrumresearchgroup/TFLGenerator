@@ -1743,8 +1743,9 @@ shinyServer(function(input, output, session) {
                                    "observationExclusionsSummaryTab",
                                    "subjectExclusionsSummaryTab")){
                       if("src" %in% names(p1List)){
+                        if(debug) save(p1List, file=file.path(srcDir,"renderImage.rda"))
                         output[[paste("Plot",item,n,sep="")]] <<-
-                          renderImage(p1List$src,deleteFile=F)
+                          renderImage(p1List,deleteFile=F)
                       }else{
                         output[[paste("Plot",item,n,sep="")]] <<- 
                           renderPrint({ print(head(p1List$preview,n=input[[paste0("previewhead",item,n)]]),row.names=F)})
