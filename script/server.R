@@ -2319,6 +2319,10 @@ shinyServer(function(input, output, session) {
     # #because of the reactive nature of 'input' comparisons have to be done one at a time
     if(length(idtest)>0){
       sameAsDefault=sum(sapply(idtest, function(X){all(input[[X]]==Defaults[X])}))/length(idtest)
+      if(is.na(sameAsDefault)){
+        cat(file=stderr(), "LOG: Missing input value present, likely due to outdated autosave\n")
+        sameAsDefault <- .1
+      }
       if(sameAsDefault!=1 & debug){
         tests <- lapply(idtest, function(X){ 
           out <- all(input[[X]]==Defaults[X])
