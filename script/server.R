@@ -314,7 +314,7 @@ shinyServer(function(input, output, session) {
       save(tabdat,file=file.path(debugDir,"tabdat.rda"))
     }
     revals$nms_tab <- isolate(names(dat))
-    updateSelectizeInput(session,"mergeKey",choices=intersect(revals$nms_tab,revals$nms_source),selected=Defaults[["mergeKey"]],server=T)
+    updateSelectizeInput(session,"mergeKey",choices=intersect(isolate(revals$nms_tab),isolate(revals$nms_source)),selected=Defaults[["mergeKey"]],server=T)
     # End debugging
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " tableFile finished successfully\n"))
     return(dat)
