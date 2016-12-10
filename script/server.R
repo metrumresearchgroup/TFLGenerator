@@ -1533,20 +1533,25 @@ shinyServer(function(input, output, session) {
                     #   return(DT::datatable(isolate(vpcFile()), filter="top"))
                     # })
                     withProgress(message="Loading VPC data", value=0, {
+                      idn <- grep(paste0(item,n),isolate(names(input)),value=T)
+                      idn <- idn[!grepl("addl",idn)]
+                      if(length(idn)>0){
+                        for(IDN in idn){
+                          these <- grep(IDN,names(Defaults),value=T)
+                          if(length(these)>1){
+                            for(thesei in these) Defaults[[thesei]] <<- NULL
+                          } 
+                          Defaults[[IDN]]<<-input[[IDN]]
+                    
+                        }
+                      }
+
                       dat <- isolate(vpcFile(n)) # Populate the vpcDataList
                       output[[paste0("contentsHead_vpcdata",n)]] <<-
                         # renderPrint({summarizeContents(vpcDataList[[vpcRun]])})
                         # DT::renderDataTable({ head(dat, n=input[[paste0("nhead",item,n)]])}, filter="top")
                         renderTable({head(dat, n=input[[paste0("nhead",item,n)]])})
-                      idn <- grep(paste0(item,n),isolate(names(input)),value=T)
-                      idn <- idn[!grepl("addl",idn)]
-                      if(length(idn)>0){
-                        for(IDN in idn){
-                          these <- grep(IDN,names(Defaults))
-                          if(length(these)>1) for(thesei in these) Defaults[[thesei]] <<- NULL
-                          Defaults[[IDN]]<<-input[[IDN]]
-                        }
-                      }
+                      
                       isolate(autosave())
                     })
 
@@ -1554,7 +1559,7 @@ shinyServer(function(input, output, session) {
                       input_vals <- isolate(reactiveValuesToList(input))
                       vpcDataList_vals <- isolate(vpcDataList)
                       # runjs(paste0("console.log('",class(vpcDataList[[nm]]),"')"))
-                      save(input_vals, vpcDataList_vals, file=file.path(srcDir,"tmp","updateVPCview.rda"))
+                      save(input_vals, Defaults, vpcDataList_vals, file=file.path(srcDir,"tmp","updateVPCview.rda"))
                     }
                   }
                 })             
@@ -1571,22 +1576,22 @@ shinyServer(function(input, output, session) {
                   if(sameAsDefault!=1){
                     # isolate(autosave())
                     withProgress(message="Loading additional VPC data", value=0, {
+                      idn=grep(paste0(item,n), isolate(names(input)), value=TRUE)
+                      idn=grep("addl",idn,value=T)
+                      
+                      if(length(idn)>0){
+                        for(IDN in idn){
+                          these <- grep(IDN,names(Defaults),value=T)
+                          if(length(these)>1) for(thesei in these) Defaults[[thesei]] <<- NULL
+                          Defaults[[IDN]]<<-input[[IDN]]
+                        }
+                      }
                       dat <- isolate(vpcAddlFile(n)) # Populate the vpcDataList
                       output[[paste0("contentsHead_addlVpcdata",n)]] <<-
                         # renderPrint({summarizeContents(vpcDataList[[vpcRun]])})
                         # DT::renderDataTable({ head(dat, n=input[[paste0("nhead",item,n)]])}, filter="top")
                         renderTable({head(dat, n=input[[paste0("addlNhead",item,n)]])})
                     })
-                    idn=grep(paste0(item,n), isolate(names(input)), value=TRUE)
-                    idn=grep("addl",idn,value=T)
-                    
-                    if(length(idn)>0){
-                      for(IDN in idn){
-                        these <- grep(IDN,names(Defaults))
-                        if(length(these)>1) for(thesei in these) Defaults[[thesei]] <<- NULL
-                        Defaults[[IDN]]<<-input[[IDN]]
-                      }
-                    }
                     if(debug){
                       input_vals <- isolate(reactiveValuesToList(input))
                       vpcDataList_vals <- isolate(vpcDataList)
