@@ -19,10 +19,11 @@ check: script/pkg/$(GUI_NAME)_$(GUI_VERSION).tar.gz script/pkg/$(TFL_NAME)_$(TFL
 	R CMD check script/pkg/$(GUI_NAME)_$(GUI_VERSION).tar.gz
 	R CMD check script/pkg/$(TFL_NAME)_$(TFL_VERSION).tar.gz
 
-data: GUI/data/DefaultsFirst.rda GUI/data/plotList.rda GUI/data/tabList.rda
+data: GUI/data/DefaultsFirst.rda GUI/data/plotList.rda GUI/data/tabList.rda GUI/data/themeEditorDefaults.rda
 	R CMD BATCH --no-save script/DefaultsFirst.R
 	R CMD BATCH --no-save script/plotList.R
 	R CMD BATCH --no-save script/tabList.R
+	R CMD BATCH --no-save script/themeEditorDefaults.R
 
 build: script/pkg/$(GUI_NAME)_$(GUI_VERSION).tar.gz script/pkg/$(TFL_NAME)_$(TFL_VERSION).tar.gz
 	R CMD build $(GUI_NAME) 
