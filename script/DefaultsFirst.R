@@ -82,7 +82,9 @@ sortBy =                                       TRUE,
 sourceNA =                                       "",
 tableNA =                                        "",
 reloadSource =                                FALSE,
-reloadTable =                                FALSE
+reloadTable =                                 FALSE,
+plotShape=                                'squares',
+plotHeight=                                       6
 )
 
 save(DefaultsFirst,file=file.path(getwd(),"GUI","data","DefaultsFirst.rda")) # Expects to run from top of repo

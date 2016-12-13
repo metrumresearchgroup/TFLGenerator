@@ -1758,7 +1758,9 @@ shinyServer(function(input, output, session) {
                     }else if(item %nin% c("demogTabCont","demogTabCat","NMTab")) {
                       dummyList=vector('list',1)
                       names(dummyList)=paste0(item,n)
-                      pSize<-plotDims(grob = dummyList)
+                      pHeight=input[[paste0("plotHeight", names(dummyList))]]
+                      pShape=input[[paste0("plotShape", names(dummyList))]]
+                      pSize<-plotDims(grob = dummyList,height=pHeight,shape=pShape)
                       jsPrint(paste0('default print,',pSize$height[[1]],",",pSize$width[[1]]))
                       output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
                         print(p1List)
@@ -1912,8 +1914,13 @@ shinyServer(function(input, output, session) {
                              Footnote=ifelse(paste("Footnote",item,n,sep="") %in% isolate(names(input)), input[[paste("Footnote",item,n,sep="")]], ""),
                              Plot=p1,
                              Type=plotList$sidebarType[plotList$type==item],
-                             CSV=p1csv
+                             CSV=p1csv,
+                             pHeight=NULL,
+                             pShape=NULL
                         )
+                      
+                      if(paste("plotHeight",item,n,sep="") %in% isolate(names(input))) p1List$pHeight=input[[paste("plotHeight",item,n,sep="")]]
+                      if(paste("plotShape",item,n,sep="") %in% isolate(names(input))) p1List$pShape=input[[paste("plotShape",item,n,sep="")]]
                       
                       
                       # Make a docx version of the caption and footnote
@@ -1948,8 +1955,11 @@ shinyServer(function(input, output, session) {
                             do.call(pListSave,p1List$Plot[[i]])  
                           })
                         }else{
-                          p1=p1List$Plot
+                          p1=list()
+                          p1$pList=p1List$Plot$pList
                           p1$fname=file.path(Dir,"PNG",paste0(item,n))
+                          p1$height=p1List$pHeight
+                          p1$shape=p1List$pShape
                           do.call(pListSave,p1)
                         }
                       }else if(item%nin%"ConcvTimeMult"){
@@ -2024,13 +2034,13 @@ shinyServer(function(input, output, session) {
                       
                       ordering <- as.character(c(tableOrder, figureOrder, listingOrder))
                       if(debug){
-                        if(item == "ConcvTimeGroup"){
+                        #if(item == "ConcvTimeGroup"){
                           message="recordGUI"
                           input_vals <- reactiveValuesToList(input,all.names=T)
                           save(message, argList, item, callType, useArgs, complete, input_vals, n,
                                argListManip, p1List=p1List, ordering,Defaults,
                                file=file.path(srcDir,"tmp","recordGUI.rda"))
-                        }
+                        #}
                       }
                       
                       # Record the GUI ----
@@ -2075,7 +2085,7 @@ shinyServer(function(input, output, session) {
             input_nms <- isolate(names(input))
             input_vals <- isolate(lapply(input_nms, function(inputi) try(input[[inputi]])))
             names(input_vals) <- input_nms
-            save(message,input_vals,guiGrobs,file=file.path(debugDir,"message.rda"))
+            save(message,input_vals,guiGrobs,file=file.path(debugDir,"messageRTF.rda"))
           }
           ###############			
           #			make a document
