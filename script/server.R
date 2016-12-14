@@ -1952,11 +1952,15 @@ shinyServer(function(input, output, session) {
                         if(item=="ConcvTimeMult"){
                           lapply(1:length(p1List$Plot), function(i){
                             p1List$Plot[[i]]$fname=file.path(Dir,"PNG",paste0(item,n,"-",i))
+                            p1List$Plot[[i]]$height=p1List$pHeight
+                            p1List$Plot[[i]]$shape=p1List$pShape
                             do.call(pListSave,p1List$Plot[[i]])  
                           })
                         }else{
                           p1=list()
                           p1$pList=p1List$Plot$pList
+                          p1$plotCols=p1List$Plot$plotCols
+                          p1$plotRows=p1List$Plot$plotRows
                           p1$fname=file.path(Dir,"PNG",paste0(item,n))
                           p1$height=p1List$pHeight
                           p1$shape=p1List$pShape
