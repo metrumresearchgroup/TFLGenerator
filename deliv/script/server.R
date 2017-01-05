@@ -96,13 +96,22 @@ shinyServer(function(input, output, session) {
     if (is.null(inFile))
       return(NULL)
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " loading template file\n"))
-    source(inFile$datapath, local=T)
-    # For backward compatibility, impute Default values that are new
+    # session$reload()
+    source(inFile$datapath)
+    # For backward compatibility, impute DefaultsFirst values that are new
     missingvars <- pool(names(Defaults),names(DefaultsFirst))$y
     for(nm in missingvars) Defaults[[nm]] <- DefaultsFirst[[nm]]
     Defaults <<- Defaults
     # Now we need to reset all input, force a refresh
-    session$reload()
+    # if(dir.exists("/opt/NMStorage_uslv")) session$reload(); Sys.sleep(3)
+    runjs("
+          function sleep (time) {
+            return new Promise((resolve) => setTimeout(resolve, time));
+          };
+          sleep(500).then(() =>{$('a[data-value=\"tabProjectInfo\"]').tab('show');})
+    ")
+    # session$reload()
+    
   })
   
   
@@ -226,7 +235,7 @@ shinyServer(function(input, output, session) {
         runs=unlist(str_split(input$runno, ","))
         runs=gsub("[[:space:]]*", "", runs)
         
-        if(!exists("originalTableData",envir=.GlobalEnv)){
+        if(!exists("originalTableData",envir=.GlobalEnv) | input$reloadTable){
           dat=matrix()
           for(irun in runs) {
             for(iext in extensions){
@@ -305,7 +314,7 @@ shinyServer(function(input, output, session) {
       save(tabdat,file=file.path(debugDir,"tabdat.rda"))
     }
     revals$nms_tab <- isolate(names(dat))
-    updateSelectizeInput(session,"mergeKey",choices=intersect(revals$nms_tab,revals$nms_source),selected=Defaults[["mergeKey"]],server=T)
+    updateSelectizeInput(session,"mergeKey",choices=intersect(isolate(revals$nms_tab),isolate(revals$nms_source)),selected=Defaults[["mergeKey"]],server=T)
     # End debugging
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " tableFile finished successfully\n"))
     return(dat)
@@ -329,7 +338,7 @@ shinyServer(function(input, output, session) {
       if(!file.exists(srcDatFile)){
         return()
       }
-      if(!exists("originalSourceData",envir=.GlobalEnv)){
+      if(!exists("originalSourceData",envir=.GlobalEnv) | input$reloadSource){
         originalSourceData <<- try(as.best(read_csv(srcDatFile)))
         if(any(class(originalSourceData)=="try-error")){
           rm("originalSourceData",envir = .GlobalEnv)
@@ -601,7 +610,7 @@ shinyServer(function(input, output, session) {
     if(debug){
       input_vals <- reactiveValuesToList(input)
       revals_vals <- reactiveValuesToList(revals)
-      if(!exists("subjectExclusions",.GlobalEnv)) subjectExclusions <- NULL
+      if(!exists("subjectExclusions",.GlobalEnv) ) subjectExclusions <- NULL
       if(!exists("observationExclusions",.GlobalEnv)) observationExclusions <- NULL
       try(save(n,item,title,vpcRun,input_vals,subjectExclusions,observationExclusions,revals,file=file.path(srcDir,"tmp","vpcFile.rda")))
     }
@@ -754,7 +763,7 @@ shinyServer(function(input, output, session) {
     
     
     
-    if(exists("subjectExclusions",envir=.GlobalEnv)){
+    if(exists("subjectExclusions",envir=.GlobalEnv) ){
       if(("NMID" %in% names(dat)) & ("NMID" %in% names(subjectExclusions))){
         dat <- filter(dat, NMID %nin% subjectExclusions$NMID)
       }
@@ -869,6 +878,7 @@ shinyServer(function(input, output, session) {
       req(input$runno, isolate(tableFile()))
       return(DT::datatable(isolate(tableFile()),filter="top"))
     })
+    output$contentsSummary_tabledata <- renderPrint({isolate(summarizeContents(tableFile()))})
   })
   observeEvent(input[["updateSourceView"]],{
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_sourcedata called\n"))
@@ -877,6 +887,7 @@ shinyServer(function(input, output, session) {
       req(input$srcData,isolate(sourceFile()))
       return(DT::datatable(isolate(sourceFile()), filter="top"))
     })  
+    output$contentsSummary_sourcedata <- renderPrint({isolate(summarizeContents(sourceFile()))})
   })
   observeEvent(input[["performMerge"]],{
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " contentsHead_analysisdata called\n"))
@@ -884,6 +895,7 @@ shinyServer(function(input, output, session) {
     output$contentsHead_analysisdata <- DT::renderDataTable({
       return(DT::datatable(isolate(dataFile()), filter="top"))
     })  
+    output$contentsSummary_analysisdata <- renderPrint({isolate(summarizeContents(dataFile()))})
   })
   
   
@@ -909,9 +921,9 @@ shinyServer(function(input, output, session) {
     dimnames(fakeData)[[2]] <- sprintf("%s (%s)",str_trim(dimnames(fakeData)[[2]]),classes)
     return(fakeData)
   }
-  output$contentsSummary_tabledata <- renderPrint({isolate(summarizeContents(tableFile()))})
-  output$contentsSummary_sourcedata <- renderPrint({isolate(summarizeContents(sourceFile()))})
-  output$contentsSummary_analysisdata <- renderPrint({isolate(summarizeContents(dataFile()))})
+  # output$contentsSummary_tabledata <- renderPrint({isolate(summarizeContents(tableFile()))})
+  # output$contentsSummary_sourcedata <- renderPrint({isolate(summarizeContents(sourceFile()))})
+  # output$contentsSummary_analysisdata <- renderPrint({isolate(summarizeContents(dataFile()))})
   
   observeEvent(input$generatesubjectExclusions,{
     cat(file=stderr(),paste0("LOG: ", Sys.time(), " contentsHead_subjectExclusions called\n"))
@@ -1036,6 +1048,8 @@ shinyServer(function(input, output, session) {
                  column(width = 6, title="Subsetting",
                         h2(""),
                         actionButton("updateSourceView", "View/refresh data"),
+                        h2(""),
+                        checkboxInput("reloadSource","Force reload from disk",value=Defaults[["reloadSource"]]),
                         # selectizeInput("sourceSubset", "Choose source columns to drop",
                         #                choices= isolate(names(sourceFile())),
                         #                selected=Defaults[["sourceSubset"]],
@@ -1065,13 +1079,15 @@ shinyServer(function(input, output, session) {
                  column(width = 6, title="Subsetting (table)",
                         h2(""),
                         actionButton("updateRunView", "View / refresh data"),
+                        h2(""),
+                        checkboxInput("reloadTable","Force reload from disk",value=Defaults[["reloadTable"]]),
                         # selectizeInput("tableSubset", "Choose run columns to drop",
                         #                choices= isolate(names(tableFile())),
                         #                selected=Defaults[["tableSubset"]],
                         #                multiple=T),
                         selectizeInput("tableSubset", "Columns to drop", choices=Defaults[["tableSubset"]], selected=Defaults[["tableSubset"]], multiple=T),
                         h2(""),
-                        textInput("tableNA",label="Comma separated list of quoted missingness identifiers",
+                        textInput("tableNA",label="Comma separated list of missingness identifiers",
                                   value=Defaults$tableNA)
                  )
                ),
@@ -1517,20 +1533,25 @@ shinyServer(function(input, output, session) {
                     #   return(DT::datatable(isolate(vpcFile()), filter="top"))
                     # })
                     withProgress(message="Loading VPC data", value=0, {
+                      idn <- grep(paste0(item,n),isolate(names(input)),value=T)
+                      idn <- idn[!grepl("addl",idn)]
+                      if(length(idn)>0){
+                        for(IDN in idn){
+                          these <- grep(IDN,names(Defaults),value=T)
+                          if(length(these)>1){
+                            for(thesei in these) Defaults[[thesei]] <<- NULL
+                          } 
+                          Defaults[[IDN]]<<-input[[IDN]]
+                    
+                        }
+                      }
+
                       dat <- isolate(vpcFile(n)) # Populate the vpcDataList
                       output[[paste0("contentsHead_vpcdata",n)]] <<-
                         # renderPrint({summarizeContents(vpcDataList[[vpcRun]])})
                         # DT::renderDataTable({ head(dat, n=input[[paste0("nhead",item,n)]])}, filter="top")
                         renderTable({head(dat, n=input[[paste0("nhead",item,n)]])})
-                      idn <- grep(paste0(item,n),isolate(names(input)),value=T)
-                      idn <- idn[!grepl("addl",idn)]
-                      if(length(idn)>0){
-                        for(IDN in idn){
-                          these <- grep(IDN,names(Defaults))
-                          if(length(these)>1) for(thesei in these) Defaults[[thesei]] <<- NULL
-                          Defaults[[IDN]]<<-input[[IDN]]
-                        }
-                      }
+                      
                       isolate(autosave())
                     })
 
@@ -1538,7 +1559,7 @@ shinyServer(function(input, output, session) {
                       input_vals <- isolate(reactiveValuesToList(input))
                       vpcDataList_vals <- isolate(vpcDataList)
                       # runjs(paste0("console.log('",class(vpcDataList[[nm]]),"')"))
-                      save(input_vals, vpcDataList_vals, file=file.path(srcDir,"tmp","updateVPCview.rda"))
+                      save(input_vals, Defaults, vpcDataList_vals, file=file.path(srcDir,"tmp","updateVPCview.rda"))
                     }
                   }
                 })             
@@ -1555,22 +1576,22 @@ shinyServer(function(input, output, session) {
                   if(sameAsDefault!=1){
                     # isolate(autosave())
                     withProgress(message="Loading additional VPC data", value=0, {
+                      idn=grep(paste0(item,n), isolate(names(input)), value=TRUE)
+                      idn=grep("addl",idn,value=T)
+                      
+                      if(length(idn)>0){
+                        for(IDN in idn){
+                          these <- grep(IDN,names(Defaults),value=T)
+                          if(length(these)>1) for(thesei in these) Defaults[[thesei]] <<- NULL
+                          Defaults[[IDN]]<<-input[[IDN]]
+                        }
+                      }
                       dat <- isolate(vpcAddlFile(n)) # Populate the vpcDataList
                       output[[paste0("contentsHead_addlVpcdata",n)]] <<-
                         # renderPrint({summarizeContents(vpcDataList[[vpcRun]])})
                         # DT::renderDataTable({ head(dat, n=input[[paste0("nhead",item,n)]])}, filter="top")
                         renderTable({head(dat, n=input[[paste0("addlNhead",item,n)]])})
                     })
-                    idn=grep(paste0(item,n), isolate(names(input)), value=TRUE)
-                    idn=grep("addl",idn,value=T)
-                    
-                    if(length(idn)>0){
-                      for(IDN in idn){
-                        these <- grep(IDN,names(Defaults))
-                        if(length(these)>1) for(thesei in these) Defaults[[thesei]] <<- NULL
-                        Defaults[[IDN]]<<-input[[IDN]]
-                      }
-                    }
                     if(debug){
                       input_vals <- isolate(reactiveValuesToList(input))
                       vpcDataList_vals <- isolate(vpcDataList)
@@ -1727,8 +1748,9 @@ shinyServer(function(input, output, session) {
                                    "observationExclusionsSummaryTab",
                                    "subjectExclusionsSummaryTab")){
                       if("src" %in% names(p1List)){
+                        if(debug) save(p1List, file=file.path(srcDir,"renderImage.rda"))
                         output[[paste("Plot",item,n,sep="")]] <<-
-                          renderImage(p1List$src,deleteFile=F)
+                          renderImage(p1List,deleteFile=F)
                       }else{
                         output[[paste("Plot",item,n,sep="")]] <<- 
                           renderPrint({ print(head(p1List$preview,n=input[[paste0("previewhead",item,n)]]),row.names=F)})
@@ -1736,7 +1758,9 @@ shinyServer(function(input, output, session) {
                     }else if(item %nin% c("demogTabCont","demogTabCat","NMTab")) {
                       dummyList=vector('list',1)
                       names(dummyList)=paste0(item,n)
-                      pSize<-plotDims(grob = dummyList)
+                      pHeight=input[[paste0("plotHeight", names(dummyList))]]
+                      pShape=input[[paste0("plotShape", names(dummyList))]]
+                      pSize<-plotDims(grob = dummyList,height=pHeight,shape=pShape)
                       jsPrint(paste0('default print,',pSize$height[[1]],",",pSize$width[[1]]))
                       output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
                         print(p1List)
@@ -1820,16 +1844,11 @@ shinyServer(function(input, output, session) {
                       
                       
                       if(item=="VPC"){
-                        if(is.null(isolate(vpcDataList[[paste0("VPC",n)]]))){
-                          cat(file=stderr(), "LOG: You need to load the VPC data in the preview section in this version of the TFL generator. \n")
-                        }
                         dati <- isolate(vpcDataList[[paste0("VPC",n)]])
-                        if(debug){
-                          input_vals <- reactiveValuesToList(input)
-                          save(vpcDataList, input_vals, item, n, file=file.path(srcDir,"vpcDebug.rda"))
-                        }
                         if(!is.null(isolate(vpcDataList[[paste0("addl","VPC",n)]]))){
-                          dati <- list(vpc=dati, addl=isolate(vpcDataList[[paste0("addl","VPC",n)]]))
+                          if(any(class(isolate(vpcDataList[[paste0("addl","VPC",n)]]))=="data.frame")){
+                            dati <- list(vpc=dati, addl=isolate(vpcDataList[[paste0("addl","VPC",n)]]))
+                          }
                         }else{
                           dati <- list(vpc=dati)
                         }
@@ -1895,8 +1914,13 @@ shinyServer(function(input, output, session) {
                              Footnote=ifelse(paste("Footnote",item,n,sep="") %in% isolate(names(input)), input[[paste("Footnote",item,n,sep="")]], ""),
                              Plot=p1,
                              Type=plotList$sidebarType[plotList$type==item],
-                             CSV=p1csv
+                             CSV=p1csv,
+                             pHeight=NULL,
+                             pShape=NULL
                         )
+                      
+                      if(paste("plotHeight",item,n,sep="") %in% isolate(names(input))) p1List$pHeight=input[[paste("plotHeight",item,n,sep="")]]
+                      if(paste("plotShape",item,n,sep="") %in% isolate(names(input))) p1List$pShape=input[[paste("plotShape",item,n,sep="")]]
                       
                       
                       # Make a docx version of the caption and footnote
@@ -1928,11 +1952,18 @@ shinyServer(function(input, output, session) {
                         if(item=="ConcvTimeMult"){
                           lapply(1:length(p1List$Plot), function(i){
                             p1List$Plot[[i]]$fname=file.path(Dir,"PNG",paste0(item,n,"-",i))
+                            p1List$Plot[[i]]$height=p1List$pHeight
+                            p1List$Plot[[i]]$shape=p1List$pShape
                             do.call(pListSave,p1List$Plot[[i]])  
                           })
                         }else{
-                          p1=p1List$Plot
+                          p1=list()
+                          p1$pList=p1List$Plot$pList
+                          p1$plotCols=p1List$Plot$plotCols
+                          p1$plotRows=p1List$Plot$plotRows
                           p1$fname=file.path(Dir,"PNG",paste0(item,n))
+                          p1$height=p1List$pHeight
+                          p1$shape=p1List$pShape
                           do.call(pListSave,p1)
                         }
                       }else if(item%nin%"ConcvTimeMult"){
@@ -1965,10 +1996,11 @@ shinyServer(function(input, output, session) {
                       #Save only the non-default arguments unless the user asks for a verbose script
                       
                       useArgs=argList
-                      if(input$verbose){useArgs=isolate(createArgList(input,item,n,dati,currentWD=currentWD(),complete=T))}
+                      complete=isolate(createArgList(input,item,n,dati,currentWD=currentWD(),complete=T))
+                      if(input$verbose){useArgs=complete}
                       
                       #reduce argList to arguments used in the dataManip
-                      argListManip=useArgs[names(useArgs) %in% names(formals(manipDat))]
+                      argListManip=complete[names(complete) %in% names(formals(manipDat))]
                       
                       #reduce argList to non-default arguments 
                       for(this_name in names(argListManip)){
@@ -2004,15 +2036,15 @@ shinyServer(function(input, output, session) {
                       listingOrder <- tryCatch(sapply(input[["listingOrder"]], getObj),
                                                error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","ListingOrderError.rda")) )
                       
-                      ordering <- c(tableOrder, figureOrder, listingOrder)
+                      ordering <- as.character(c(tableOrder, figureOrder, listingOrder))
                       if(debug){
-                        if(item == "paramDist"){
+                        #if(item == "ConcvTimeGroup"){
                           message="recordGUI"
                           input_vals <- reactiveValuesToList(input,all.names=T)
-                          save(message, argList, item, callType, useArgs, input_vals, n,
+                          save(message, argList, item, callType, useArgs, complete, input_vals, n,
                                argListManip, p1List=p1List, ordering,Defaults,
                                file=file.path(srcDir,"tmp","recordGUI.rda"))
-                        }
+                        #}
                       }
                       
                       # Record the GUI ----
@@ -2057,7 +2089,7 @@ shinyServer(function(input, output, session) {
             input_nms <- isolate(names(input))
             input_vals <- isolate(lapply(input_nms, function(inputi) try(input[[inputi]])))
             names(input_vals) <- input_nms
-            save(message,input_vals,guiGrobs,file=file.path(debugDir,"message.rda"))
+            save(message,input_vals,guiGrobs,file=file.path(debugDir,"messageRTF.rda"))
           }
           ###############			
           #			make a document
@@ -2079,7 +2111,7 @@ shinyServer(function(input, output, session) {
                                  error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","tableOrderError.rda")))
           listingOrder <- tryCatch(sapply(input[["listingOrder"]], getObj),
                                    error=function(e) if(debug) save(e,file=file.path(srcDir,"tmp","ListingOrderError.rda")) )
-          ordering <- c(tableOrder, figureOrder, listingOrder)
+          ordering <- as.character(c(tableOrder, figureOrder, listingOrder))
           guiGrobs <- tryCatch(guiGrobs[ordering],
                                error=function(e) if(debug) save(e,ordering,file=file.path(srcDir,"tmp","guiGrobsOrderError.rda")))
           
@@ -2307,17 +2339,24 @@ shinyServer(function(input, output, session) {
     # #because of the reactive nature of 'input' comparisons have to be done one at a time
     if(length(idtest)>0){
       sameAsDefault=sum(sapply(idtest, function(X){all(input[[X]]==Defaults[X])}))/length(idtest)
-    }
-    if(sameAsDefault!=1 & debug){
-      tests <- lapply(idtest, function(X){ 
-        out <- all(input[[X]]==Defaults[X])
-        out[length(out)==0] <- X
-        out
-      })
-      names(tests) <- idtest
-      input_vals <- reactiveValuesToList(input)
-      comparators<-list(Defaults=Defaults[idtest], input=input_vals[idtest])
-      save(tests, comparators,file=file.path(srcDir,"tmp","sameAsDefault.rda"))
+      if(is.na(sameAsDefault)){
+        cat(file=stderr(), "LOG: Missing input value present, likely due to outdated autosave\n")
+        sameAsDefault <- .1
+      }
+      if(sameAsDefault!=1 & debug){
+        tests <- lapply(idtest, function(X){ 
+          out <- all(input[[X]]==Defaults[X])
+          out[length(out)==0] <- X
+          out
+        })
+        names(tests) <- idtest
+        input_vals <- reactiveValuesToList(input)
+        comparators<-list(Defaults=Defaults[idtest], input=input_vals[idtest])
+        save(tests, comparators,file=file.path(srcDir,"tmp","sameAsDefault.rda"))
+      }
+    }else{
+      cat(file=stderr(), "LOG: No comparisons to be made between Defaults and input!\n")
+      sameAsDefault <- .1
     }
     return(sameAsDefault)
   }

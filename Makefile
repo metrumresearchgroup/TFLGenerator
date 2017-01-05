@@ -49,6 +49,7 @@ clean:
 	-rm -fr script/lib/$(TFL_NAME)
 	
 update_deliv:
+	rm deliv/script/pkg/*
 	cp script/pkg/* deliv/script/pkg/
 	cp script/server.R script/ui.R deliv/script/
 	cp script/shiny-server.conf deliv/script/shiny-server.conf

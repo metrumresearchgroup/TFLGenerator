@@ -2,9 +2,13 @@
 Set up instructions for the TFL generator
 
 1) Launch an Envision workflow (recommended to use 8 core)
-1) Place this directory somewhere in /data (e.g., /data/tflgenerator)
-2) As root, run asRootpkgSetup.R (e.g., cd script; sudo R CMD BATCH asRootpkgSetup.R)
+2) Place this directory somewhere in /data (e.g., /data/tflgenerator)
 3) As you, run pkgSetup.R (e.g., cd script; R CMD BATCH pkgSetup.R)
 4) As root, copy shiny-server.conf to /etc/shiny-server/shiny-server.conf (sudo cp shiny-server.conf /etc/shiny-server/shiny-server.conf)
-5) Restart shiny-server (sudo restart shiny-server)
-6) Via Metworx dashboard, check Envision app is running (TFL generator)
+5) Update nginx:
+5a) sudo ./nginx_update.sh
+5b) sudo cp nginx.conf /etc/nginx
+5c) sudo cp metworx /etc/nginx/sites-available
+5d) sudo service nginx restart
+6) Restart shiny-server (sudo restart shiny-server)
+7) Via Metworx dashboard, check Envision app is running (TFL generator)

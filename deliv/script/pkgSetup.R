@@ -3,7 +3,7 @@ rm(list=ls())
 author <- c("danp","polhamus")
 pkgs <- c('metrumrg','shinyFiles','animation','gdata','shinydashboard',
           'DT','rtf','lazyeval','dplyr','DBI','ggplot2','gridExtra',
-          'readr','shinyAce','shinyBS')
+          'readr','shinyAce','shinyBS','TFL','GUI','colourpicker','shinyjs')
 
 # Create the shiny path and touch some files there so the Makefile can run
 if(dir.exists("/data/shiny-server") & file.exists("../Makefile")){
