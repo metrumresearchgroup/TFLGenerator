@@ -38,52 +38,48 @@ if(file.exists(file.path(pkgDir,"PACKAGES"))){
 
 
 ## Only authors can install from CRAN and write_PACKAGES
-fromCRAN <- user %in% author
-if(fromCRAN){
-  newpkgs <- setdiff(pkgs, available)
-  write_PACKAGES(pkgDir)
-  # We want the old version of gridExtra
-  if("gridExtra" %in% newpkgs){
-    download.file("https://cran.r-project.org/src/contrib/Archive/gridExtra/gridExtra_0.9.tar.gz",destfile=file.path(pkgDir,"gridExtra_0.9.tar.gz"))
-    write_PACKAGES(pkgDir)   		  
-  }
-  if("audited" %in% newpkgs){
-    download.file("https://metrumrg-soft.s3.amazonaws.com/audited/audited_1.9.tar.gz",destfile=file.path(pkgDir,"audited_1.9.tar.gz"))
-    write_PACKAGES(pkgDir)
-  }
-  if("fork" %in% newpkgs){
-    download.file("https://metrumrg-soft.s3.amazonaws.com/fork/fork_1.2.4.tar.gz",destfile=file.path(pkgDir,"fork_1.2.4.tar.gz"))
-    write_PACKAGES(pkgDir)
-  }
-  if("review" %in% newpkgs){
-    download.file("https://metrumrg-soft.s3.amazonaws.com/review/review_2.5.tar.gz",destfile=file.path(pkgDir,"review_2.5.tar.gz"))
-    write_PACKAGES(pkgDir)
-  }
-  if("metrumrg" %in% newpkgs){
-    download.file("http://download.r-forge.r-project.org/src/contrib/metrumrg_5.57.tar.gz", destfile="pkg/metrumrg_5.57.tar.gz")
-    write_PACKAGES(pkgDir)
-  }
-  if(length(newpkgs)>0){
-    install.packages(newpkgs,
-                     lib=libDir,
-                     contriburl=c(mycran,
-                                  contrib.url("http://r-forge.r-project.org","source"),
-                                  contrib.url("https://cran.rstudio.com/","source")),
-                     destdir=pkgDir,
-                     type="source",
-                     INSTALL_opts="--no-multiarch")
-    write_PACKAGES(pkgDir)
-  }
-  ## If multiple authors qcing each other, a package could be available but uninstalled.  Install from local.
-  uninstalled <- setdiff(pkgs, installed.packages(libDir))
-  if(length(uninstalled)>0){
-    install.packages(uninstalled,
-                     lib = libDir,
-                     contriburl = mycran,
-                     type = "source",
-                     INSTALL_opts="--no-multiarch")
-  }    
-}
+fromCRAN <- F
+# fromCRAN <- user %in% author
+# if(fromCRAN){
+#   newpkgs <- setdiff(pkgs, available)
+#   write_PACKAGES(pkgDir)
+#   if("audited" %in% newpkgs){
+#     download.file("https://metrumrg-soft.s3.amazonaws.com/audited/audited_1.9.tar.gz",destfile=file.path(pkgDir,"audited_1.9.tar.gz"))
+#     write_PACKAGES(pkgDir)
+#   }
+#   if("fork" %in% newpkgs){
+#     download.file("https://metrumrg-soft.s3.amazonaws.com/fork/fork_1.2.4.tar.gz",destfile=file.path(pkgDir,"fork_1.2.4.tar.gz"))
+#     write_PACKAGES(pkgDir)
+#   }
+#   if("review" %in% newpkgs){
+#     download.file("https://metrumrg-soft.s3.amazonaws.com/review/review_2.5.tar.gz",destfile=file.path(pkgDir,"review_2.5.tar.gz"))
+#     write_PACKAGES(pkgDir)
+#   }
+#   if("metrumrg" %in% newpkgs){
+#     download.file("http://download.r-forge.r-project.org/src/contrib/metrumrg_5.57.tar.gz", destfile="pkg/metrumrg_5.57.tar.gz")
+#     write_PACKAGES(pkgDir)
+#   }
+#   if(length(newpkgs)>0){
+#     install.packages(newpkgs,
+#                      lib=libDir,
+#                      contriburl=c(mycran,
+#                                   contrib.url("http://r-forge.r-project.org","source"),
+#                                   contrib.url("https://cran.rstudio.com/","source")),
+#                      destdir=pkgDir,
+#                      type="source",
+#                      INSTALL_opts="--no-multiarch")
+#     write_PACKAGES(pkgDir)
+#   }
+#   ## If multiple authors qcing each other, a package could be available but uninstalled.  Install from local.
+#   uninstalled <- setdiff(pkgs, installed.packages(libDir))
+#   if(length(uninstalled)>0){
+#     install.packages(uninstalled,
+#                      lib = libDir,
+#                      contriburl = mycran,
+#                      type = "source",
+#                      INSTALL_opts="--no-multiarch")
+#   }    
+# }
 if(!fromCRAN){
   installed <- row.names(installed.packages(libDir))
   newpkgs <- setdiff(pkgs, installed)
