@@ -16,7 +16,7 @@
 \usepackage{verbatim}
 \rhead{\scriptsize \proptitle}
 %\chead{Middle top}
-\setlength{\headheight}{45pt}
+\setlength{\headheight}{46pt}
 \newenvironment{changemargin}[2]{%
 \begin{list}{}{%
 \setlength{\topsep}{0pt}%
@@ -27,15 +27,15 @@
 \setlength{\parsep}{\parskip}%
 }%
 \item[]}{\end{list}}
-%\newcommand{\CR}{43}
-\lhead{\includegraphics[scale=.55]{logonew.pdf}}%\\\smallskip\scriptsize  CR-\CR}
+%\newcommand{\CR}{48}
+\lhead{\includegraphics[scale=.55]{logonew.pdf}\\\smallskip\scriptsize  CR-\CR}
 
 \fancyfoot[C]{Page \thepage\ of \pageref{LastPage}}
 \usepackage[colorlinks=true,linkcolor=black,urlcolor=blue]{hyperref}
 
-\newcommand{\topic}{Figures testing summary}
-\newcommand{\proptitle}{Pharmacometrics TFL Generator v1.0.0 qualification}
-\newcommand{\testinglog}{figures-testing-log-complete.pdf}
+\newcommand{\topic}{Testing summary}
+\newcommand{\proptitle}{Pharmacometrics TFL Generator v1.2.0 qualification}
+\newcommand{\testinglog}{testing-log-complete.pdf}
 
 \newcommand{\propversion}{metworx-2.1}
 \newcommand{\nmqualversion}{8.3.3}
@@ -98,6 +98,14 @@ Dates (YYYY-MM-DD)     &               \\\hline
 
 \newpage
 
+\tableofcontents
+\listoffigures
+
+\newpage
+
+\section*{Summary}
+
+
 \section*{Testing log}
 
 \includepdf[pages=-]{\testinglog}
@@ -106,6 +114,17 @@ Dates (YYYY-MM-DD)     &               \\\hline
 
 
 \section*{Appendix}
+
+\subsection*{Listing of attachments}
+\begin{itemize}
+  \item \verb|510-template.R|: Testing template used in this document
+  \item \verb|testing_2017-01-09_Figures.doc|: Output doc file from app
+  \item \verb|testing_2017-01_09_Figures_rebuild_from_script.doc|: Output doc file
+  from reproducible R script
+  \item \verb|testing_20107-01-09_script.R|: Reproducible R script
+\end{itemize}
+
+\newpage
 
 \subsection*{Screenshots}
 
