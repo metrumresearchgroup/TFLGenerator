@@ -56,6 +56,7 @@ update_deliv:
 	cp -R script/nginx deliv/nginx
 	cp script/nginx_update.sh deliv/nginx_update.sh
 	cp -R deliv tflgenerator 
+	rm -f tflgenerator-$(GUI_VERSION).zip
 	zip -r tflgenerator-$(GUI_VERSION).zip tflgenerator
 	rm -fr tflgenerator
 	
