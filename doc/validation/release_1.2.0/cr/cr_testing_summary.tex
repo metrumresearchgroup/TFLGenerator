@@ -27,13 +27,13 @@
 \setlength{\parsep}{\parskip}%
 }%
 \item[]}{\end{list}}
-%\newcommand{\CR}{48}
+\newcommand{\CR}{48}
 \lhead{\includegraphics[scale=.55]{logonew.pdf}\\\smallskip\scriptsize  CR-\CR}
 
 \fancyfoot[C]{Page \thepage\ of \pageref{LastPage}}
 \usepackage[colorlinks=true,linkcolor=black,urlcolor=blue]{hyperref}
 
-\newcommand{\topic}{Testing summary}
+\newcommand{\topic}{Testing summary: Pharmacometrics TFL v1.2.0}
 \newcommand{\proptitle}{Pharmacometrics TFL Generator v1.2.0 qualification}
 \newcommand{\testinglog}{testing-log-complete.pdf}
 
@@ -105,14 +105,16 @@ Dates (YYYY-MM-DD)     &               \\\hline
 
 \section*{Summary}
 
-Testing was started on January 03, 2017 and concluded on January 08, 2017.  All 
+Testing was initiated on January 09, 2017 and concluded on January 11, 2017.  All 
 tests passed with the only modifications to the testing log being corrections related 
 to using a different dataset for testing than that which has been used historically.  
 See, for example, test 02-13 which uses subsetting on SEX rather than DOSE as only
 one dose exists in the testing dataset.
 
+Supporting documents are listed in the appendix, and serve as evidence for several 
+tasks as outlined in the completed testing log.
 
-
+\newpage
 \section*{Testing log}
 
 \includepdf[pages=-]{\testinglog}
@@ -122,13 +124,13 @@ one dose exists in the testing dataset.
 
 \section*{Appendix}
 
-\subsection*{Listing of attachments}
+\subsection*{Supporting documents}
 \begin{itemize}
-  \item \verb|510-template.R|: Testing template used in this document
+  \item \verb|510-template.R.txt|: Testing template used in this document
   \item \verb|testing_2017-01-09_Figures.doc|: Output doc file from app
   \item \verb|testing_2017-01_09_Figures_rebuild_from_script.doc|: Output doc file
   from reproducible R script
-  \item \verb|testing_20107-01-09_script.R|: Reproducible R script
+  \item \verb|testing_20107-01-09_script.R.txt|: Reproducible R script
 \end{itemize}
 
 \newpage

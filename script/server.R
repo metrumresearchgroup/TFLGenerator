@@ -2058,7 +2058,8 @@ shinyServer(function(input, output, session) {
                                 manipArgs=argListManip,
                                 currentWD=currentWD(),
                                 grob=p1List,
-                                ordering=ordering)
+                                ordering=ordering,
+                                pkgDir=file.path(srcDir,"script","pkg"))
                       # ,
                       # error=function(e){
                       #   cat(file=stderr(), sprintf("Record GUI failed with %s %s\n",item,n))
