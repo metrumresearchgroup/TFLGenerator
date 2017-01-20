@@ -253,7 +253,9 @@ shinyServer(function(input, output, session) {
               foo$Run=irun
               dat=merge(dat, foo, all=TRUE)
               dat=dat[rowSums(is.na(dat)) != ncol(dat),]
-              dat$V1=NULL
+              if("V1"%in%names(dat)){
+                if(all(is.na(dat[,"V1"]))) dat$V1 <- NULL
+              }
             }	
           }
           originalTableData <<- dat
@@ -1970,7 +1972,7 @@ shinyServer(function(input, output, session) {
                         #argList$page=0
                         #p1=do.call(callType,argList)
                         #for(i in 1:length(p1)) pListSave(p1[[i]]$pList,plotCols = 1,plotRows = 1,fname = file.path(Dir,paste0(item,i)))
-                        f <- renderTex(p1,item=item,footnote=p1List$Footnote,tmpDir=file.path(Dir,"PNG"),
+                        f <- renderTex(p1,item=glue(item,n),footnote=p1List$Footnote,tmpDir=file.path(Dir,"PNG"),
                                        margin=c(left=10,top=5,right=50,bottom=5))
                         p1List$Plot <- f['src']
                       }
