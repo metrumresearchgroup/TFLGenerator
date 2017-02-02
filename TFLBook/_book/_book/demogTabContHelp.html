@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Demographics table for continuous variables</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for demogTabCont"><tr><td>demogTabCont</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Demographics table for continuous variables</h2>
+
+<h3>Usage</h3>
+
+<pre>
+demogTabCont(datFile, groupBy = list(c("STUDY", "Study")), idVar = "NMID",
+  conList = list(c("AGE", "Age (years)"), c("HGTB", "Height (cm)"), c("WGTB",
+  "Weight (kg)")), catList = list(c("DIS", "Disease")), sigDig = 3)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>datFile</code></td>
+<td>
+<p>data.frame</p>
+</td></tr>
+<tr valign="top"><td><code>groupBy</code></td>
+<td>
+<p>a list of (multiple) two element vectors; the first element is the column 
+of <code>datFile</code> on which the table is grouped and the second element is the
+&quot;pretty&quot; name for printing</p>
+</td></tr>
+<tr valign="top"><td><code>idVar</code></td>
+<td>
+<p>ID variable in <code>datFile</code></p>
+</td></tr>
+<tr valign="top"><td><code>conList</code></td>
+<td>
+<p>a list of (multiple) two element vectors (like <code>groupBy</code>)
+that denote the list of continuous variables you wish to summarize</p>
+</td></tr>
+<tr valign="top"><td><code>catList</code></td>
+<td>
+<p>a list of a single two element vector giving the variable on which
+to stratify by.  Pass an empty string for no stratification</p>
+</td></tr>
+<tr valign="top"><td><code>sigDig</code></td>
+<td>
+<p>number of significant digits</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>LaTex table
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data("twoCmt")
+demogTabCont(twoCmt)
+</pre>
+
+
+</body></html>

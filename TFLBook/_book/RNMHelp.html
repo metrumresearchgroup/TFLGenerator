@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Create a Nonmem run output table from the XML output</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for RNM"><tr><td>RNM</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Create a Nonmem run output table from the XML output</h2>
+
+<h3>Description</h3>
+
+<p>Table includes parameter estimates, variance
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+RNM(Run, Sig = 3, ConfInt = 0.95, View = TRUE, saveCSV = FALSE, saveFig = FALSE, OffDiagonals = TRUE, project = getwd(), height = NULL, width = NULL, unTransform = FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>Run</code></td>
+<td>
+<p>character vector of run numbers</p>
+</td></tr>
+<tr valign="top"><td><code>Sig</code></td>
+<td>
+<p>numeric significant figures to display in the table</p>
+</td></tr>
+<tr valign="top"><td><code>ConfInt</code></td>
+<td>
+<p>numeric indicating confidence intervals to display in the table (.95 indicates 95%)</p>
+</td></tr>
+<tr valign="top"><td><code>View</code></td>
+<td>
+<p>view the output table in the Rstudio interface (logical)</p>
+</td></tr>
+<tr valign="top"><td><code>saveCSV</code></td>
+<td>
+<p>save the output table as a *.csv file within the parent directory</p>
+</td></tr>
+<tr valign="top"><td><code>saveFig</code></td>
+<td>
+<p>the output table as a *.png within the parent directory</p>
+</td></tr>
+<tr valign="top"><td><code>OffDiagonals</code></td>
+<td>
+<p>include the off diagonal values in the table presentation</p>
+</td></tr>
+<tr valign="top"><td><code>project</code></td>
+<td>
+<p>string indicating home directory of the Nonmem Run defaults to the current working directory</p>
+</td></tr>
+<tr valign="top"><td><code>height</code></td>
+<td>
+<p>numeric in inches, indicating the height of *png output</p>
+</td></tr>
+<tr valign="top"><td><code>width</code></td>
+<td>
+<p>numeric in inches, indicating the width of *png output</p>
+</td></tr>
+<tr valign="top"><td><code>unTransform</code></td>
+<td>
+<p>logical indicating whether to revert transformed parameter estimates. Looks for &quot;LOGD&quot; in the title feild, without this defaults to all thetas</p>
+</td></tr>
+<tr valign="top"><td><code>removeFixed</code></td>
+<td>
+<p>- (logical) TRUE will remove all fixed values (nonzero) from the output table</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>LaTex table
+</p>
+
+
+</body></html>

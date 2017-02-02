@@ -1,0 +1,71 @@
+--- 
+title: "TFL book guide"
+author: "Metrum Research Group"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+output:
+  tufte::tufte_handout: default
+  tufte::tufte_html:
+    toc: yes
+    css: css/toc.css
+  
+documentclass: book
+bibliography: [book.bib, packages.bib]
+biblio-style: apalike
+link-citations: yes
+description: "A tutorial on using the Tables List and Figures (TFL) package"
+---
+```{r setup, echo=FALSE}
+suppressMessages(library(texPreview))
+rt=knitr::opts_knit$get('rmarkdown.pandoc.to')
+fd=NULL 
+
+if(rt%in%c("html", "html5", "s5", "slidy","slideous", "dzslides", "revealjs","md")){
+  fd="_book/texPreview"
+  if(!dir.exists(fd)) dir.create(fd,recursive = T)
+}
+```
+
+# Preface {-}
+
+The TFL package is an R package for creating tables, figures, and listings in a reproducible manner.
+
+To compile this book you need to install **bookdown** from Github:
+
+```{r one, eval=FALSE}
+devtools::install_github("rstudio/bookdown")
+```
+
+Each Rmd file contains a chapter that explains sets of similar funcationalities as specified in the file name.
+
+To compile this to PDF, you need to install XeLaTeX.
+
+```{r two,include=FALSE}
+# automatically create a bib database for R packages
+knitr::write_bib(c(
+  .packages(), 'bookdown', 'knitr', 'rmarkdown'
+), 'packages.bib')
+```
+
+Load the Package
+```{r three,echo=FALSE}
+.libPaths("../script/lib")
+suppressMessages({
+                  library(tools)
+                  library(TFL)
+                  library(texPreview)
+  })
+
+fn.src=function(fn){
+fn.rd=paste0('../TFL/man/',fn,'.Rd')
+fn.hlp=paste0('_book/',fn,'Help.html')
+
+tools::Rd2HTML(Rd = fn.rd,out = fn.hlp)
+writeLines(paste0('<iframe width="100%" height="315" src="',fn.hlp,'" frameborder="0" allowfullscreen></iframe>'))
+}
+```
+
+Load into the global enviornment data used in the tutorial
+```{r four}
+data("twoCmt")
+```

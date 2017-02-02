@@ -1,0 +1,66 @@
+# Tables
+
+## demogTabCat
+
+Demographics table for categorical variables
+
+```{r results='asis',echo=FALSE}
+fn.src('demogTabCat')
+```
+
+```{r results='asis'}
+#Example 1
+demogTabCat.ex1=demogTabCat(twoCmt)
+
+texPreview(obj = demogTabCat.ex1,stem = 'demogTabCatEx1',
+           fileDir = fd,
+           imgFormat = 'png',
+           returnType = rt)
+
+# Example 2
+demogTabCat.ex2=demogTabCat(twoCmt,stratBy = '')
+
+texPreview(obj = demogTabCat.ex2,stem = 'demogTabCatEx2',
+           fileDir = fd,
+           imgFormat = 'png',
+           returnType = rt)
+```
+
+## demogTabCont
+
+Demographics table for categorical variables
+
+```{r results='asis',echo=FALSE}
+fn.src('demogTabCont')
+```
+
+```{r results='asis'}
+demogTabCont.ex1=demogTabCont(twoCmt)
+
+# Example
+texPreview(obj = demogTabCont.ex1,stem = 'demogTabCatEx1',
+           fileDir = fd,
+           imgFormat = 'png',
+           returnType = rt)
+```
+
+## RNM
+
+NONMEM model summary table
+
+```{r results='asis',echo=FALSE}
+fn.src('RNM')
+```
+
+```{r results='asis'}
+projDir=getwd()
+setwd("../TFL/inst/external")
+RNM.ex1=RNM('0069')
+setwd(projDir)
+
+# Example
+texPreview(obj = RNM.ex1,stem = 'RNMEx1',
+           fileDir = fd,
+           imgFormat = 'png',
+           returnType = rt)
+```

@@ -3,7 +3,8 @@
 author <- c('yonis','danp')
 pkgs <- c('metrumrg','shinyFiles','animation','gdata','shinydashboard',
           'DT','rtf','lazyeval','dplyr','DBI','ggplot2','gridExtra',
-          'readr','shinyAce','shinyBS','TFL','GUI','colourpicker')
+          'readr','shinyAce','shinyBS','TFL','colourpicker','bookdown',
+          'tufte','tufterhandout')
 
 user <- Sys.info()["user"]
 parentScriptDir <- getwd()  ## You may need to mod this to be in the top level of scriptDir
@@ -88,5 +89,5 @@ if(!fromCRAN){
   }
 }
 
-
+devtools::install_github('metrumresearchgroup/texPreview',lib=libDir)
 

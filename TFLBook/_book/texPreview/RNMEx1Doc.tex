@@ -1,0 +1,38 @@
+\documentclass[varwidth, border={10 5 50 5}]{standalone}
+\usepackage[usenames,dvispnames,svgnames,table]{xcolor}
+\usepackage{multirow}
+\usepackage{helvet}
+\usepackage{amsmath}
+\usepackage{rotating}
+\usepackage{graphicx}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{setspace}
+\usepackage{caption}
+\captionsetup{labelformat=empty}
+\begin{document}
+\begin{tabular}{l|l|l|l|l}
+  \hline \hline
+ Parameter & Estimate & $\%$RSE & CI (95\%) & Units \\ \hline
+ $\text{ CL}$                           & 0.173            & 14.7\           & (0.123, 0.223)                       & L/day            \\
+ $\text{ V2}$                           & 3.13             & 26.9\           & (1.48, 4.78)                         & L                \\
+ $\text{ Q}$                            & 0.724            & 14.8\           & (0.514, 0.934)                       & L/day            \\
+ $\text{ V3}$                           & 2.23             & 4.27\           & (2.04, 2.42)                         & L                \\
+ $\text{ KA}$                           & 0.329            & 24.1\           & (0.174, 0.484)                       & 1/day            \\
+ $\text{ F}$                            & 0.698            & 22.1\           & (0.396, 1)                           & \%              \\
+ $\text{  CL-BW}$                       & 0.75             & Fixed            & -                                    & -                \\
+ $\text{  V2-BW}$                       & 1                & Fixed            & -                                    & -                \\ \hline
+\multicolumn{5}{l}{Interindividual variability} \\ \hline
+ $\omega_{\text{ CL}}$                 & 26.1             & 7.78\           & (22.1, 30.1)                         & CV \%           \\
+ $\text{Cor}_{\text{ CL}-\text{ V2}}$ & 0.663            & 10.2\           & (0.531, 0.795)                       & r                \\
+ $\omega_{\text{ V2}}$                 & 32.5             & 28.2\           & (14.5, 50.5)                         & CV \%           \\
+ $\omega_{\text{ Q}}$                  & 0                & Fixed            & -                                    & CV \%           \\
+ $\omega_{\text{ V3}}$                 & 0                & Fixed            & -                                    & CV \%           \\
+ $\omega_{\text{ KA}}$                 & 50.8             & 18.9\           & (32, 69.6)                           & CV \%           \\
+ $\omega_{\text{ F}}$                  & 0                & Fixed            & -                                    & CV \%           \\
+ $\omega_{\text{ KA2}}$                & 0                & Fixed            & -                                    & CV \%           \\
+ $\omega_{\text{ KA3}}$                & 0                & Fixed            & -                                    & CV \%           \\ \hline
+\multicolumn{5}{l}{Residual error} \\ \hline
+ $\sigma_{\text{ Additive}}$           & 0                & Fixed            & -                                    & SD               \\
+ $\sigma_{\text{ Proportional}}$       & 14.3             & 17.8\           & (9.3, 19.3)                          & CV \%           \\ \hline
+\end{tabular}
+\end{document}
