@@ -90,4 +90,5 @@ if(!fromCRAN){
 }
 
 devtools::install_github('metrumresearchgroup/texPreview',lib=libDir)
+devtools::install_github('ijlyttle/bsplus',lib=libDir)
 

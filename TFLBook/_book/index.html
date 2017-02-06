@@ -26,7 +26,7 @@
 <meta name="author" content="Metrum Research Group">
 
 
-<meta name="date" content="2017-02-02">
+<meta name="date" content="2017-02-06">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -49,6 +49,10 @@
 
 
 
+<script src="libs/htmlwidgets-0.8/htmlwidgets.js"></script>
+<link href="libs/lory-0.4.6/lory.css" rel="stylesheet" />
+<script src="libs/lory-0.4.6/lory.min.js"></script>
+<script src="libs/loryR-binding-0.1/loryR.js"></script>
 
 
 <style type="text/css">
@@ -106,7 +110,21 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="1.2" data-path="tables.html"><a href="tables.html#demogtabcont"><i class="fa fa-check"></i><b>1.2</b> demogTabCont</a></li>
 <li class="chapter" data-level="1.3" data-path="tables.html"><a href="tables.html#rnm"><i class="fa fa-check"></i><b>1.3</b> RNM</a></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="figures.html"><a href="figures.html"><i class="fa fa-check"></i><b>2</b> Figures</a></li>
+<li class="chapter" data-level="2" data-path="figures.html"><a href="figures.html"><i class="fa fa-check"></i><b>2</b> Figures</a><ul>
+<li class="chapter" data-level="2.1" data-path="figures.html"><a href="figures.html#concvtime"><i class="fa fa-check"></i><b>2.1</b> ConcvTime</a></li>
+<li class="chapter" data-level="2.2" data-path="figures.html"><a href="figures.html#concvtimeind"><i class="fa fa-check"></i><b>2.2</b> ConcvTimeInd</a></li>
+<li class="chapter" data-level="2.3" data-path="figures.html"><a href="figures.html#concvtimemult"><i class="fa fa-check"></i><b>2.3</b> ConcvTimeMult</a></li>
+<li class="chapter" data-level="2.4" data-path="figures.html"><a href="figures.html#concvtimesum"><i class="fa fa-check"></i><b>2.4</b> ConcvTimeSum</a></li>
+<li class="chapter" data-level="2.5" data-path="figures.html"><a href="figures.html#gof"><i class="fa fa-check"></i><b>2.5</b> GOF</a></li>
+<li class="chapter" data-level="2.6" data-path="figures.html"><a href="figures.html#obsvipred"><i class="fa fa-check"></i><b>2.6</b> OBSvIPRED</a></li>
+<li class="chapter" data-level="2.7" data-path="figures.html"><a href="figures.html#qqplot"><i class="fa fa-check"></i><b>2.7</b> QQplot</a></li>
+<li class="chapter" data-level="2.8" data-path="figures.html"><a href="figures.html#barchartmult"><i class="fa fa-check"></i><b>2.8</b> barchartMult</a></li>
+<li class="chapter" data-level="2.9" data-path="figures.html"><a href="figures.html#covcat"><i class="fa fa-check"></i><b>2.9</b> covCat</a></li>
+<li class="chapter" data-level="2.10" data-path="figures.html"><a href="figures.html#covcon"><i class="fa fa-check"></i><b>2.10</b> covCon</a></li>
+<li class="chapter" data-level="2.11" data-path="figures.html"><a href="figures.html#distmult"><i class="fa fa-check"></i><b>2.11</b> distMult</a></li>
+<li class="chapter" data-level="2.12" data-path="figures.html"><a href="figures.html#ggpairs"><i class="fa fa-check"></i><b>2.12</b> ggpairs</a></li>
+<li class="chapter" data-level="2.13" data-path="figures.html"><a href="figures.html#paramdist"><i class="fa fa-check"></i><b>2.13</b> paramDist</a></li>
+</ul></li>
 </ul>
 
       </nav>
@@ -127,7 +145,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="header">
 <h1 class="title">TFL book guide</h1>
 <h4 class="author"><em>Metrum Research Group</em></h4>
-<h4 class="date"><em>2017-02-02</em></h4>
+<h4 class="date"><em>2017-02-06</em></h4>
 </div>
 <div id="preface" class="section level1 unnumbered">
 <h1>Preface</h1>
@@ -136,7 +154,6 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools::<span class="kw">install_github</span>(<span class="st">&quot;rstudio/bookdown&quot;</span>)</code></pre></div>
 <p>Each Rmd file contains a chapter that explains sets of similar funcationalities as specified in the file name.</p>
 <p>To compile this to PDF, you need to install XeLaTeX.</p>
-<p>Load the Package</p>
 <p>Load into the global enviornment data used in the tutorial</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;twoCmt&quot;</span>)</code></pre></div>
 

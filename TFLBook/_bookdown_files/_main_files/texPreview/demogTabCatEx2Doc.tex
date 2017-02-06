@@ -1,0 +1,23 @@
+\documentclass[varwidth, border={10 5 50 5}]{standalone}
+\usepackage[usenames,dvispnames,svgnames,table]{xcolor}
+\usepackage{multirow}
+\usepackage{helvet}
+\usepackage{amsmath}
+\usepackage{rotating}
+\usepackage{graphicx}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{setspace}
+\usepackage{caption}
+\captionsetup{labelformat=empty}
+\begin{document}
+\begin{tabular}{l|ll|lllll}
+ 
+\multicolumn{1}{c}{{\bfseries }}&\multicolumn{2}{c}{{\bfseries Sex}}&\multicolumn{5}{c}{{\bfseries Race}} \\ \hline 
+ {\bfseries Study} & {\bfseries 0} & {\bfseries 1} & {\bfseries 0} & {\bfseries 1} & {\bfseries 2} & {\bfseries 3} & {\bfseries 88} \\ \hline
+ \quad 183         & 6              & 10             & 14             & 0              & 2              & 0              & 0               \\
+ \quad 390         & 32             & 5              & 13             & 2              & 0              & 22             & 0               \\
+ \quad 620         & 44             & 13             & 21             & 5              & 3              & 26             & 2               \\ \hline
+ {\bfseries Total} & 82             & 28             & 48             & 7              & 5              & 48             & 2               \\
+ \quad\%          & (74.5\%)      & (25.5\%)      & (43.6\%)      & (6.36\%)      & (4.55\%)      & (43.6\%)      & (1.82\%)       \\ \hline
+\end{tabular}
+\end{document}

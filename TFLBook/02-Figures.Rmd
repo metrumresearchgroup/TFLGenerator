@@ -1,2 +1,223 @@
 # Figures
- This is the figures chapter
+
+## ConcvTime
+        
+
+```{r results='asis',echo=FALSE}
+fn.src('ConcvTime',hlp.dir)
+```
+        
+
+```{r ConcvTime, echo=FALSE,fig.show='hide',warning=FALSE}
+example(ConcvTime,ask = F)
+        
+
+lapply(list.files(fig.dir,pattern = 'ConcvTime-',full.names = T),
+           function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
+           loryR(images_per_page = 1, options = list(rewind=TRUE))
+```
+
+## ConcvTimeInd
+        
+
+```{r results='asis',echo=FALSE}
+fn.src('ConcvTimeInd',hlp.dir)
+```
+        
+
+```{r ConcvTimeInd, echo=FALSE,fig.show='hide',warning=FALSE}
+example(ConcvTimeInd,ask = F)
+        
+
+lapply(list.files(fig.dir,pattern = 'ConcvTimeInd-',full.names = T),
+           function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
+           loryR(images_per_page = 1, options = list(rewind=TRUE))
+```
+
+## ConcvTimeMult
+        
+
+```{r results='asis',echo=FALSE}
+fn.src('ConcvTimeMult',hlp.dir)
+```
+        
+
+```{r ConcvTimeMult, echo=FALSE,fig.show='hide',warning=FALSE}
+example(ConcvTimeMult,ask = F)
+        
+
+lapply(list.files(fig.dir,pattern = 'ConcvTimeMult-',full.names = T),
+           function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
+           loryR(images_per_page = 1, options = list(rewind=TRUE))
+```
+
+## ConcvTimeSum
+        
+
+```{r results='asis',echo=FALSE}
+fn.src('ConcvTimeSum',hlp.dir)
+```
+        
+
+```{r ConcvTimeSum, echo=FALSE,fig.show='hide',warning=FALSE}
+example(ConcvTimeSum,ask = F)
+        
+
+lapply(list.files(fig.dir,pattern = 'ConcvTimeSum-',full.names = T),
+           function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
+           loryR(images_per_page = 1, options = list(rewind=TRUE))
+```
+
+## GOF
+        
+
+```{r results='asis',echo=FALSE}
+fn.src('GOF',hlp.dir)
+```
+        
+
+```{r GOF, echo=FALSE,fig.show='hide',warning=FALSE}
+example(GOF,ask = F)
+        
+
+lapply(list.files(fig.dir,pattern = 'GOF-',full.names = T),
+           function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
+           loryR(images_per_page = 1, options = list(rewind=TRUE))
+```
+
+## OBSvIPRED
+        
+
+```{r results='asis',echo=FALSE}
+fn.src('OBSvIPRED',hlp.dir)
+```
+        
+
+```{r OBSvIPRED, echo=FALSE,fig.show='hide',warning=FALSE}
+example(OBSvIPRED,ask = F)
+        
+
+lapply(list.files(fig.dir,pattern = 'OBSvIPRED-',full.names = T),
+           function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
+           loryR(images_per_page = 1, options = list(rewind=TRUE))
+```
+
+## QQplot
+        
+
+```{r results='asis',echo=FALSE}
+fn.src('QQplot',hlp.dir)
+```
+        
+
+```{r QQplot, echo=FALSE,fig.show='hide',warning=FALSE}
+example(QQplot,ask = F)
+        
+
+lapply(list.files(fig.dir,pattern = 'QQplot-',full.names = T),
+           function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
+           loryR(images_per_page = 1, options = list(rewind=TRUE))
+```
+
+## barchartMult
+        
+
+```{r results='asis',echo=FALSE}
+fn.src('barchartMult',hlp.dir)
+```
+        
+
+```{r barchartMult, echo=FALSE,fig.show='hide',warning=FALSE}
+example(barchartMult,ask = F)
+        
+
+lapply(list.files(fig.dir,pattern = 'barchartMult-',full.names = T),
+           function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
+           loryR(images_per_page = 1, options = list(rewind=TRUE))
+```
+
+## covCat
+        
+
+```{r results='asis',echo=FALSE}
+fn.src('covCat',hlp.dir)
+```
+        
+
+```{r covCat, echo=FALSE,fig.show='hide',warning=FALSE}
+example(covCat,ask = F)
+        
+
+lapply(list.files(fig.dir,pattern = 'covCat-',full.names = T),
+           function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
+           loryR(images_per_page = 1, options = list(rewind=TRUE))
+```
+
+## covCon
+        
+
+```{r results='asis',echo=FALSE}
+fn.src('covCon',hlp.dir)
+```
+        
+
+```{r covCon, echo=FALSE,fig.show='hide',warning=FALSE}
+example(covCon,ask = F)
+        
+
+lapply(list.files(fig.dir,pattern = 'covCon-',full.names = T),
+           function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
+           loryR(images_per_page = 1, options = list(rewind=TRUE))
+```
+
+## distMult
+        
+
+```{r results='asis',echo=FALSE}
+fn.src('distMult',hlp.dir)
+```
+        
+
+```{r distMult, echo=FALSE,fig.show='hide',warning=FALSE}
+example(distMult,ask = F)
+        
+
+lapply(list.files(fig.dir,pattern = 'distMult-',full.names = T),
+           function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
+           loryR(images_per_page = 1, options = list(rewind=TRUE))
+```
+
+## ggpairs
+        
+
+```{r results='asis',echo=FALSE}
+fn.src('ggpairs',hlp.dir)
+```
+        
+
+```{r ggpairs, echo=FALSE,fig.show='hide',warning=FALSE}
+example(ggpairs,ask = F)
+        
+
+lapply(list.files(fig.dir,pattern = 'ggpairs-',full.names = T),
+           function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
+           loryR(images_per_page = 1, options = list(rewind=TRUE))
+```
+
+## paramDist
+        
+
+```{r results='asis',echo=FALSE}
+fn.src('paramDist',hlp.dir)
+```
+        
+
+```{r paramDist, echo=FALSE,fig.show='hide',warning=FALSE}
+example(paramDist,ask = F)
+        
+
+lapply(list.files(fig.dir,pattern = 'paramDist-',full.names = T),
+           function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
+           loryR(images_per_page = 1, options = list(rewind=TRUE))
+```
+

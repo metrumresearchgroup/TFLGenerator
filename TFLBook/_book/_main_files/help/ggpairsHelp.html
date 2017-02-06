@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Correlation Comparison plot</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for ggpairs"><tr><td>ggpairs</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Correlation Comparison plot</h2>
+
+<h3>Description</h3>
+
+<p>Creates a grid ggplot object with R-squared and p-values indicated in corresponding upper trianges
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+ggpairs(datFile, xCols = grep("ETA", names(datFile), value = TRUE), xLimit = NULL, yLimit = NULL, xForm = waiver(), yForm = waiver(), xScale = "identity", yScale = "identity", facetBy = "", ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>datFile</code></td>
+<td>
+<p>data.frame output of a NM run containing ER-SSAP standard column names and numeric-only columns</p>
+</td></tr>
+<tr valign="top"><td><code>xCols</code></td>
+<td>
+<p>character column names</p>
+</td></tr>
+<tr valign="top"><td><code>xLimit</code></td>
+<td>
+<p>vector input for x-axis limits example: c(0,10) of lower triangle plots</p>
+</td></tr>
+<tr valign="top"><td><code>yLimit</code></td>
+<td>
+<p>vector input for y-axis limits example: c(.1,100000) of lower triangle plots</p>
+</td></tr>
+<tr valign="top"><td><code>xForm</code></td>
+<td>
+<p>function format of the x-axis (options: comma, scientific, percent or waiver() for no formatting) of lower triangle plots</p>
+</td></tr>
+<tr valign="top"><td><code>yForm</code></td>
+<td>
+<p>function format of the y-axis (options: comma, scientific, percent or waiver() for no formatting) of lower triangle plots</p>
+</td></tr>
+<tr valign="top"><td><code>xScale</code></td>
+<td>
+<p>function format for the x-axis (options, &quot;identity&quot;, log10_trans(), log_trans()) of lower triangle plots</p>
+</td></tr>
+<tr valign="top"><td><code>yScale</code></td>
+<td>
+<p>function format for the y-axis (options, &quot;identity&quot;, log10_trans(), log_trans()) of lower triangle plots</p>
+</td></tr>
+<tr valign="top"><td><code>facetBy</code></td>
+<td>
+<p>character column name for optional faceting</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>Lower triangle shows comparison plots of diagonal values with line of best fit, upper triangle shows R squared and p values for these comparisons
+</p>
+
+
+<h3>Value</h3>
+
+<p>returns ggplot object (grob) that must be saved or printed
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data("twoCmt")
+ex1=ggpairs(twoCmt,xCols=c('ETA1','ETA2'))
+ex2=ggpairs(twoCmt,xCols=c('ETA1','ETA2','ETA5'))
+list(ex1,ex2)
+</pre>
+
+
+</body></html>

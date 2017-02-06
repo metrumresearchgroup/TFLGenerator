@@ -1,66 +1,68 @@
 # Tables
 
 ## demogTabCat
-
-Demographics table for categorical variables
+        
 
 ```{r results='asis',echo=FALSE}
-fn.src('demogTabCat')
+fn.src('demogTabCat',hlp.dir)
 ```
+        
 
-```{r results='asis'}
-#Example 1
-demogTabCat.ex1=demogTabCat(twoCmt)
+```{r demogTabCat, echo=FALSE}
+ex.out=example(demogTabCat,echo = F)$value
+if(!is.list(ex.out)) ex.out=list(ex.out)
+for(i in 1:length(ex.out)){
+junk=texPreview(obj = ex.out[[i]],stem = paste0('demogTabCatEx',i),fileDir = fd,imgFormat = 'png')
+}
 
-texPreview(obj = demogTabCat.ex1,stem = 'demogTabCatEx1',
-           fileDir = fd,
-           imgFormat = 'png',
-           returnType = rt)
+        
 
-# Example 2
-demogTabCat.ex2=demogTabCat(twoCmt,stratBy = '')
-
-texPreview(obj = demogTabCat.ex2,stem = 'demogTabCatEx2',
-           fileDir = fd,
-           imgFormat = 'png',
-           returnType = rt)
-```
-
+lapply(list.files(fd,pattern = glob2rx('demogTabCat*.png'),full.names=T),
+             function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
+         loryR(images_per_page = 1, options = list(rewind=TRUE))
+         ```
+         
 ## demogTabCont
-
-Demographics table for categorical variables
+        
 
 ```{r results='asis',echo=FALSE}
-fn.src('demogTabCont')
+fn.src('demogTabCont',hlp.dir)
 ```
+        
 
-```{r results='asis'}
-demogTabCont.ex1=demogTabCont(twoCmt)
+```{r demogTabCont, echo=FALSE}
+ex.out=example(demogTabCont,echo = F)$value
+if(!is.list(ex.out)) ex.out=list(ex.out)
+for(i in 1:length(ex.out)){
+junk=texPreview(obj = ex.out[[i]],stem = paste0('demogTabContEx',i),fileDir = fd,imgFormat = 'png')
+}
 
-# Example
-texPreview(obj = demogTabCont.ex1,stem = 'demogTabCatEx1',
-           fileDir = fd,
-           imgFormat = 'png',
-           returnType = rt)
-```
+        
 
+lapply(list.files(fd,pattern = glob2rx('demogTabCont*.png'),full.names=T),
+             function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
+         loryR(images_per_page = 1, options = list(rewind=TRUE))
+         ```
+         
 ## RNM
-
-NONMEM model summary table
+        
 
 ```{r results='asis',echo=FALSE}
-fn.src('RNM')
+fn.src('RNM',hlp.dir)
 ```
+        
 
-```{r results='asis'}
-projDir=getwd()
-setwd("../TFL/inst/external")
-RNM.ex1=RNM('0069')
-setwd(projDir)
+```{r RNM, echo=FALSE}
+ex.out=example(RNM,echo = F)$value
+if(!is.list(ex.out)) ex.out=list(ex.out)
+for(i in 1:length(ex.out)){
+junk=texPreview(obj = ex.out[[i]],stem = paste0('RNMEx',i),fileDir = fd,imgFormat = 'png')
+}
 
-# Example
-texPreview(obj = RNM.ex1,stem = 'RNMEx1',
-           fileDir = fd,
-           imgFormat = 'png',
-           returnType = rt)
-```
+        
+
+lapply(list.files(fd,pattern = glob2rx('RNM*.png'),full.names=T),
+             function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
+         loryR(images_per_page = 1, options = list(rewind=TRUE))
+         ```
+         

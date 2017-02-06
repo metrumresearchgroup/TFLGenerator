@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Multipanel concentration vs time profiles for individual...</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for ConcvTimeMult"><tr><td>ConcvTimeMult</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Multipanel concentration vs time profiles for individual patients</h2>
+
+<h3>Description</h3>
+
+<p>Longitundinal plot showing individual concentration vs time
+profile, including observed, conditional, and unconditional (on random effects)
+values of concentration
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+ConcvTimeMult(datFile, groupBy = "NMID", xBy = "TAFD", yBy = "DV",
+  ipredVar = "IPRE", predVar = "PRED", doseVar = "DOSE",
+  doseLab = "mg/kg", markBy = "DOSE", preserveMarkByLevels = F,
+  Color = T, xLimit = NULL, yLimit = NULL, xForm = waiver(),
+  yForm = waiver(), xScale = "identity", yScale = "log10",
+  Title = "Individuals", xLab = "Time", yLab = "Concentration",
+  ncol = 3, nrow = 3, ID = NULL, minorTicks = FALSE,
+  minorTickNum = 10, genAll = T, page = 1, themeUpdate = list(),
+  themeTextSize = 14, themePlotTitleSize = 1.2, themeAxisTxtSize = 0.8,
+  themeAxisTxtColour = "black", themeAxisTitleTxtSize = 0.9,
+  themeAxisTitleColour = "black", themePanelBackgroundFill = "white",
+  themePanelGridSize = NULL, themePanelGridColour = "white",
+  themePanelLineType = 1, themePanelTitleSize = 1.2,
+  themePlotTitleColour = "black", ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>datFile</code></td>
+<td>
+<p>A <code>data.frame</code> containing the necessary variables for the
+figure</p>
+</td></tr>
+<tr valign="top"><td><code>groupBy</code></td>
+<td>
+<p>Column name that identifies the subset of <code>datFile</code> to be
+used in each of the panels; typically, this is &quot;NMID&quot; or &quot;ID.</p>
+</td></tr>
+<tr valign="top"><td><code>xBy</code></td>
+<td>
+<p>Name of the variable denoting the x axis (typically time) in 
+<code>datFile</code></p>
+</td></tr>
+<tr valign="top"><td><code>yBy</code></td>
+<td>
+<p>Name of the variable containing the observed concentration values</p>
+</td></tr>
+<tr valign="top"><td><code>ipredVar</code></td>
+<td>
+<p>Individual prediction column</p>
+</td></tr>
+<tr valign="top"><td><code>predVar</code></td>
+<td>
+<p>Population prediction column</p>
+</td></tr>
+<tr valign="top"><td><code>doseVar</code></td>
+<td>
+<p>Column name of <code>datFile</code> in which dosing labels are held.
+If specified, these doses will appear as titles per patient</p>
+</td></tr>
+<tr valign="top"><td><code>doseLab</code></td>
+<td>
+<p>A label to be appended to the value in doseVar</p>
+</td></tr>
+<tr valign="top"><td><code>markBy</code></td>
+<td>
+<p>ignored</p>
+</td></tr>
+<tr valign="top"><td><code>xLimit</code></td>
+<td>
+<p>Two element numeric vector giving the lower and upper limits of 
+<code>xBy</code></p>
+</td></tr>
+<tr valign="top"><td><code>yLimit</code></td>
+<td>
+<p>Two element numeric vector giving the lower and upper limits of
+the concentration axis (y)</p>
+</td></tr>
+<tr valign="top"><td><code>Title</code></td>
+<td>
+<p>String, the title for the plot</p>
+</td></tr>
+<tr valign="top"><td><code>ID</code></td>
+<td>
+<p>Numeric vector, the ID's in <code>datFile[,idVar]</code> you wish to plot</p>
+</td></tr>
+<tr valign="top"><td><code>minorTicks</code></td>
+<td>
+<p>Logical, include minor ticks?</p>
+</td></tr>
+<tr valign="top"><td><code>minorTickNum</code></td>
+<td>
+<p>Integer, number of minor ticks between major ticks</p>
+</td></tr>
+<tr valign="top"><td><code>theme*</code></td>
+<td>
+<p>Various controls for the ggplot2 theme</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>A concentration vs time ggplot2 object of class <code>TFL</code> which
+can be plotted or printed with the corresponding method.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data("twoCmt")
+twoCmt=twoCmt%&gt;%mutate(DOSE=factor(DOSE))
+## Not run: ConcvTimeMult(datFile = twoCmt,ipredVar='IPRED')
+ex1=ConcvTimeMult(datFile = twoCmt,ipredVar='IPRED',genAll=F,page=1)
+ex2=ConcvTimeMult(datFile = twoCmt,ipredVar='IPRED',genAll=F,page=2,nrow =5,ncol=4)
+list(ex1[[1]],ex2[[1]])
+</pre>
+
+
+</body></html>
