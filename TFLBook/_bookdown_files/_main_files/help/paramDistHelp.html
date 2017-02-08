@@ -110,9 +110,8 @@ paramDist(datFile, xBy = "ETA1", binWidth = 0.1, groupBy = NULL, markBy = NULL, 
 
 <pre>
 data("twoCmt")
-ex1=paramDist(twoCmt)
-ex2=paramDist(twoCmt,xCols=c('ETA1','ETA2'),xLab=c(expression(eta[1]),expression(eta[2])))
-list(ex1,ex2)
+paramDist(twoCmt)
+paramDist(twoCmt,xCols=c('ETA1','ETA2'),xLab=c(expression(eta[1]),expression(eta[2])))
 </pre>
 
 

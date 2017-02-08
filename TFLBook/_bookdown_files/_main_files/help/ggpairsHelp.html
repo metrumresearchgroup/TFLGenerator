@@ -78,9 +78,8 @@ ggpairs(datFile, xCols = grep("ETA", names(datFile), value = TRUE), xLimit = NUL
 
 <pre>
 data("twoCmt")
-ex1=ggpairs(twoCmt,xCols=c('ETA1','ETA2'))
-ex2=ggpairs(twoCmt,xCols=c('ETA1','ETA2','ETA5'))
-list(ex1,ex2)
+ggpairs(twoCmt,xCols=c('ETA1','ETA2'))
+ggpairs(twoCmt,xCols=c('ETA1','ETA2','ETA5'))
 </pre>
 
 

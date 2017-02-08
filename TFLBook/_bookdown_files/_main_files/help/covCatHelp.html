@@ -122,9 +122,8 @@ methods.
 
 <pre>
 data("twoCmt")
-ex1=covCat(twoCmt,catList = list('SEX'),conList = 'IPRED',nCols=1)
-ex2=covCat(twoCmt,catList = list(list('SEX','Gender'),list('DOSE')),conList = list(list('IPRED'),list('ETA1',expression(eta[1]))))
-list(ex1,ex2)
+covCat(twoCmt,catList = list('SEX'),conList = 'IPRED',nCols=1)
+covCat(twoCmt,catList = list(list('SEX','Gender'),list('DOSE')),conList = list(list('IPRED'),list('ETA1',expression(eta[1]))))
 </pre>
 
 

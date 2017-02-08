@@ -122,9 +122,8 @@ can be plotted or printed with the corresponding method.
 <pre>
 data("twoCmt")
 twoCmt=twoCmt%&gt;%mutate(DOSE=factor(DOSE))
-ex1=ConcvTimeInd(datFile = twoCmt)
-ex2=ConcvTimeInd(datFile = twoCmt,facetBy = 'SEX')
-list(ex1,ex2)
+ConcvTimeInd(datFile = twoCmt)
+ConcvTimeInd(datFile = twoCmt,facetBy = 'SEX')
 </pre>
 
 

@@ -64,3 +64,24 @@ Load into the global enviornment data used in the tutorial
 ```{r four}
 data("twoCmt")
 ```
+
+# Example Data Description {-}
+Example dataset '0069.csv' contains a NONMEM input datafile merged with output from a population PK analysis. 
+Dosing records have been removed for this example.  The input datafile was derived from a single-dose, parallel group, dose-escalation study with intravenous and subcutaneous routes of administration.  PK samples were collected extensively following dosing in 108 subjects who were healthy or had disease status 1 or 2 (DISF).  Basic patient-specific demographics are included in the dataset such as Age (AGE), Weight (WGTB), Height (HGTB), and Race (RACE).
+
+# Example NONMEM Control Stream Description {-}
+NONMEM output is also included in the dataset including population and individual predicted concentrations (PRED and IPRED), residual and weighted residual values (RES and WRES), normalized predicted distribution errors (NPDE), individual post-hoc estimates of all inter-individual variability estimates (ETA's) as well as individual estimates of all PK parameters.
+
+The population PK model which described the data was a 2-compartment model following oral and intravenous drug administration.  The model included estimates of inter-individual variability for CL and V2 with an estimate of covariance between these parameters. Inter-individual variability was also estimated on KA.  Additive and proportional residual variability were also estimated in the model.
+
+The parameter table rendered in [RNM] provides parameter labels, units, typical value estimates, and estimates of relative standard error (RSE) and confidence intervals (CI) for the typical values, for all parameters included in the final model.  It should be noted that parameter labels must be included in the original run control stream to be retrieved from the xml file used to generate the final table output.  
+
+For example....[add an example of how the label in control stream should be formatted]
+
+RSE and CI are calculated using ... (provide eq'n if using NONMEM output)
+
+```{r results='asis',echo=FALSE}
+cat(ctl2html(file.path(find.package('TFL'),'external/0069/0069.ctl')),file=file.path(hlp.dir,'ExampleCTL.html'),sep='\n')
+writeLines(paste0('<iframe width="100%" height="400" src="',file.path(hlp.dir,'ExampleCTL.html'),'" allowfullscreen></iframe>'))
+```
+

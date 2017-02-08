@@ -124,9 +124,8 @@ can be plotted or printed with the corresponding method.
 data("twoCmt")
 twoCmt=twoCmt%&gt;%mutate(DOSE=factor(DOSE))
 ## Not run: ConcvTimeMult(datFile = twoCmt,ipredVar='IPRED')
-ex1=ConcvTimeMult(datFile = twoCmt,ipredVar='IPRED',genAll=F,page=1)
-ex2=ConcvTimeMult(datFile = twoCmt,ipredVar='IPRED',genAll=F,page=2,nrow =5,ncol=4)
-list(ex1[[1]],ex2[[1]])
+ConcvTimeMult(datFile = twoCmt,ipredVar='IPRED',genAll=F,page=1)
+ConcvTimeMult(datFile = twoCmt,ipredVar='IPRED',genAll=F,page=2,nrow =5,ncol=4)
 </pre>
 
 

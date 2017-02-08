@@ -114,9 +114,8 @@ OBSvIPRED(datFile,  xBy = "IPRE", yBy = "DV", groupBy=NULL, markBy = NULL, xLimi
 
 <pre>
 data("twoCmt")
-ex1=OBSvIPRED(twoCmt%&gt;%filter(DV&gt;0),xBy='IPRED')
-ex2=OBSvIPRED(twoCmt,xBy='IPRED',xScale = 'identity',markBy = 'SEX')
-list(ex1,ex2)
+OBSvIPRED(twoCmt%&gt;%filter(DV&gt;0),xBy='IPRED')
+OBSvIPRED(twoCmt,xBy='IPRED',xScale = 'identity',markBy = 'SEX')
 </pre>
 
 

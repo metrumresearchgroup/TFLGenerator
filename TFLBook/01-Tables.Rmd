@@ -4,7 +4,7 @@
         
 
 ```{r results='asis',echo=FALSE}
-fn.src('demogTabCat',hlp.dir)
+fn.src('demogTabCat','TFL',hlp.dir)
 ```
         
 
@@ -17,6 +17,21 @@ junk=texPreview(obj = ex.out[[i]],stem = paste0('demogTabCatEx',i),fileDir = fd,
 
         
 
+### Name: demogTabCat
+### Title: Demographics table for categorical variables
+### Aliases: demogTabCat
+
+### ** Examples
+
+data("twoCmt")
+ex1=demogTabCat(twoCmt)
+ex2=demogTabCat(twoCmt,stratBy = '')
+list(ex1,ex2)
+
+
+
+        
+
 lapply(list.files(fd,pattern = glob2rx('demogTabCat*.png'),full.names=T),
              function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
          loryR(images_per_page = 1, options = list(rewind=TRUE))
@@ -26,7 +41,7 @@ lapply(list.files(fd,pattern = glob2rx('demogTabCat*.png'),full.names=T),
         
 
 ```{r results='asis',echo=FALSE}
-fn.src('demogTabCont',hlp.dir)
+fn.src('demogTabCont','TFL',hlp.dir)
 ```
         
 
@@ -39,6 +54,19 @@ junk=texPreview(obj = ex.out[[i]],stem = paste0('demogTabContEx',i),fileDir = fd
 
         
 
+### Name: demogTabCont
+### Title: Demographics table for continuous variables
+### Aliases: demogTabCont
+
+### ** Examples
+
+data("twoCmt")
+demogTabCont(twoCmt)
+
+
+
+        
+
 lapply(list.files(fd,pattern = glob2rx('demogTabCont*.png'),full.names=T),
              function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
          loryR(images_per_page = 1, options = list(rewind=TRUE))
@@ -48,7 +76,7 @@ lapply(list.files(fd,pattern = glob2rx('demogTabCont*.png'),full.names=T),
         
 
 ```{r results='asis',echo=FALSE}
-fn.src('RNM',hlp.dir)
+fn.src('RNM','TFL',hlp.dir)
 ```
         
 
@@ -58,6 +86,18 @@ if(!is.list(ex.out)) ex.out=list(ex.out)
 for(i in 1:length(ex.out)){
 junk=texPreview(obj = ex.out[[i]],stem = paste0('RNMEx',i),fileDir = fd,imgFormat = 'png')
 }
+
+        
+
+### Name: RNM
+### Title: Create a Nonmem run output table from the XML output
+### Aliases: RNM
+
+### ** Examples
+
+RNM(Run = '0069',proj='../TFL/inst/external')
+
+
 
         
 

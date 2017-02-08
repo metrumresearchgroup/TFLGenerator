@@ -142,8 +142,8 @@ methods.
 
 <pre>
 data("twoCmt")
-ex1=covCon(twoCmt,conList_x = 'IPRED',conList_y = 'ETA1',nCol=1)
-ex2=covCon(twoCmt,
+covCon(twoCmt,conList_x = 'IPRED',conList_y = 'ETA1',nCol=1)
+covCon(twoCmt,
 conList_x = list(
 list('IPRED','Individual Prediction'),
 list('IRES','Individual Residual')
@@ -152,7 +152,6 @@ conList_y = list(
 list('ETA1',expression(eta[1]))
 )
 )
-list(ex1,ex2)
 
 </pre>
 
