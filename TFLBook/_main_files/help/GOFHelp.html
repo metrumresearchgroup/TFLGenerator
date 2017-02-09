@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Goodness of fit plots</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for GOF"><tr><td>GOF</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Goodness of fit plots</h2>
+
+<h3>Description</h3>
+
+<p>NONMEM goodness of fit plots for a model
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+GOF(datFile, markBy = NULL, markByType = "Discrete", smooth = T,
+  preserveMarkByLevels = F, timeBy = "TAFD", timeLimit = NULL,
+  timeScale = "identity", timeLab = "Time (weeks)", timeFmt = "comma",
+  concBy = "DV", concLimit = NULL, concScale = "log10",
+  concLab = "Observed Serum Concentration (ug/mL)", concFmt = "comma",
+  predBy = "PRED", predLimit = NULL, predScale = "log10",
+  predLab = "Population Prediction (ug/mL)", predFmt = "comma",
+  ipredBy = "IPRED", ipredLimit = NULL, ipredScale = "log10",
+  ipredLab = "Individual Prediction (ug/mL)", ipredFmt = "comma",
+  cwresBy = "CWRES", cwresLimit = NULL, cwresScale = "identity",
+  cwresLab = "Conditional Weighted Residuals", cwresFmt = "comma",
+  npdeBy = "NPDE", npdeLimit = NULL, npdeScale = "identity",
+  npdeLab = "NPDE", npdeFmt = "comma", Title = "Goodness of Fit Plots",
+  themeUpdate = list(), themeTextSize = 14, themePlotTitleSize = 1.2,
+  themeAxisTxtSize = 0.5, themeAxisTxtColour = "black",
+  themeAxisTitleTxtSize = 0.5, themeAxisTitleColour = "black",
+  themePanelBackgroundFill = "white", themePanelGridSize = NULL,
+  themePanelGridColour = "white", themePanelLineType = 1,
+  themePanelTitleSize = 1.2, themePlotTitleColour = "black", ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>datFile</code></td>
+<td>
+<p>data.frame</p>
+</td></tr>
+<tr valign="top"><td><code>markBy</code></td>
+<td>
+<p>character; column name on which to mark by different colors</p>
+</td></tr>
+<tr valign="top"><td><code>markByType</code></td>
+<td>
+<p>&quot;Discrete&quot; or &quot;Continuous&quot; for the markby scale</p>
+</td></tr>
+<tr valign="top"><td><code>smooth</code></td>
+<td>
+<p>logical; include a loess?</p>
+</td></tr>
+<tr valign="top"><td><code>preserveMarkByLevels</code></td>
+<td>
+<p>logical; not used outside of the GUI</p>
+</td></tr>
+<tr valign="top"><td><code>timeBy</code></td>
+<td>
+<p>character; column name for the time variable</p>
+</td></tr>
+<tr valign="top"><td><code>timeLimit</code></td>
+<td>
+<p>limits for time, of the form &quot;t1,t2&quot; or &quot;t1-t2&quot;</p>
+</td></tr>
+<tr valign="top"><td><code>timeScale</code></td>
+<td>
+<p>&quot;identity&quot;, &quot;log10&quot;, or &quot;log&quot;</p>
+</td></tr>
+<tr valign="top"><td><code>timeLab</code></td>
+<td>
+<p>label for the time axis</p>
+</td></tr>
+<tr valign="top"><td><code>timeFmt</code></td>
+<td>
+<p>format for time, one of &quot;comma&quot;, &quot;plain&quot;, &quot;scientific&quot;</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>Only arguments for time are described here, but the same definitions
+apply to each of pred (population prediction), ipred (individual prediction),
+cwres (residuals), npde (NPDE values)
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data("twoCmt")
+GOF(twoCmt,cwresBy = 'IRES')
+</pre>
+
+
+</body></html>
