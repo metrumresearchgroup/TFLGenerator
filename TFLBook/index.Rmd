@@ -69,6 +69,33 @@ data("twoCmt")
 Example dataset '0069.csv' contains a NONMEM input datafile merged with output from a population PK analysis. 
 Dosing records have been removed for this example.  The input datafile was derived from a single-dose, parallel group, dose-escalation study with intravenous and subcutaneous routes of administration.  PK samples were collected extensively following dosing in 108 subjects who were healthy or had disease status 1 or 2 (DISF).  Basic patient-specific demographics are included in the dataset such as Age (AGE), Weight (WGTB), Height (HGTB), and Race (RACE).
 
+Data creation script from raw tab file
+```{r}
+library(dplyr)
+tab=read.table(file.path(find.package('TFL'),'external/0069/0069.tab'),
+               header=TRUE, skip=1, stringsAsFactors=F, fill=TRUE)
+tab <- subset(tab, select=c(ID:HGTB,MDV))
+tab <- group_by(tab, ID,TIME,STUD,EVID)
+tab <- mutate(tab, WGT=WGTB+.1*TIME+rnorm(length(WGTB)))
+tab$WGT[ tab$STUD==183 ] <- NA
+```
+
+```{r echo=FALSE}
+DT::datatable(tab,
+              extensions = c('Scroller','FixedColumns'), 
+              options = list(
+                              deferRender = TRUE,
+                              pageLength=nrow(tab),
+                              scrollY = 400,
+                              scroller = TRUE,
+                              dom = 't',
+                              scrollX = TRUE,
+                              fixedColumns = TRUE
+                            )
+              )
+```
+
+
 # Example NONMEM Control Stream Description {-}
 NONMEM output is also included in the dataset including population and individual predicted concentrations (PRED and IPRED), residual and weighted residual values (RES and WRES), normalized predicted distribution errors (NPDE), individual post-hoc estimates of all inter-individual variability estimates (ETA's) as well as individual estimates of all PK parameters.
 
@@ -76,10 +103,34 @@ The population PK model which described the data was a 2-compartment model follo
 
 The parameter table rendered in [RNM] provides parameter labels, units, typical value estimates, and estimates of relative standard error (RSE) and confidence intervals (CI) for the typical values, for all parameters included in the final model.  It should be noted that parameter labels must be included in the original run control stream to be retrieved from the xml file used to generate the final table output.  
 
-For example....[add an example of how the label in control stream should be formatted]
+Control stream formating rules for variance components:
+
+  - [P] yields CV
+  - [A] yields sd
+  - [F] yields r as appropriate
+
+Example: 
+
+```
+$THETA 
+  (.001,.08,2) ; [L/day] CL
+  (7,18,40) ; [L] V
+
+$OMEGA BLOCK(2) 
+  .6 ;[P] CL 
+  .3 ;[F] CL-V
+  .3 ;[A] V
+```
+
+Will give:
+
+  - titles of “CL” and “V” with units of “L/day” and “L” for THETA
+  - For variance components, the titles are “CL”, “CL-V”, and “V”.  CL will report the CV, the off-diagonal will report as correlation, and the IIV for F will be reported as a standard deviation
+  - Similar rules apply to residual error
 
 RSE and CI are calculated using ... (provide eq'n if using NONMEM output)
 
+**Full Control Stream**
 ```{r results='asis',echo=FALSE}
 cat(ctl2html(file.path(find.package('TFL'),'external/0069/0069.ctl')),file=file.path(hlp.dir,'ExampleCTL.html'),sep='\n')
 writeLines(paste0('<iframe width="100%" height="400" src="',file.path(hlp.dir,'ExampleCTL.html'),'" allowfullscreen></iframe>'))

@@ -26,7 +26,7 @@
 <meta name="author" content="Metrum Research Group">
 
 
-<meta name="date" content="2017-02-09">
+<meta name="date" content="2017-02-10">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -50,6 +50,14 @@
 
 
 <script src="libs/htmlwidgets-0.8/htmlwidgets.js"></script>
+<script src="libs/datatables-binding-0.1/datatables.js"></script>
+<script src="libs/datatables-1.10.7/jquery.dataTables.min.js"></script>
+<link href="libs/datatables-default-1.10.7/dataTables.extra.css" rel="stylesheet" />
+<link href="libs/datatables-default-1.10.7/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/datatables-scroller-1.10.7/dataTables.scroller.min.css" rel="stylesheet" />
+<script src="libs/datatables-scroller-1.10.7/dataTables.scroller.min.js"></script>
+<link href="libs/datatables-fixedColumns-1.10.7/dataTables.fixedColumns.min.css" rel="stylesheet" />
+<script src="libs/datatables-fixedColumns-1.10.7/dataTables.fixedColumns.min.js"></script>
 <link href="libs/lory-0.4.6/lory.css" rel="stylesheet" />
 <script src="libs/lory-0.4.6/lory.min.js"></script>
 <script src="libs/loryR-binding-0.1/loryR.js"></script>
@@ -149,10 +157,29 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>NONMEM output is also included in the dataset including population and individual predicted concentrations (PRED and IPRED), residual and weighted residual values (RES and WRES), normalized predicted distribution errors (NPDE), individual post-hoc estimates of all inter-individual variability estimates (ETA’s) as well as individual estimates of all PK parameters.</p>
 <p>The population PK model which described the data was a 2-compartment model following oral and intravenous drug administration. The model included estimates of inter-individual variability for CL and V2 with an estimate of covariance between these parameters. Inter-individual variability was also estimated on KA. Additive and proportional residual variability were also estimated in the model.</p>
 <p>The parameter table rendered in <a href="tables.html#rnm">RNM</a> provides parameter labels, units, typical value estimates, and estimates of relative standard error (RSE) and confidence intervals (CI) for the typical values, for all parameters included in the final model. It should be noted that parameter labels must be included in the original run control stream to be retrieved from the xml file used to generate the final table output.</p>
-<p>For example….[add an example of how the label in control stream should be formatted]</p>
+<p>Control stream formating rules for variance components:</p>
+<ul>
+<li>[P] yields CV</li>
+<li>[A] yields sd</li>
+<li>[F] yields r as appropriate</li>
+</ul>
+<p>Example:</p>
+<pre><code>$THETA 
+  (.001,.08,2) ; [L/day] CL
+  (7,18,40) ; [L] V
+
+$OMEGA BLOCK(2) 
+  .6 ;[P] CL 
+  .3 ;[F] CL-V
+  .3 ;[A] V</code></pre>
+<p>Will give:</p>
+<ul>
+<li>titles of “CL” and “V” with units of “L/day” and “L” for THETA</li>
+<li>For variance components, the titles are “CL”, “CL-V”, and “V”. CL will report the CV, the off-diagonal will report as correlation, and the IIV for F will be reported as a standard deviation</li>
+<li>Similar rules apply to residual error</li>
+</ul>
 <p>RSE and CI are calculated using … (provide eq’n if using NONMEM output)</p>
-<iframe width="100%" height="400" src="_main_files/help/ExampleCTL.html" allowfullscreen>
-</iframe>
+<p><strong>Full Control Stream</strong> <iframe width="100%" height="400" src="_main_files/help/ExampleCTL.html" allowfullscreen></iframe></p>
 
 </div>
             </section>

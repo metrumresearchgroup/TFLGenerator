@@ -57,6 +57,7 @@ fn.src=function(fn,pkg,hlp.dir){
   fn.hlp=file.path(hlp.dir,paste0(fn,'Help.html'))
   
   tools::Rd2HTML(Rd = utils:::.getHelpFile(fn.rd),out = fn.hlp)
+  #fn.hlp=paste0(capture.output({tools::Rd2HTML(Rd = utils:::.getHelpFile(fn.rd))}),collapse='\n')
   writeLines(paste0('<iframe width="100%" height="400" src="',fn.hlp,'" allowfullscreen></iframe>'))
 }
 
