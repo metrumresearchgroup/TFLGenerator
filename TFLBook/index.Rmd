@@ -1,0 +1,87 @@
+--- 
+title: "TFL book guide"
+author: "Metrum Research Group"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+output: bookdown::gitbook
+  
+documentclass: book
+bibliography: [book.bib, packages.bib]
+biblio-style: apalike
+link-citations: yes
+description: "A tutorial on using the Tables List and Figures (TFL) package"
+---
+```{r setup, echo=FALSE}
+.libPaths("../script/lib")
+suppressMessages({
+                  library(tools)
+                  library(TFL)
+                  library(texPreview)
+                  library(loryR)
+  })
+
+source('utils.R')
+source('buildChapters.R')
+
+rt=knitr::opts_knit$get('rmarkdown.pandoc.to')
+fd=NULL 
+
+if(rt%in%c("html", "html5", "s5", "slidy","slideous", "dzslides", "revealjs","md")){
+  fd="_main_files/texPreview"
+  if(!dir.exists(fd)) dir.create(fd,recursive = T)
+  
+  hlp.dir="_main_files/help"
+  if(!dir.exists(hlp.dir)) dir.create(hlp.dir,recursive = T)
+  
+  fig.dir='_main_files/figure-html'
+  if(!dir.exists(fig.dir)) dir.create(fig.dir,recursive = T)
+}
+```
+
+# Preface {-}
+
+The TFL package is an R package for creating tables, figures, and listings in a reproducible manner.
+
+To compile this book you need to install **bookdown** from Github:
+
+```{r one, eval=FALSE}
+devtools::install_github("rstudio/bookdown")
+```
+
+Each Rmd file contains a chapter that explains sets of similar funcationalities as specified in the file name.
+
+To compile this to PDF, you need to install XeLaTeX.
+
+```{r two,include=FALSE}
+# automatically create a bib database for R packages
+knitr::write_bib(c(
+  .packages(), 'bookdown', 'knitr', 'rmarkdown'
+), 'packages.bib')
+```
+
+
+Load into the global enviornment data used in the tutorial
+```{r four}
+data("twoCmt")
+```
+
+# Example Data Description {-}
+Example dataset '0069.csv' contains a NONMEM input datafile merged with output from a population PK analysis. 
+Dosing records have been removed for this example.  The input datafile was derived from a single-dose, parallel group, dose-escalation study with intravenous and subcutaneous routes of administration.  PK samples were collected extensively following dosing in 108 subjects who were healthy or had disease status 1 or 2 (DISF).  Basic patient-specific demographics are included in the dataset such as Age (AGE), Weight (WGTB), Height (HGTB), and Race (RACE).
+
+# Example NONMEM Control Stream Description {-}
+NONMEM output is also included in the dataset including population and individual predicted concentrations (PRED and IPRED), residual and weighted residual values (RES and WRES), normalized predicted distribution errors (NPDE), individual post-hoc estimates of all inter-individual variability estimates (ETA's) as well as individual estimates of all PK parameters.
+
+The population PK model which described the data was a 2-compartment model following oral and intravenous drug administration.  The model included estimates of inter-individual variability for CL and V2 with an estimate of covariance between these parameters. Inter-individual variability was also estimated on KA.  Additive and proportional residual variability were also estimated in the model.
+
+The parameter table rendered in [RNM] provides parameter labels, units, typical value estimates, and estimates of relative standard error (RSE) and confidence intervals (CI) for the typical values, for all parameters included in the final model.  It should be noted that parameter labels must be included in the original run control stream to be retrieved from the xml file used to generate the final table output.  
+
+For example....[add an example of how the label in control stream should be formatted]
+
+RSE and CI are calculated using ... (provide eq'n if using NONMEM output)
+
+```{r results='asis',echo=FALSE}
+cat(ctl2html(file.path(find.package('TFL'),'external/0069/0069.ctl')),file=file.path(hlp.dir,'ExampleCTL.html'),sep='\n')
+writeLines(paste0('<iframe width="100%" height="400" src="',file.path(hlp.dir,'ExampleCTL.html'),'" allowfullscreen></iframe>'))
+```
+

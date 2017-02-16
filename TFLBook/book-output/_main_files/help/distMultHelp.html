@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Multipanel distribution</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for distMult"><tr><td>distMult</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Multipanel distribution</h2>
+
+<h3>Usage</h3>
+
+<pre>
+distMult(datFile, idVar = "NMID", conList = list(c("WGTB", "Weight (kg)"),
+  c("AGE", "Age (years)"), c("CL", "Creatinine Clearance (mL/min)")),
+  notches = T, order = c("Density", "QQ", "Boxplot"),
+  themeUpdate = list(), themeTextSize = 14, themePlotTitleSize = 1.2,
+  themeAxisTxtSize = 0.8, themeAxisTxtColour = "black",
+  themeAxisTitleTxtSize = 0.9, themeAxisTitleColour = "black",
+  themePanelBackgroundFill = "white", themePanelGridSize = NULL,
+  themePanelGridColour = "white", themePanelLineType = 1,
+  themePanelTitleSize = 1.2, themePlotTitleColour = "black")
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>datFile</code></td>
+<td>
+<p>data.frame</p>
+</td></tr>
+<tr valign="top"><td><code>idVar</code></td>
+<td>
+<p>ID variable in <code>datFile</code></p>
+</td></tr>
+<tr valign="top"><td><code>conList</code></td>
+<td>
+<p>list of two element vectors giving the continuous variables in
+<code>datFile</code> you wish to summarize, and the &quot;pretty&quot; names of those variables
+for printing</p>
+</td></tr>
+<tr valign="top"><td><code>notches</code></td>
+<td>
+<p>Notched boxplots?</p>
+</td></tr>
+<tr valign="top"><td><code>order</code></td>
+<td>
+<p>Some permutation of &quot;Density&quot;, &quot;QQ&quot;, and &quot;Boxplot&quot;</p>
+</td></tr>
+<tr valign="top"><td><code>theme*</code></td>
+<td>
+<p>various parameters for the plot theme</p>
+</td></tr>
+</table>
+
+
+<h3>Examples</h3>
+
+<pre>
+data("twoCmt")
+distMult(twoCmt)
+distMult(twoCmt,order = c("Boxplot","Density","QQ"))
+</pre>
+
+
+</body></html>

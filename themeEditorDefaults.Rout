@@ -1,0 +1,44 @@
+
+R version 3.3.2 (2016-10-31) -- "Sincere Pumpkin Patch"
+Copyright (C) 2016 The R Foundation for Statistical Computing
+Platform: x86_64-apple-darwin13.4.0 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[Previously saved workspace restored]
+
+> load(file.path(getwd(),"TFL","data","cleanTheme.rda"))
+> 
+> themeEditorDefaults=list(
++   themeTextSize=cleanTheme$text$size[[1]],
++   themePlotTitleSize=cleanTheme$plot.title$size[[1]],
++   themeAxisTxtSize=cleanTheme$axis.text$size[[1]],
++   themeAxisTxtColour='black',
++   themeAxisTitleTxtSize=cleanTheme$axis.title$size[[1]],
++   themeAxisTitleColour='black',
++   themePanelBackgroundFill=cleanTheme$panel.background$fill,
++   themePanelGridSize=NULL,
++   themePanelGridColour='white',
++   themePanelLineType=1,
++   themePanelTitleSize=NULL,
++   themePlotTitleColour='black',
++   themePlotLegendPosition="right"
++ )
+> 
+> save(themeEditorDefaults,file=file.path(getwd(),"GUI","data","themeEditorDefaults.rda")) # Expects to run from top of repo
+> 
+> proc.time()
+   user  system elapsed 
+  0.392   0.038   0.417 

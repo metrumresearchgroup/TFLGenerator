@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Boxplots</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for covCat"><tr><td>covCat</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Boxplots</h2>
+
+<h3>Description</h3>
+
+<p>Boxplot comparing (multiple) categorical variables to (multiple) 
+continuous variables
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+covCat(datFile, catList, conList, nCols = 2, idVar = "NMID",
+  yLimit = NULL, yForm = waiver(), yScale = "identity", facetBy = "",
+  notches = TRUE, minorTicks = FALSE, minorTickNum = 10,
+  themeUpdate = list(), themeTextSize = 14, themePlotTitleSize = 1.2,
+  themeAxisTxtSize = 0.8, themeAxisTxtColour = "black",
+  themeAxisTitleTxtSize = 0.9, themeAxisTitleColour = "black",
+  themePanelBackgroundFill = "white", themePanelGridSize = NULL,
+  themePanelGridColour = "white", themePanelLineType = 1,
+  themePanelTitleSize = 1.2, themePlotTitleColour = "black", ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>datFile</code></td>
+<td>
+<p>A <code>data.frame</code> containing the necessary variables for the
+figure</p>
+</td></tr>
+<tr valign="top"><td><code>catList</code></td>
+<td>
+<p>A list of two objects.  The first object is a vector of the categorical
+variables in <code>datFile</code> to be plotted, the second object is a list of matching length
+containing &quot;pretty&quot; labels for each of the categorical variables</p>
+</td></tr>
+<tr valign="top"><td><code>conList</code></td>
+<td>
+<p>A list of two objects.  The first object is a vector of the continuous
+variables in <code>datFile</code> to be plotted, the second object is a list of matching length
+containing &quot;pretty&quot; labels for each of the continuous variables</p>
+</td></tr>
+<tr valign="top"><td><code>nCols</code></td>
+<td>
+<p>Integer, how many columns to arrange the plots into</p>
+</td></tr>
+<tr valign="top"><td><code>idVar</code></td>
+<td>
+<p>Column name for ID, used to report the number of patients at each level
+of the categorical variables</p>
+</td></tr>
+<tr valign="top"><td><code>yLimit</code></td>
+<td>
+<p>Two element numeric vector giving the lower and upper limits of
+the y axis, recycled for all continuous variables if multiple</p>
+</td></tr>
+<tr valign="top"><td><code>yForm</code></td>
+<td>
+<p>One of &quot;percent&quot;, &quot;comma&quot;, &quot;none&quot;, or &quot;scientific&quot; denoting the
+labeling to be used for the y-axis</p>
+</td></tr>
+<tr valign="top"><td><code>yScale</code></td>
+<td>
+<p>One of &quot;identity&quot;, &quot;log&quot;, &quot;log10&quot;; passed to scale_[xy]_continuous</p>
+</td></tr>
+<tr valign="top"><td><code>facetBy</code></td>
+<td>
+<p>Variable name in <code>datFile</code> on which to facet_wrap by</p>
+</td></tr>
+<tr valign="top"><td><code>notches</code></td>
+<td>
+<p>Logical, should the boxplots be notched or not 
+(see boxplot.stats for details)</p>
+</td></tr>
+<tr valign="top"><td><code>minorTicks</code></td>
+<td>
+<p>Logical, include minor ticks?</p>
+</td></tr>
+<tr valign="top"><td><code>minorTickNum</code></td>
+<td>
+<p>Integer, number of minor ticks between major ticks</p>
+</td></tr>
+<tr valign="top"><td><code>Title</code></td>
+<td>
+<p>String, the title for the plot</p>
+</td></tr>
+<tr valign="top"><td><code>theme*</code></td>
+<td>
+<p>Various controls for the ggplot2 theme</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>Most calculations are passed through to boxplot.stats with a few
+important exceptions.  Each plot includes the adjusted R squared value and p-value
+associated with an analysis of variance of the continuous variable on the categorical
+variable.  Additionally, the inner 20
+of the continuous variable is shown as a shaded box overlayed on the traditional boxplot.
+</p>
+
+
+<h3>Value</h3>
+
+<p>A &quot;TFL&quot; object consisting of a list of plots and the intended layout for 
+their display.  The figure can be rendered with the <code>print</code> or <code>plot</code> 
+methods.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data("twoCmt")
+covCat(twoCmt,catList = list('SEX'),conList = 'IPRED',nCols=1)
+covCat(twoCmt,catList = list(list('SEX','Gender'),list('DOSE')),conList = list(list('IPRED'),list('ETA1',expression(eta[1]))))
+</pre>
+
+
+</body></html>
