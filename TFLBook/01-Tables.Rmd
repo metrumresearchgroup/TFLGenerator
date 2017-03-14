@@ -32,11 +32,12 @@ list(ex1,ex2)
 
         
 
-lapply(list.files(fd,pattern = glob2rx('demogTabCat*.png'),full.names=T),
-             function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
-         loryR(images_per_page = 1, options = list(rewind=TRUE))
-         ```
-         
+
+```
+```{r}
+slickR(list.files(fd,pattern = glob2rx('demogTabCat*.png'),full.names = T),slideId = 'demogTabCat')
+```
+
 ## demogTabCont
         
 
@@ -67,11 +68,12 @@ demogTabCont(twoCmt)
 
         
 
-lapply(list.files(fd,pattern = glob2rx('demogTabCont*.png'),full.names=T),
-             function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
-         loryR(images_per_page = 1, options = list(rewind=TRUE))
-         ```
-         
+
+```
+```{r}
+slickR(list.files(fd,pattern = glob2rx('demogTabCont*.png'),full.names = T),slideId = 'demogTabCont')
+```
+
 ## RNM
         
 
@@ -101,8 +103,9 @@ RNM(Run = '0069',proj='../TFL/inst/external')
 
         
 
-lapply(list.files(fd,pattern = glob2rx('RNM*.png'),full.names=T),
-             function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
-         loryR(images_per_page = 1, options = list(rewind=TRUE))
-         ```
-         
+
+```
+```{r}
+slickR(list.files(fd,pattern = glob2rx('RNM*.png'),full.names = T),slideId = 'RNM')
+```
+

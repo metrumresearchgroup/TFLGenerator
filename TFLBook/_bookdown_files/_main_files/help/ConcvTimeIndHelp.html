@@ -23,14 +23,17 @@ ConcvTimeInd(datFile, groupBy = "NMID", xBy = "TAFD", yBy = "DV",
   Color = T, xLimit = NULL, yLimit = NULL, xForm = waiver(),
   yForm = waiver(), minorTicks = FALSE, minorTickNum = 10,
   xScale = "identity", yScale = "log10", Title = "Individuals",
-  xLab = "Time", yLab = "Concentration", facetBy = "", fF = "",
-  fnrow = NULL, fncol = NULL, fscales = "fixed", themeUpdate = list(),
-  themeTextSize = 14, themePlotTitleSize = 1.2, themeAxisTxtSize = 0.8,
+  xLab = "Time", yLab = "Concentration", fF = "", facetByRow = ".",
+  facetByCol = ".", fnrow = NULL, fncol = NULL, fscales = "fixed",
+  facetType = "wrap", themeUpdate = list(), themeTextSize = 14,
+  themePlotTitleSize = 1.2, themeAxisTxtSize = 0.8,
   themeAxisTxtColour = "black", themeAxisTitleTxtSize = 0.9,
   themeAxisTitleColour = "black", themePanelBackgroundFill = "white",
   themePanelGridSize = NULL, themePanelGridColour = "white",
   themePanelLineType = 1, themePanelTitleSize = 1.2,
-  themePlotTitleColour = "black", themePlotLegendPosition = "right", ...)
+  themePlotTitleColour = "black", themePlotLegendPosition = "right",
+  srcAdd = TRUE, srcPath = ".", srcName = "script",
+  figPath = "../deliv/figure", figName = "Rplot.pdf", ...)
 </pre>
 
 
@@ -123,7 +126,7 @@ can be plotted or printed with the corresponding method.
 data("twoCmt")
 twoCmt=twoCmt%&gt;%mutate(DOSE=factor(DOSE))
 ConcvTimeInd(datFile = twoCmt)
-ConcvTimeInd(datFile = twoCmt,facetBy = 'SEX')
+ConcvTimeInd(datFile = twoCmt,facetByRow = 'SEX')
 </pre>
 
 

@@ -26,9 +26,10 @@ ConcvTime(datFile = twoCmt,ID = '1',ipredVar = 'IPRED',minorTicks = T)
 
         
 
-lapply(list.files(fig.dir,pattern = 'ConcvTime-',full.names = T),
-           function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
-           loryR(images_per_page = 1, options = list(rewind=TRUE))
+
+```
+```{r}
+slickR(list.files(fig.dir,pattern = 'ConcvTime-',full.names = T),slideId = 'ConcvTime')
 ```
 
 ## ConcvTimeInd
@@ -53,15 +54,16 @@ fn.src('ConcvTimeInd','TFL',hlp.dir)
 data("twoCmt")
 twoCmt=twoCmt%>%mutate(DOSE=factor(DOSE))
 ConcvTimeInd(datFile = twoCmt)
-ConcvTimeInd(datFile = twoCmt,facetBy = 'SEX')
+ConcvTimeInd(datFile = twoCmt,facetByRow = 'SEX')
 
 
 
         
 
-lapply(list.files(fig.dir,pattern = 'ConcvTimeInd-',full.names = T),
-           function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
-           loryR(images_per_page = 1, options = list(rewind=TRUE))
+
+```
+```{r}
+slickR(list.files(fig.dir,pattern = 'ConcvTimeInd-',full.names = T),slideId = 'ConcvTimeInd')
 ```
 
 ## ConcvTimeMult
@@ -92,9 +94,10 @@ ConcvTimeMult(datFile = twoCmt,ipredVar='IPRED',genAll=F,page=2,nrow =5,ncol=4)
 
         
 
-lapply(list.files(fig.dir,pattern = 'ConcvTimeMult-',full.names = T),
-           function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
-           loryR(images_per_page = 1, options = list(rewind=TRUE))
+
+```
+```{r}
+slickR(list.files(fig.dir,pattern = 'ConcvTimeMult-',full.names = T),slideId = 'ConcvTimeMult')
 ```
 
 ## ConcvTimeSum
@@ -124,9 +127,10 @@ ConcvTimeSum(datFile = manipDat(twoCmt,groupBy = 'SEX',sumThis = T))
 
         
 
-lapply(list.files(fig.dir,pattern = 'ConcvTimeSum-',full.names = T),
-           function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
-           loryR(images_per_page = 1, options = list(rewind=TRUE))
+
+```
+```{r}
+slickR(list.files(fig.dir,pattern = 'ConcvTimeSum-',full.names = T),slideId = 'ConcvTimeSum')
 ```
 
 ## GOF
@@ -154,9 +158,10 @@ GOF(twoCmt,cwresBy = 'IRES')
 
         
 
-lapply(list.files(fig.dir,pattern = 'GOF-',full.names = T),
-           function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
-           loryR(images_per_page = 1, options = list(rewind=TRUE))
+
+```
+```{r}
+slickR(list.files(fig.dir,pattern = 'GOF-',full.names = T),slideId = 'GOF')
 ```
 
 ## OBSvIPRED
@@ -186,9 +191,10 @@ OBSvIPRED(twoCmt,xBy='IPRED',xScale = 'identity',markBy = 'SEX')
 
         
 
-lapply(list.files(fig.dir,pattern = 'OBSvIPRED-',full.names = T),
-           function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
-           loryR(images_per_page = 1, options = list(rewind=TRUE))
+
+```
+```{r}
+slickR(list.files(fig.dir,pattern = 'OBSvIPRED-',full.names = T),slideId = 'OBSvIPRED')
 ```
 
 ## QQplot
@@ -218,9 +224,10 @@ QQplot(twoCmt,facetBy = 'DOSE')
 
         
 
-lapply(list.files(fig.dir,pattern = 'QQplot-',full.names = T),
-           function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
-           loryR(images_per_page = 1, options = list(rewind=TRUE))
+
+```
+```{r}
+slickR(list.files(fig.dir,pattern = 'QQplot-',full.names = T),slideId = 'QQplot')
 ```
 
 ## barchartMult
@@ -250,9 +257,10 @@ barchartMult(datFile = twoCmt,nrow=2)
 
         
 
-lapply(list.files(fig.dir,pattern = 'barchartMult-',full.names = T),
-           function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
-           loryR(images_per_page = 1, options = list(rewind=TRUE))
+
+```
+```{r}
+slickR(list.files(fig.dir,pattern = 'barchartMult-',full.names = T),slideId = 'barchartMult')
 ```
 
 ## covCat
@@ -281,9 +289,10 @@ covCat(twoCmt,catList = list(list('SEX','Gender'),list('DOSE')),conList = list(l
 
         
 
-lapply(list.files(fig.dir,pattern = 'covCat-',full.names = T),
-           function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
-           loryR(images_per_page = 1, options = list(rewind=TRUE))
+
+```
+```{r}
+slickR(list.files(fig.dir,pattern = 'covCat-',full.names = T),slideId = 'covCat')
 ```
 
 ## covCon
@@ -321,9 +330,10 @@ list('ETA1',expression(eta[1]))
 
         
 
-lapply(list.files(fig.dir,pattern = 'covCon-',full.names = T),
-           function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
-           loryR(images_per_page = 1, options = list(rewind=TRUE))
+
+```
+```{r}
+slickR(list.files(fig.dir,pattern = 'covCon-',full.names = T),slideId = 'covCon')
 ```
 
 ## distMult
@@ -352,9 +362,10 @@ distMult(twoCmt,order = c("Boxplot","Density","QQ"))
 
         
 
-lapply(list.files(fig.dir,pattern = 'distMult-',full.names = T),
-           function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
-           loryR(images_per_page = 1, options = list(rewind=TRUE))
+
+```
+```{r}
+slickR(list.files(fig.dir,pattern = 'distMult-',full.names = T),slideId = 'distMult')
 ```
 
 ## ggpairs
@@ -383,9 +394,10 @@ ggpairs(twoCmt,xCols=c('ETA1','ETA2','ETA5'))
 
         
 
-lapply(list.files(fig.dir,pattern = 'ggpairs-',full.names = T),
-           function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
-           loryR(images_per_page = 1, options = list(rewind=TRUE))
+
+```
+```{r}
+slickR(list.files(fig.dir,pattern = 'ggpairs-',full.names = T),slideId = 'ggpairs')
 ```
 
 ## paramDist
@@ -414,8 +426,9 @@ paramDist(twoCmt,xCols=c('ETA1','ETA2'),xLab=c(expression(eta[1]),expression(eta
 
         
 
-lapply(list.files(fig.dir,pattern = 'paramDist-',full.names = T),
-           function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
-           loryR(images_per_page = 1, options = list(rewind=TRUE))
+
+```
+```{r}
+slickR(list.files(fig.dir,pattern = 'paramDist-',full.names = T),slideId = 'paramDist')
 ```
 

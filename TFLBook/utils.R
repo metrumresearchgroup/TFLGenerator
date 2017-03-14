@@ -16,9 +16,11 @@ if(output=='figure'){
 ")
   
   chnk3=
-    paste0("lapply(list.files(fig.dir,pattern = '",fn,"-',full.names = T),
-           function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
-           loryR(images_per_page = 1, options = list(rewind=TRUE))
+    
+    paste0("
+```
+```{r}
+slickR(list.files(fig.dir,pattern = '",fn,"-',full.names = T),slideId = '",fn,"')
 ```
 ")}
   
@@ -32,12 +34,15 @@ junk=texPreview(obj = ex.out[[i]],stem = paste0('",fn,"Ex',i),fileDir = fd,imgFo
 }
 ")
 
+
 chnk3=
-  paste0("lapply(list.files(fd,pattern = glob2rx('",fn,"*.png'),full.names=T),
-             function(x) base64enc::dataURI(file = x, mime='image/png'))%>%
-         loryR(images_per_page = 1, options = list(rewind=TRUE))
-         ```
-         ")
+  
+  paste0("
+```
+```{r}
+slickR(list.files(fd,pattern = glob2rx('",fn,"*.png'),full.names = T),slideId = '",fn,"')
+```
+")
 }
   
 

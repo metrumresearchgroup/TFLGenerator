@@ -3,7 +3,9 @@ title: "TFL book guide"
 author: "Metrum Research Group"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
-output: bookdown::gitbook
+output: 
+  bookdown::gitbook:
+    keep_md: true
   
 documentclass: book
 bibliography: [book.bib, packages.bib]
@@ -17,7 +19,7 @@ suppressMessages({
                   library(tools)
                   library(TFL)
                   library(texPreview)
-                  library(loryR)
+                  library(slickR)
   })
 
 source('utils.R')
