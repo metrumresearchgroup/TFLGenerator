@@ -4,10 +4,10 @@ if(!is.character(fn)) fn=as.character(substitute(fn))
 header=paste0("## ",fn)
 
 chnk1=
-paste0(
-"```{r results='asis',echo=FALSE}
-fn.src('",fn,"','",pkg,"',hlp.dir)
-```")
+ paste0(
+ "```{r results='asis',echo=FALSE}
+ fn.src('",fn,"','",pkg,"',hlp.dir)
+ ```")
 
 eval(parse(text=paste0('chnkExample<-readExample(',fn,')')))
 
@@ -15,14 +15,27 @@ if(output=='figure'){
   chnk2=paste0("```{r ",fn,", echo=FALSE,fig.show='hide',warning=FALSE}
 ")
   
-  chnk3=
-    
-    paste0("
+  chnk3= paste0("
 ```
 ```{r}
-slickR(list.files(fig.dir,pattern = '",fn,"-',full.names = T),slideId = '",fn,"')
+picList=list.files(fig.dir,pattern = '",fn,"-',full.names = T)
+lp=length(picList)
+ if(lp==1){
+slickR(picList,slideId = '",fn,"',width='100%',height='400px',slickOpts=list(dots=T))
+ }else{
+ slickR( rep(picList,2),
+        slideId = c('",fn,"-up','",fn,"-down'),
+                slideIdx = list(1:lp,(lp+1):(2*lp)),
+                slideType=rep('img',2),
+                synchSlides = c('",fn,"-up','",fn,"-down'),
+                slickOpts = list(list(slidesToShow=1,slidesToScroll=1),
+                list(dots=T,slidesToScroll=1,slidesToShow=lp,centerMode=T,focusOnSelect=T)
+                ),height=400,width='100%')
+}
+
 ```
-")}
+")
+  }
   
 if(output=='table'){
 chnk2=paste0(
@@ -30,17 +43,13 @@ chnk2=paste0(
 ex.out=example(",fn,",echo = F)$value
 if(!is.list(ex.out)) ex.out=list(ex.out)
 for(i in 1:length(ex.out)){
-junk=texPreview(obj = ex.out[[i]],stem = paste0('",fn,"Ex',i),fileDir = fd,imgFormat = 'png')
+junk=texPreview(obj = ex.out[[i]],stem = paste0('",fn,"Ex',i),fileDir = fd,imgFormat = 'svg',ignore.stdout=T)
 }
 ")
 
 
-chnk3=
-  
-  paste0("
-```
-```{r}
-slickR(list.files(fd,pattern = glob2rx('",fn,"*.png'),full.names = T),slideId = '",fn,"')
+chnk3=paste0("
+slickR(list.files(fd,pattern = glob2rx('",fn,"*.svg'),full.names = T),slideId = '",fn,"',width='100%',height='400px')
 ```
 ")
 }

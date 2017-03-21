@@ -4,15 +4,15 @@
         
 
 ```{r results='asis',echo=FALSE}
-fn.src('demogTabCat','TFL',hlp.dir)
-```
+ fn.src('demogTabCat','TFL',hlp.dir)
+ ```
         
 
 ```{r demogTabCat, echo=FALSE}
 ex.out=example(demogTabCat,echo = F)$value
 if(!is.list(ex.out)) ex.out=list(ex.out)
 for(i in 1:length(ex.out)){
-junk=texPreview(obj = ex.out[[i]],stem = paste0('demogTabCatEx',i),fileDir = fd,imgFormat = 'png')
+junk=texPreview(obj = ex.out[[i]],stem = paste0('demogTabCatEx',i),fileDir = fd,imgFormat = 'svg',ignore.stdout=T)
 }
 
         
@@ -33,79 +33,6 @@ list(ex1,ex2)
         
 
 
-```
-```{r}
-slickR(list.files(fd,pattern = glob2rx('demogTabCat*.png'),full.names = T),slideId = 'demogTabCat')
-```
-
-## demogTabCont
-        
-
-```{r results='asis',echo=FALSE}
-fn.src('demogTabCont','TFL',hlp.dir)
-```
-        
-
-```{r demogTabCont, echo=FALSE}
-ex.out=example(demogTabCont,echo = F)$value
-if(!is.list(ex.out)) ex.out=list(ex.out)
-for(i in 1:length(ex.out)){
-junk=texPreview(obj = ex.out[[i]],stem = paste0('demogTabContEx',i),fileDir = fd,imgFormat = 'png')
-}
-
-        
-
-### Name: demogTabCont
-### Title: Demographics table for continuous variables
-### Aliases: demogTabCont
-
-### ** Examples
-
-data("twoCmt")
-demogTabCont(twoCmt)
-
-
-
-        
-
-
-```
-```{r}
-slickR(list.files(fd,pattern = glob2rx('demogTabCont*.png'),full.names = T),slideId = 'demogTabCont')
-```
-
-## RNM
-        
-
-```{r results='asis',echo=FALSE}
-fn.src('RNM','TFL',hlp.dir)
-```
-        
-
-```{r RNM, echo=FALSE}
-ex.out=example(RNM,echo = F)$value
-if(!is.list(ex.out)) ex.out=list(ex.out)
-for(i in 1:length(ex.out)){
-junk=texPreview(obj = ex.out[[i]],stem = paste0('RNMEx',i),fileDir = fd,imgFormat = 'png')
-}
-
-        
-
-### Name: RNM
-### Title: Create a Nonmem run output table from the XML output
-### Aliases: RNM
-
-### ** Examples
-
-RNM(Run = '0069',proj='../TFL/inst/external')
-
-
-
-        
-
-
-```
-```{r}
-slickR(list.files(fd,pattern = glob2rx('RNM*.png'),full.names = T),slideId = 'RNM')
+slickR(list.files(fd,pattern = glob2rx('demogTabCat*.svg'),full.names = T),slideId = 'demogTabCat',width='100%',height='400px')
 ```
 
