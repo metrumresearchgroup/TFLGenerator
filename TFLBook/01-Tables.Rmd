@@ -8,7 +8,7 @@
  ```
         
 
-```{r demogTabCat, echo=FALSE}
+```{r demogTabCat, echo=TRUE}
 ex.out=example(demogTabCat,echo = F)$value
 if(!is.list(ex.out)) ex.out=list(ex.out)
 for(i in 1:length(ex.out)){
@@ -34,5 +34,72 @@ list(ex1,ex2)
 
 
 slickR(list.files(fd,pattern = glob2rx('demogTabCat*.svg'),full.names = T),slideId = 'demogTabCat',width='100%',height='400px')
+```
+
+## RNM
+        
+
+```{r results='asis',echo=FALSE}
+ fn.src('RNM','TFL',hlp.dir)
+ ```
+        
+
+```{r RNM, echo=TRUE}
+ex.out=example(RNM,echo = F)$value
+if(!is.list(ex.out)) ex.out=list(ex.out)
+for(i in 1:length(ex.out)){
+junk=texPreview(obj = ex.out[[i]],stem = paste0('RNMEx',i),fileDir = fd,imgFormat = 'svg',ignore.stdout=T)
+}
+
+        
+
+### Name: RNM
+### Title: Create a Nonmem run output table from the XML output
+### Aliases: RNM
+
+### ** Examples
+
+RNM(Run = '0069',proj='../TFL/inst/external')
+
+
+
+        
+
+
+slickR(list.files(fd,pattern = glob2rx('RNM*.svg'),full.names = T),slideId = 'RNM',width='100%',height='400px')
+```
+
+## demogTabCont
+        
+
+```{r results='asis',echo=FALSE}
+ fn.src('demogTabCont','TFL',hlp.dir)
+ ```
+        
+
+```{r demogTabCont, echo=TRUE}
+ex.out=example(demogTabCont,echo = F)$value
+if(!is.list(ex.out)) ex.out=list(ex.out)
+for(i in 1:length(ex.out)){
+junk=texPreview(obj = ex.out[[i]],stem = paste0('demogTabContEx',i),fileDir = fd,imgFormat = 'svg',ignore.stdout=T)
+}
+
+        
+
+### Name: demogTabCont
+### Title: Demographics table for continuous variables
+### Aliases: demogTabCont
+
+### ** Examples
+
+data("twoCmt")
+demogTabCont(twoCmt)
+
+
+
+        
+
+
+slickR(list.files(fd,pattern = glob2rx('demogTabCont*.svg'),full.names = T),slideId = 'demogTabCont',width='100%',height='400px')
 ```
 

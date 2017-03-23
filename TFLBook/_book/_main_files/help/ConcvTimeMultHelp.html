@@ -21,7 +21,8 @@ values of concentration
 ConcvTimeMult(datFile, groupBy = "NMID", xBy = "TAFD", yBy = "DV",
   ipredVar = "IPRE", predVar = "PRED", doseVar = "DOSE",
   doseLab = "mg/kg", markBy = "DOSE", preserveMarkByLevels = F,
-  Color = T, xLimit = NULL, yLimit = NULL, xForm = waiver(),
+  Color = T, rugVar = NULL, rugVals = 1, rugCols = "red",
+  blqVal = NULL, xLimit = NULL, yLimit = NULL, xForm = waiver(),
   yForm = waiver(), xScale = "identity", yScale = "log10",
   Title = "Individuals", xLab = "Time", yLab = "Concentration",
   ncol = 3, nrow = 3, ID = NULL, minorTicks = FALSE,
@@ -79,6 +80,22 @@ If specified, these doses will appear as titles per patient</p>
 <tr valign="top"><td><code>markBy</code></td>
 <td>
 <p>ignored</p>
+</td></tr>
+<tr valign="top"><td><code>rugVar</code></td>
+<td>
+<p>Column name of variable to create rug layer (default NULL)</p>
+</td></tr>
+<tr valign="top"><td><code>rugVals</code></td>
+<td>
+<p>Numeric vector of values rugVar is displayed (default c(1))</p>
+</td></tr>
+<tr valign="top"><td><code>rugCols</code></td>
+<td>
+<p>Character value that defines color of rug ticks (default 'red')</p>
+</td></tr>
+<tr valign="top"><td><code>blqVal</code></td>
+<td>
+<p>Numeric value that defines the 'Below Level of Quantification (BLQ)' horizontal reference line (default NULL)</p>
 </td></tr>
 <tr valign="top"><td><code>xLimit</code></td>
 <td>

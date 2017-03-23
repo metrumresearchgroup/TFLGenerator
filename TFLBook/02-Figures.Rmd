@@ -8,7 +8,7 @@
  ```
         
 
-```{r ConcvTime, echo=FALSE,fig.show='hide',warning=FALSE}
+```{r ConcvTime, echo=TRUE,fig.show='show',warning=FALSE}
 
         
 
@@ -27,22 +27,398 @@ ConcvTime(datFile = twoCmt,ID = '1',ipredVar = 'IPRED',minorTicks = T)
         
 
 
-```
-```{r}
-picList=list.files(fig.dir,pattern = 'ConcvTime-',full.names = T)
-lp=length(picList)
- if(lp==1){
-slickR(picList,slideId = 'ConcvTime',width='100%',height='400px',slickOpts=list(dots=T))
- }else{
- slickR( rep(picList,2),
-        slideId = c('ConcvTime-up','ConcvTime-down'),
-                slideIdx = list(1:lp,(lp+1):(2*lp)),
-                slideType=rep('img',2),
-                synchSlides = c('ConcvTime-up','ConcvTime-down'),
-                slickOpts = list(list(slidesToShow=1,slidesToScroll=1),
-                list(dots=T,slidesToScroll=1,slidesToShow=lp,centerMode=T,focusOnSelect=T)
-                ),height=400,width='100%')
-}
+  ```
+  
+## ConcvTimeInd
+        
 
-```
+```{r results='asis',echo=FALSE}
+ fn.src('ConcvTimeInd','TFL',hlp.dir)
+ ```
+        
 
+```{r ConcvTimeInd, echo=TRUE,fig.show='show',warning=FALSE}
+
+        
+
+### Name: ConcvTimeInd
+### Title: Concentration vs time profiles for groups of patients (spaghetti
+###   plot)
+### Aliases: ConcvTimeInd
+
+### ** Examples
+
+data("twoCmt")
+twoCmt=twoCmt%>%mutate(DOSE=factor(DOSE))
+ConcvTimeInd(datFile = twoCmt)
+ConcvTimeInd(datFile = twoCmt,facetByRow = 'SEX')
+
+
+
+        
+
+
+  ```
+  
+## ConcvTimeMult
+        
+
+```{r results='asis',echo=FALSE}
+ fn.src('ConcvTimeMult','TFL',hlp.dir)
+ ```
+        
+
+```{r ConcvTimeMult, echo=TRUE,fig.show='show',warning=FALSE}
+
+        
+
+### Name: ConcvTimeMult
+### Title: Multipanel concentration vs time profiles for individual
+###   patients
+### Aliases: ConcvTimeMult
+
+### ** Examples
+
+data("twoCmt")
+twoCmt=twoCmt%>%mutate(DOSE=factor(DOSE))
+ConcvTimeMult(datFile = twoCmt,ipredVar='IPRED',genAll=F,page=1)
+ConcvTimeMult(datFile = twoCmt,ipredVar='IPRED',genAll=F,page=2,nrow =5,ncol=4)
+
+
+
+        
+
+
+  ```
+  
+## ConcvTimeSum
+        
+
+```{r results='asis',echo=FALSE}
+ fn.src('ConcvTimeSum','TFL',hlp.dir)
+ ```
+        
+
+```{r ConcvTimeSum, echo=TRUE,fig.show='show',warning=FALSE}
+
+        
+
+### Name: ConcvTimeSum
+### Title: Concentration vs time profiles for groups of patients (summary
+###   plot)
+### Aliases: ConcvTimeSum
+
+### ** Examples
+
+data("twoCmt")
+twoCmt=twoCmt%>%mutate_each(funs(factor),DOSE,SEX)
+ConcvTimeSum(datFile = manipDat(twoCmt,groupBy = 'SEX',sumThis = T))
+
+
+
+        
+
+
+  ```
+  
+## GOF
+        
+
+```{r results='asis',echo=FALSE}
+ fn.src('GOF','TFL',hlp.dir)
+ ```
+        
+
+```{r GOF, echo=TRUE,fig.show='show',warning=FALSE}
+
+        
+
+### Name: GOF
+### Title: Goodness of fit plots
+### Aliases: GOF
+
+### ** Examples
+
+data("twoCmt")
+GOF(twoCmt,cwresBy = 'IRES')
+
+
+
+        
+
+
+  ```
+  
+## OBSvIPRED
+        
+
+```{r results='asis',echo=FALSE}
+ fn.src('OBSvIPRED','TFL',hlp.dir)
+ ```
+        
+
+```{r OBSvIPRED, echo=TRUE,fig.show='show',warning=FALSE}
+
+        
+
+### Name: OBSvIPRED
+### Title: Standard goodness of fit plots for observed versus predicted
+###   values
+### Aliases: OBSvIPRED
+
+### ** Examples
+
+data("twoCmt")
+OBSvIPRED(twoCmt%>%filter(DV>0),xBy='IPRED')
+OBSvIPRED(twoCmt,xBy='IPRED',xScale = 'identity',markBy = 'SEX')
+
+
+
+        
+
+
+  ```
+  
+## QQplot
+        
+
+```{r results='asis',echo=FALSE}
+ fn.src('QQplot','TFL',hlp.dir)
+ ```
+        
+
+```{r QQplot, echo=TRUE,fig.show='show',warning=FALSE}
+
+        
+
+### Name: QQplot
+### Title: Create a standard Quantile-Quantile plot
+### Aliases: QQplot
+
+### ** Examples
+
+data("twoCmt")
+QQplot(twoCmt)
+QQplot(twoCmt,markBy = 'SEX')
+QQplot(twoCmt,facetBy = 'DOSE')
+
+
+
+        
+
+
+  ```
+  
+## barchartMult
+        
+
+```{r results='asis',echo=FALSE}
+ fn.src('barchartMult','TFL',hlp.dir)
+ ```
+        
+
+```{r barchartMult, echo=TRUE,fig.show='show',warning=FALSE}
+
+        
+
+### Name: barchartMult
+### Title: Bar charts
+### Aliases: barchartMult
+
+### ** Examples
+
+data("twoCmt")
+barchartMult(datFile = twoCmt)
+barchartMult(datFile = twoCmt,catList = list(c('SEX','Gender')))
+barchartMult(datFile = twoCmt,nrow=2)
+
+
+
+        
+
+
+  ```
+  
+## covCat
+        
+
+```{r results='asis',echo=FALSE}
+ fn.src('covCat','TFL',hlp.dir)
+ ```
+        
+
+```{r covCat, echo=TRUE,fig.show='show',warning=FALSE}
+
+        
+
+### Name: covCat
+### Title: Boxplots
+### Aliases: covCat
+
+### ** Examples
+
+data("twoCmt")
+covCat(twoCmt,catList = list('SEX'),conList = 'IPRED',nCols=1)
+covCat(twoCmt,catList = list(list('SEX','Gender'),list('DOSE')),conList = list(list('IPRED'),list('ETA1',expression(eta[1]))))
+
+
+
+        
+
+
+  ```
+  
+## covCon
+        
+
+```{r results='asis',echo=FALSE}
+ fn.src('covCon','TFL',hlp.dir)
+ ```
+        
+
+```{r covCon, echo=TRUE,fig.show='show',warning=FALSE}
+
+        
+
+### Name: covCon
+### Title: Scatterplots
+### Aliases: covCon
+
+### ** Examples
+
+data("twoCmt")
+covCon(twoCmt,conList_x = 'IPRED',conList_y = 'ETA1',nCol=1)
+covCon(twoCmt,
+conList_x = list(
+list('IPRED','Individual Prediction'),
+list('IRES','Individual Residual')
+),
+conList_y = list(
+list('ETA1',expression(eta[1]))
+)
+)
+
+
+
+
+        
+
+
+  ```
+  
+## distMult
+        
+
+```{r results='asis',echo=FALSE}
+ fn.src('distMult','TFL',hlp.dir)
+ ```
+        
+
+```{r distMult, echo=TRUE,fig.show='show',warning=FALSE}
+
+        
+
+### Name: distMult
+### Title: Multipanel distribution
+### Aliases: distMult
+
+### ** Examples
+
+data("twoCmt")
+distMult(twoCmt)
+distMult(twoCmt,order = c("Boxplot","Density","QQ"))
+
+
+
+        
+
+
+  ```
+  
+## ggpairs
+        
+
+```{r results='asis',echo=FALSE}
+ fn.src('ggpairs','TFL',hlp.dir)
+ ```
+        
+
+```{r ggpairs, echo=TRUE,fig.show='show',warning=FALSE}
+
+        
+
+### Name: ggpairs
+### Title: Correlation Comparison plot
+### Aliases: ggpairs
+
+### ** Examples
+
+data("twoCmt")
+ggpairs(twoCmt,xCols=c('ETA1','ETA2'))
+ggpairs(twoCmt,xCols=c('ETA1','ETA2','ETA5'))
+
+
+
+        
+
+
+  ```
+  
+## ggpairs_generator
+        
+
+```{r results='asis',echo=FALSE}
+ fn.src('ggpairs_generator','TFL',hlp.dir)
+ ```
+        
+
+```{r ggpairs_generator, echo=TRUE,fig.show='show',warning=FALSE}
+
+        
+
+### Name: ggpairs_generator
+### Title: Correlation Comparison plot
+### Aliases: ggpairs_generator
+
+### ** Examples
+
+data("twoCmt")
+ggpairs(twoCmt,xCols=c('ETA1','ETA2'))
+ggpairs(twoCmt,xCols=c('ETA1','ETA2','ETA5'))
+
+
+
+        
+
+
+  ```
+  
+## paramDist
+        
+
+```{r results='asis',echo=FALSE}
+ fn.src('paramDist','TFL',hlp.dir)
+ ```
+        
+
+```{r paramDist, echo=TRUE,fig.show='show',warning=FALSE}
+
+        
+
+### Name: paramDist
+### Title: Parameter Distribution Plots
+### Aliases: paramDist
+
+### ** Examples
+
+data("twoCmt")
+paramDist(twoCmt)
+paramDist(twoCmt,xCols=c('ETA1','ETA2'),xLab=c(expression(eta[1]),expression(eta[2])))
+
+
+
+        
+
+
+  ```
+  

@@ -12,26 +12,28 @@ chnk1=
 eval(parse(text=paste0('chnkExample<-readExample(',fn,')')))
 
 if(output=='figure'){
-  chnk2=paste0("```{r ",fn,", echo=FALSE,fig.show='hide',warning=FALSE}
+  chnk2=paste0("```{r ",fn,", echo=TRUE,fig.show='show',warning=FALSE}
 ")
-  
-  chnk3= paste0("
+  chnk3='
+  ```
+  '
+  chnk4= paste0("
 ```
 ```{r}
 picList=list.files(fig.dir,pattern = '",fn,"-',full.names = T)
 lp=length(picList)
- if(lp==1){
+# if(lp==1){
 slickR(picList,slideId = '",fn,"',width='100%',height='400px',slickOpts=list(dots=T))
- }else{
- slickR( rep(picList,2),
-        slideId = c('",fn,"-up','",fn,"-down'),
-                slideIdx = list(1:lp,(lp+1):(2*lp)),
-                slideType=rep('img',2),
-                synchSlides = c('",fn,"-up','",fn,"-down'),
-                slickOpts = list(list(slidesToShow=1,slidesToScroll=1),
-                list(dots=T,slidesToScroll=1,slidesToShow=lp,centerMode=T,focusOnSelect=T)
-                ),height=400,width='100%')
-}
+#  }else{
+#  slickR( rep(picList,2),
+#         slideId = c('",fn,"-up','",fn,"-down'),
+#                 slideIdx = list(1:lp,(lp+1):(2*lp)),
+#                 slideType=rep('img',2),
+#                 synchSlides = c('",fn,"-up','",fn,"-down'),
+#                 slickOpts = list(list(slidesToShow=1,slidesToScroll=1),
+#                 list(dots=T,slidesToScroll=1,slidesToShow=lp,centerMode=T,focusOnSelect=T)
+#                 ),height=400,width='100%')
+# }
 
 ```
 ")
@@ -39,7 +41,7 @@ slickR(picList,slideId = '",fn,"',width='100%',height='400px',slickOpts=list(dot
   
 if(output=='table'){
 chnk2=paste0(
-"```{r ",fn,", echo=FALSE}
+"```{r ",fn,", echo=TRUE}
 ex.out=example(",fn,",echo = F)$value
 if(!is.list(ex.out)) ex.out=list(ex.out)
 for(i in 1:length(ex.out)){

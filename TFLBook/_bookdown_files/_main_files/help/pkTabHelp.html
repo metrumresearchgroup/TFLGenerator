@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: pkTab</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for pkTab"><tr><td>pkTab</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>pkTab</h2>
+
+<h3>Description</h3>
+
+<p>Table that depicts the frequency by groups and exclusion criteria
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+pkTab(datFile, groupBy = list(c("STUDY", "Study Phase")), idVar = "NMID",
+  exclVar = list(BLQ = list(label = "BLQ", flag = T)))
+</pre>
+
+
+<h3>Examples</h3>
+
+<pre>
+ datFile=twoCmt%&gt;%mutate(BLQ=(DV&lt;=100&amp;DV&gt;0))
+ datFile$rndGroup=sample(1:5,size = nrow(datFile),replace = T)
+ datFile$NODOSE=datFile$DV==0
+ out=pkTab(datFile,
+         groupBy = list(c("STUDY","Study Phase"),c('rndGroup','Randomization Group')),
+         exclVar=list(BLQ=list(label='BLQ',flag=T),NODOSE=list(label='No Dose',flag=T))
+ )
+out
+#texPreview(print(xtable(out,digits=0),include.rownames=FALSE),stem='test',imgFormat = 'svg')
+</pre>
+
+
+</body></html>
