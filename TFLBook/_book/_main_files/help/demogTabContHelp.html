@@ -12,7 +12,9 @@
 <pre>
 demogTabCont(datFile, groupBy = list(c("STUDY", "Study")), idVar = "NMID",
   conList = list(c("AGE", "Age (years)"), c("HGTB", "Height (cm)"), c("WGTB",
-  "Weight (kg)")), catList = list(c("DIS", "Disease")), sigDig = 3)
+  "Weight (kg)")), catList = list(c("DIS", "Disease")), sigDig = 3,
+  srcAdd = TRUE, srcPath = ".", srcName = "script",
+  tblPath = "../deliv/table", tblName = "table.tex")
 </pre>
 
 
@@ -56,11 +58,32 @@ to stratify by.  Pass an empty string for no stratification</p>
 </p>
 
 
+<h3>See Also</h3>
+
+<p><code>texPreview</code>
+</p>
+
+
 <h3>Examples</h3>
 
 <pre>
+ require(texPreview)
+ Knit&lt;-!is.null(knitr::opts_knit$get('rmarkdown.pandoc.to')) #Check if in knit environment
+ Chk&lt;-interactive()||Knit #Check for Rstudio and knit environment
+
 data("twoCmt")
+
+if(!Knit) 
 demogTabCont(twoCmt)
+
+#Show Table in Viewer
+if(Chk)  texPreview(obj = demogTabCont(twoCmt),
+                    stem = paste0('demogTabContEx1'),
+                    fileDir = fd,
+                    imgFormat = 'svg',
+                    returnType=rt,
+                    ignore.stdout=T)
+                    
 </pre>
 
 

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.2.10)  23 MAR 2017 13:54
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.2.10)  7 APR 2017 11:03
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -312,11 +312,11 @@ Package caption Info: End \AtBeginDocument code.
 {/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 (./RNMEx1Doc.aux) ) 
 Here is how much of TeX's memory you used:
- 4591 strings out of 493013
- 69064 string characters out of 6133343
+ 4592 strings out of 493013
+ 69070 string characters out of 6133343
  153794 words of memory out of 5000000
  8071 multiletter control sequences out of 15000+600000
- 8220 words of font info for 21 fonts, out of 8000000 for 9000
+ 9374 words of font info for 22 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  53i,15n,92p,236b,224s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/base/8r.
@@ -324,7 +324,7 @@ enc}</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.p
 fb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb
 ></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb><
 /usr/local/texlive/2016/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb>
-Output written on RNMEx1Doc.pdf (1 page, 34791 bytes).
+Output written on RNMEx1Doc.pdf (1 page, 35437 bytes).
 PDF statistics:
  25 PDF objects out of 1000 (max. 8388607)
  17 compressed objects within 1 object stream

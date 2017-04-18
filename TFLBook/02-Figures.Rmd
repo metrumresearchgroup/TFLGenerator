@@ -84,6 +84,23 @@ twoCmt=twoCmt%>%mutate(DOSE=factor(DOSE))
 ConcvTimeMult(datFile = twoCmt,ipredVar='IPRED',genAll=F,page=1)
 ConcvTimeMult(datFile = twoCmt,ipredVar='IPRED',genAll=F,page=2,nrow =5,ncol=4)
 
+rug.data=addlExpand( tab =file.path(find.package('TFL'),'external/mi210/510/510.tab'),
+demog = file.path(find.package('TFL'),'external/mi210/poppk_wcovs.csv'),
+group.vars = c('ID','EVID','AMT'),
+demog.fillVars = c('HT','WT','CLCR','SEX','AGE'),
+demog.keepVars = c('RATE')
+)
+
+ConcvTimeMult(datFile = rug.data,
+              groupBy='ID',
+              xBy = 'TIME',
+              ipredVar = 'IPRED',
+              genAll = F,
+              ID=1:9,
+              rugVar = 'EVID',
+              rugVals = 1)
+
+
 
 
         
@@ -356,6 +373,7 @@ distMult(twoCmt,order = c("Boxplot","Density","QQ"))
 data("twoCmt")
 ggpairs(twoCmt,xCols=c('ETA1','ETA2'))
 ggpairs(twoCmt,xCols=c('ETA1','ETA2','ETA5'))
+ggpairs(twoCmt,xCols=c('ETA1','ETA2','ETA5'),runno='0069',project = system.file('external',package = 'TFL'))
 
 
 

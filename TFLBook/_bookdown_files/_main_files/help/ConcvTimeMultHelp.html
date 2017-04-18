@@ -137,6 +137,12 @@ can be plotted or printed with the corresponding method.
 </p>
 
 
+<h3>See Also</h3>
+
+<p><code>addlExpand</code>
+</p>
+
+
 <h3>Examples</h3>
 
 <pre>
@@ -145,6 +151,23 @@ twoCmt=twoCmt%&gt;%mutate(DOSE=factor(DOSE))
 ## Not run: ConcvTimeMult(datFile = twoCmt,ipredVar='IPRED')
 ConcvTimeMult(datFile = twoCmt,ipredVar='IPRED',genAll=F,page=1)
 ConcvTimeMult(datFile = twoCmt,ipredVar='IPRED',genAll=F,page=2,nrow =5,ncol=4)
+
+rug.data=addlExpand( tab =file.path(find.package('TFL'),'external/mi210/510/510.tab'),
+demog = file.path(find.package('TFL'),'external/mi210/poppk_wcovs.csv'),
+group.vars = c('ID','EVID','AMT'),
+demog.fillVars = c('HT','WT','CLCR','SEX','AGE'),
+demog.keepVars = c('RATE')
+)
+
+ConcvTimeMult(datFile = rug.data,
+              groupBy='ID',
+              xBy = 'TIME',
+              ipredVar = 'IPRED',
+              genAll = F,
+              ID=1:9,
+              rugVar = 'EVID',
+              rugVals = 1)
+
 </pre>
 
 

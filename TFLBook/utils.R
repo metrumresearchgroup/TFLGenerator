@@ -40,17 +40,24 @@ slickR(picList,slideId = '",fn,"',width='100%',height='400px',slickOpts=list(dot
   }
   
 if(output=='table'){
-chnk2=paste0(
-"```{r ",fn,", echo=TRUE}
+
+    chnk2=paste0("```{r ",fn,", echo=TRUE, results='asis'}
+                 ")
+    chnk3='
+    ```
+    '
+  
+chnk4=paste0(
+"```{r ",fn,", cache=FALSE, echo=TRUE, results='asis'}
 ex.out=example(",fn,",echo = F)$value
 if(!is.list(ex.out)) ex.out=list(ex.out)
 for(i in 1:length(ex.out)){
-junk=texPreview(obj = ex.out[[i]],stem = paste0('",fn,"Ex',i),fileDir = fd,imgFormat = 'svg',ignore.stdout=T)
+texPreview(obj = ex.out[[i]],stem = paste0('",fn,"Ex',i),fileDir = fd,imgFormat = 'svg',returnType=rt,ignore.stdout=T)
 }
 ")
 
 
-chnk3=paste0("
+chnk5=paste0("
 slickR(list.files(fd,pattern = glob2rx('",fn,"*.svg'),full.names = T),slideId = '",fn,"',width='100%',height='400px')
 ```
 ")

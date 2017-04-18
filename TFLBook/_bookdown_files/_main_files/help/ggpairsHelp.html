@@ -59,6 +59,26 @@ ggpairs(datFile, xCols = grep("ETA", names(datFile), value = TRUE), xLimit = NUL
 <td>
 <p>character column name for optional faceting</p>
 </td></tr>
+<tr valign="top"><td><code>project</code></td>
+<td>
+<p>string indicating home directory of the Nonmem Run defaults to the current working directory</p>
+</td></tr>
+<tr valign="top"><td><code>runno</code></td>
+<td>
+<p>character vector of run numbers</p>
+</td></tr>
+<tr valign="top"><td><code>minorTicks</code></td>
+<td>
+<p>Logical, include minor ticks?</p>
+</td></tr>
+<tr valign="top"><td><code>minorTickNum</code></td>
+<td>
+<p>Integer, number of minor ticks between major ticks</p>
+</td></tr>
+<tr valign="top"><td><code>theme*</code></td>
+<td>
+<p>Various controls for the ggplot2 theme</p>
+</td></tr>
 </table>
 
 
@@ -80,6 +100,7 @@ ggpairs(datFile, xCols = grep("ETA", names(datFile), value = TRUE), xLimit = NUL
 data("twoCmt")
 ggpairs(twoCmt,xCols=c('ETA1','ETA2'))
 ggpairs(twoCmt,xCols=c('ETA1','ETA2','ETA5'))
+ggpairs(twoCmt,xCols=c('ETA1','ETA2','ETA5'),runno='0069',project = system.file('external',package = 'TFL'))
 </pre>
 
 

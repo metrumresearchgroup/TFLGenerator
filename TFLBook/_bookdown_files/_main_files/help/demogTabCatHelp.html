@@ -12,7 +12,9 @@
 <pre>
 demogTabCat(datFile, groupBy = list(c("STUDY", "Study")), idVar = "NMID",
   catList = list(c("SEX", "Sex"), c("RACE", "Race")),
-  stratBy = list(c("DIS", "Disease")), sigDig = 3)
+  stratBy = list(c("DIS", "Disease")), sigDig = 3, srcAdd = TRUE,
+  srcPath = ".", srcName = "script", tblPath = "../deliv/table",
+  tblName = "table.tex")
 </pre>
 
 
@@ -56,13 +58,40 @@ to stratify by.  Pass an empty string for no stratification</p>
 </p>
 
 
+<h3>See Also</h3>
+
+<p><code>texPreview</code>
+</p>
+
+
 <h3>Examples</h3>
 
 <pre>
+ require(texPreview)
+ Knit&lt;-!is.null(knitr::opts_knit$get('rmarkdown.pandoc.to')) #Check if in knit environment
+ Chk&lt;-interactive()||Knit #Check for Rstudio and knit environment
+
 data("twoCmt")
-ex1=demogTabCat(twoCmt)
-ex2=demogTabCat(twoCmt,stratBy = '')
-list(ex1,ex2)
+
+if(!Knit) 
+
+demogTabCat(twoCmt)
+
+#Show Table in Viewer
+if(Chk) texPreview(obj = demogTabCat(twoCmt),
+                   stem = paste0('demogTabCatEx1'),
+                   fileDir = fd,
+                   imgFormat = 'svg',
+                   returnType=rt,
+                   ignore.stdout=T)
+ 
+if(!Knit) 
+
+demogTabCat(twoCmt,stratBy = '')
+
+#Show Table in Viewer
+if(Chk) texPreview(obj = demogTabCat(twoCmt,stratBy = ''),stem = paste0('demogTabCatEx2'),fileDir = fd,imgFormat = 'svg',returnType=rt,ignore.stdout=T)
+
 </pre>
 
 

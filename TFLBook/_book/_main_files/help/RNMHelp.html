@@ -80,10 +80,30 @@ RNM(Run, Sig = 3, ConfInt = 0.95, View = TRUE, saveCSV = FALSE, saveFig = FALSE,
 </p>
 
 
+<h3>See Also</h3>
+
+<p><code>texPreview</code>
+</p>
+
+
 <h3>Examples</h3>
 
 <pre>
-RNM(Run = '0069',proj='../TFL/inst/external')
+ require(texPreview)
+ Knit&lt;-!is.null(knitr::opts_knit$get('rmarkdown.pandoc.to')) #Check if in knit environment
+ Chk&lt;-interactive()||Knit #Check for Rstudio and knit environment
+
+if(!Knit) 
+
+RNM(Run = '0069',proj=system.file('external',package = 'TFL'))
+
+#Show Table in Viewer
+if(Chk) texPreview(obj = RNM(Run = '0069',proj=system.file('external',package = 'TFL')),
+                   stem = paste0('RNMEx1'),
+                   fileDir = fd,imgFormat = 'svg',
+                   returnType=rt,
+                   ignore.stdout=T)
+
 </pre>
 
 
