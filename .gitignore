@@ -6,3 +6,7 @@ DefaultsFirst.Rout
 plotList.Rout
 tmp
 tabList.Rout
+deliv/*
+.gitignore
+.Rbuildignore
+TFL.Rproj
