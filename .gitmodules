@@ -1,0 +1,6 @@
+[submodule "GUI"]
+	path = GUI
+	url = git@github.com:metrumresearchgroup/GUI.git
+[submodule "TFL"]
+	path = TFL
+	url = git@github.com:metrumresearchgroup/TFL.git
