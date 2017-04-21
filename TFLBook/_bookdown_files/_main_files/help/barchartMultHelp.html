@@ -9,8 +9,7 @@
 
 <h3>Description</h3>
 
-<p><code>barchartMult</code> returns a barchart for each categorical 
-variable listed.
+<p><code>barchartMult</code> returns a barchart for each categorical variable listed.
 </p>
 
 
@@ -24,7 +23,7 @@ barchartMult(datFile, ID = "NMID", catList = list(c("SEX", "Gender"),
   themeAxisTitleColour = "black", themePanelBackgroundFill = "white",
   themePanelGridSize = NULL, themePanelGridColour = "white",
   themePanelLineType = 1, themePanelTitleSize = 1.2,
-  themePlotTitleColour = "black", nrow = 1, srcAdd = TRUE,
+  themePlotTitleColour = "black", fnrow = 1, srcAdd = TRUE,
   srcPath = ".", srcName = "script", figPath = "../deliv/figure",
   figName = "Rplot.pdf", ...)
 </pre>
@@ -35,17 +34,95 @@ barchartMult(datFile, ID = "NMID", catList = list(c("SEX", "Gender"),
 <table summary="R argblock">
 <tr valign="top"><td><code>datFile</code></td>
 <td>
-<p>A 'data.frame' containing variables listed in <code>catList</code></p>
+<p>data.frame, contains the necessary variables to produce the output</p>
+</td></tr>
+<tr valign="top"><td><code>ID</code></td>
+<td>
+<p>numeric, vector of the patient IDs to plot, Default: 'NMID'</p>
 </td></tr>
 <tr valign="top"><td><code>catList</code></td>
 <td>
-<p>A list of pairs of strings.  The first string in each pair is 
-the variable name in <code>datFile</code>, while the second is the label to be
-printed for the variable</p>
+<p>list, list of two element vectors giving the column name and rename, 
+Default: list(c(&quot;SEX&quot;, &quot;Gender&quot;), c(&quot;RACE&quot;, &quot;Race&quot;), c(&quot;DIS&quot;, &quot;Disease status&quot;))</p>
 </td></tr>
-<tr valign="top"><td><code>theme*</code></td>
+<tr valign="top"><td><code>themeUpdate</code></td>
 <td>
-<p>Various controls for the ggplot2 theme</p>
+<p>list, with theme elements to replace session theme, Default: list()</p>
+</td></tr>
+<tr valign="top"><td><code>themeTextSize</code></td>
+<td>
+<p>numeric, overall plot text size, Default: 14</p>
+</td></tr>
+<tr valign="top"><td><code>themePlotTitleSize</code></td>
+<td>
+<p>numeric, plot title text size relative to themeTextSize, Default: 1.2</p>
+</td></tr>
+<tr valign="top"><td><code>themeAxisTxtSize</code></td>
+<td>
+<p>numeric, plot axis text size relative to themeTextSize, Default: 0.8</p>
+</td></tr>
+<tr valign="top"><td><code>themeAxisTxtColour</code></td>
+<td>
+<p>character, axis text colour, Default: 'black'</p>
+</td></tr>
+<tr valign="top"><td><code>themeAxisTitleTxtSize</code></td>
+<td>
+<p>numeric, plot axis title text size relative to themeTextSize, Default: 0.9</p>
+</td></tr>
+<tr valign="top"><td><code>themeAxisTitleColour</code></td>
+<td>
+<p>character, axis title text colour, Default: 'black'</p>
+</td></tr>
+<tr valign="top"><td><code>themePanelBackgroundFill</code></td>
+<td>
+<p>character, plot background colour, Default: 'white'</p>
+</td></tr>
+<tr valign="top"><td><code>themePanelGridSize</code></td>
+<td>
+<p>numeric, grid line size, Default: NULL</p>
+</td></tr>
+<tr valign="top"><td><code>themePanelGridColour</code></td>
+<td>
+<p>character, grid lines colour, Default: 'white'</p>
+</td></tr>
+<tr valign="top"><td><code>themePanelLineType</code></td>
+<td>
+<p>numeric, grid line type, Default: 1</p>
+</td></tr>
+<tr valign="top"><td><code>themePanelTitleSize</code></td>
+<td>
+<p>numeric, panel title text size relative to themeTextSize, Default: 1.2</p>
+</td></tr>
+<tr valign="top"><td><code>themePlotTitleColour</code></td>
+<td>
+<p>character, panel title text colour, Default: 'black'</p>
+</td></tr>
+<tr valign="top"><td><code>fnrow</code></td>
+<td>
+<p>integer, Number of rows passed to facet_wrap, Default: 1</p>
+</td></tr>
+<tr valign="top"><td><code>srcAdd</code></td>
+<td>
+<p>boolean, add source caption to output Default: TRUE, Default: TRUE</p>
+</td></tr>
+<tr valign="top"><td><code>srcPath</code></td>
+<td>
+<p>character, source script path, Default: '.'</p>
+</td></tr>
+<tr valign="top"><td><code>srcName</code></td>
+<td>
+<p>character, source script name, Default: 'script'</p>
+</td></tr>
+<tr valign="top"><td><code>figPath</code></td>
+<td>
+<p>character, Output figure path, Default: '../deliv/figure'</p>
+</td></tr>
+<tr valign="top"><td><code>figName</code></td>
+<td>
+<p>character, Output figure name, Default: 'Rplot.pdf'</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
 </td></tr>
 </table>
 
@@ -63,7 +140,7 @@ printed with the corresponding method.
 data("twoCmt")
 barchartMult(datFile = twoCmt)
 barchartMult(datFile = twoCmt,catList = list(c('SEX','Gender')))
-barchartMult(datFile = twoCmt,nrow=2)
+barchartMult(datFile = twoCmt,fnrow=2)
 </pre>
 
 

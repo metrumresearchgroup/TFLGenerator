@@ -16,7 +16,20 @@
 <h3>Usage</h3>
 
 <pre>
-OBSvIPRED(datFile,  xBy = "IPRE", yBy = "DV", groupBy=NULL, markBy = NULL, xLimit = NULL, yLimit = xLimit, xBreaks = lseq(datFile[c(xBy, yBy)]), yBreaks = xBreaks, xForm = waiver(), yForm = xForm, xScale = log10_trans(), yScale = xScale, Title = "", xLab = "Individiual Prediction", yLab = "Observed Plasma Concentration", facetBy = "", minorTicks = FALSE, ...)
+OBSvIPRED(datFile, xBy = "IPRE", yBy = "DV", groupBy = NULL,
+  markBy = NULL, markByType = "Discrete", obsLabel = NULL,
+  smoothType = ifelse(nrow(datFile) &lt;= 1000, "loess", "gam"), xLimit = "",
+  xBreaks = waiver(), xForm = waiver(), xScale = scales::log10_trans(),
+  Title = "", xLab = "Individiual Prediction",
+  yLab = "Observed Plasma Concentration", facetBy = "", fF = "",
+  fnrow = "", fncol = "", fscales = "fixed", minorTicks = NULL,
+  minorTickNum = 10, themeUpdate = list(), themeTextSize = 14,
+  themePlotTitleSize = 1.2, themeAxisTxtSize = 0.8,
+  themeAxisTxtColour = "black", themeAxisTitleTxtSize = 0.9,
+  themeAxisTitleColour = "black", themePanelBackgroundFill = "white",
+  themePanelGridSize = NULL, themePanelGridColour = "white",
+  themePanelLineType = 1, themePanelTitleSize = 1.2,
+  themePlotTitleColour = "black", themePlotLegendPosition = "right", ...)
 </pre>
 
 
@@ -25,75 +38,150 @@ OBSvIPRED(datFile,  xBy = "IPRE", yBy = "DV", groupBy=NULL, markBy = NULL, xLimi
 <table summary="R argblock">
 <tr valign="top"><td><code>datFile</code></td>
 <td>
-<p>data.frame output of a NM run containing ER-SSAP standard column names and numeric-only columns</p>
+<p>data.frame, contains the necessary variables to produce the output</p>
 </td></tr>
 <tr valign="top"><td><code>xBy</code></td>
 <td>
-<p>character column name for x-axis</p>
+<p>character, Column name for X-axis, Default: 'IPRE'</p>
 </td></tr>
 <tr valign="top"><td><code>yBy</code></td>
 <td>
-<p>character column name for y-axis</p>
+<p>character, Column name for Y-axis, Default: 'DV'</p>
 </td></tr>
 <tr valign="top"><td><code>groupBy</code></td>
 <td>
-<p>character column name for  groupings within the plot (such as smoothing line)</p>
+<p>character, column name for groupings within the output, Default: NULL</p>
 </td></tr>
 <tr valign="top"><td><code>markBy</code></td>
 <td>
-<p>character column name for characteristic groupings within the plot (such as color and shape)</p>
+<p>character, column name on which to mark by different colors, Default: NULL</p>
+</td></tr>
+<tr valign="top"><td><code>markByType</code></td>
+<td>
+<p>character, controls the type of variable expected mapped to markBy c(&quot;Discrete&quot;, &quot;Continuous&quot;), Default: 'Discrete'</p>
+</td></tr>
+<tr valign="top"><td><code>obsLabel</code></td>
+<td>
+<p>character, if set to a column name annotation of text is used instead of points, Default: NULL</p>
+</td></tr>
+<tr valign="top"><td><code>smoothType</code></td>
+<td>
+<p>function|character, function used for interpolation, Default: ifelse(nrow(datFile) &lt;= 1000,&quot;loess&quot;,&quot;gam&quot;)</p>
 </td></tr>
 <tr valign="top"><td><code>xLimit</code></td>
 <td>
-<p>vector input for x-axis limits example: c(.1,100000)</p>
+<p>numeric, Two element vector giving the lower and upper limits of the X-axis, Default: &rdquo;</p>
 </td></tr>
 <tr valign="top"><td><code>xBreaks</code></td>
 <td>
-<p>vector input for x-axis breaks.  Best set as a log sequence of the range of x and y data.</p>
+<p>numeric, Vector input for X-axis breaks, Default: waiver()</p>
 </td></tr>
 <tr valign="top"><td><code>xForm</code></td>
 <td>
-<p>function format of the x-axis (options: comma, scientific, percent or waiver() for no formatting)</p>
+<p>function|character,  Format of the X-axis variable tick label, Default: waiver()</p>
 </td></tr>
 <tr valign="top"><td><code>xScale</code></td>
 <td>
-<p>function format for the x-axis (options, &quot;identity&quot;, log10_trans(), log_trans())</p>
+<p>function|character,  Scale transformtion for the X-axis variable, Default: scales::log10_trans()</p>
 </td></tr>
 <tr valign="top"><td><code>Title</code></td>
 <td>
-<p>character figure title</p>
+<p>character, Figure title, Default: &rdquo;</p>
 </td></tr>
 <tr valign="top"><td><code>xLab</code></td>
 <td>
-<p>character x-axis title</p>
+<p>character, Label of X-axis, Default: 'Individiual Prediction'</p>
 </td></tr>
 <tr valign="top"><td><code>yLab</code></td>
 <td>
-<p>character y-axis title</p>
+<p>character, Label of Y-axis, Default: 'Observed Plasma Concentration'</p>
 </td></tr>
 <tr valign="top"><td><code>facetBy</code></td>
 <td>
-<p>character column name for optional faceting</p>
+<p>character, column name for figure faceting, Default: &rdquo;</p>
+</td></tr>
+<tr valign="top"><td><code>fF</code></td>
+<td>
+<p>character, Labels for the facet levels in the form &quot;Level1,Label1;Level2,Label2&quot;, Default: &rdquo;</p>
+</td></tr>
+<tr valign="top"><td><code>fnrow</code></td>
+<td>
+<p>integer, Number of rows passed to facet_wrap, Default: &rdquo;</p>
+</td></tr>
+<tr valign="top"><td><code>fncol</code></td>
+<td>
+<p>integer, Number of columns passed to facet_wrap, Default: &rdquo;</p>
+</td></tr>
+<tr valign="top"><td><code>fscales</code></td>
+<td>
+<p>character, Scale type for facet_wrap c(&quot;fixed&quot;,&quot;free&quot;,&quot;free_y&quot;,&quot;free_x&quot;), Default: 'fixed'</p>
 </td></tr>
 <tr valign="top"><td><code>minorTicks</code></td>
 <td>
-<p>logical indicating whether minor log 10 ticks should be added to the y and x axis</p>
+<p>character, sides to add minorticks, t,b,l,r; if NULL (default) no minor ticks are created, Default: NULL</p>
 </td></tr>
-<tr valign="top"><td><code>yLimit</code></td>
+<tr valign="top"><td><code>minorTickNum</code></td>
 <td>
-<p>vector input for y-axis limits example: c(.1,100000).  For best comparison should be left as the default (set to xLimit)</p>
+<p>integer, number of minor ticks between major ticks, Default: 10</p>
 </td></tr>
-<tr valign="top"><td><code>yBreaks</code></td>
+<tr valign="top"><td><code>themeUpdate</code></td>
 <td>
-<p>vector input for x-axis breaks.  For best comparison should be left as the default (set to xBreaks)</p>
+<p>list, with theme elements to replace session theme, Default: list()</p>
 </td></tr>
-<tr valign="top"><td><code>yForm</code></td>
+<tr valign="top"><td><code>themeTextSize</code></td>
 <td>
-<p>function format of the y-axis (options: comma, scientific, percent or waiver() for no formatting)</p>
+<p>numeric, overall plot text size, Default: 14</p>
 </td></tr>
-<tr valign="top"><td><code>yScale</code></td>
+<tr valign="top"><td><code>themePlotTitleSize</code></td>
 <td>
-<p>function format for the y-axis (options, &quot;identity&quot;, log10_trans(), log_trans())</p>
+<p>numeric, plot title text size relative to themeTextSize, Default: 1.2</p>
+</td></tr>
+<tr valign="top"><td><code>themeAxisTxtSize</code></td>
+<td>
+<p>numeric, plot axis text size relative to themeTextSize, Default: 0.8</p>
+</td></tr>
+<tr valign="top"><td><code>themeAxisTxtColour</code></td>
+<td>
+<p>character, axis text colour, Default: 'black'</p>
+</td></tr>
+<tr valign="top"><td><code>themeAxisTitleTxtSize</code></td>
+<td>
+<p>numeric, plot axis title text size relative to themeTextSize, Default: 0.9</p>
+</td></tr>
+<tr valign="top"><td><code>themeAxisTitleColour</code></td>
+<td>
+<p>character, axis title text colour, Default: 'black'</p>
+</td></tr>
+<tr valign="top"><td><code>themePanelBackgroundFill</code></td>
+<td>
+<p>character, plot background colour, Default: 'white'</p>
+</td></tr>
+<tr valign="top"><td><code>themePanelGridSize</code></td>
+<td>
+<p>numeric, grid line size, Default: NULL</p>
+</td></tr>
+<tr valign="top"><td><code>themePanelGridColour</code></td>
+<td>
+<p>character, grid lines colour, Default: 'white'</p>
+</td></tr>
+<tr valign="top"><td><code>themePanelLineType</code></td>
+<td>
+<p>numeric, grid line type, Default: 1</p>
+</td></tr>
+<tr valign="top"><td><code>themePanelTitleSize</code></td>
+<td>
+<p>numeric, panel title text size relative to themeTextSize, Default: 1.2</p>
+</td></tr>
+<tr valign="top"><td><code>themePlotTitleColour</code></td>
+<td>
+<p>character, panel title text colour, Default: 'black'</p>
+</td></tr>
+<tr valign="top"><td><code>themePlotLegendPosition</code></td>
+<td>
+<p>character, legend position, Default: 'right'</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
 </td></tr>
 </table>
 
@@ -114,7 +202,7 @@ OBSvIPRED(datFile,  xBy = "IPRE", yBy = "DV", groupBy=NULL, markBy = NULL, xLimi
 
 <pre>
 data("twoCmt")
-OBSvIPRED(twoCmt%&gt;%filter(DV&gt;0),xBy='IPRED')
+OBSvIPRED(twoCmt%&gt;%dplyr::filter(DV&gt;0),xBy='IPRED')
 OBSvIPRED(twoCmt,xBy='IPRED',xScale = 'identity',markBy = 'SEX')
 </pre>
 

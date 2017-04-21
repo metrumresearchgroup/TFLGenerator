@@ -16,7 +16,19 @@
 <h3>Usage</h3>
 
 <pre>
-ggpairs(datFile, xCols = grep("ETA", names(datFile), value = TRUE), xLimit = NULL, yLimit = NULL, xForm = waiver(), yForm = waiver(), xScale = "identity", yScale = "identity", facetBy = "", ...)
+ggpairs(datFile, xCols = grep("ETA", names(datFile), value = TRUE),
+  xLab = xCols, xLimit = NULL, yLimit = NULL, xForm = waiver(),
+  yForm = waiver(), xScale = "identity", yScale = "identity",
+  facetBy = "", corstat = "R2", project = getwd(), runno = "",
+  minorTicks = NULL, minorTickNum = 10, themeUpdate = list(),
+  themeTextSize = 14, themePlotTitleSize = 1.2, themeAxisTxtSize = 0.8,
+  themeAxisTxtColour = "black", themeAxisTitleTxtSize = 0.9,
+  themeAxisTitleColour = "black", themePanelBackgroundFill = "white",
+  themePanelGridSize = NULL, themePanelGridColour = "white",
+  themePanelLineType = 1, themePanelTitleSize = 1.2,
+  themePlotTitleColour = "black", srcAdd = TRUE, srcPath = ".",
+  srcName = "script", figPath = "../deliv/figure", figName = "Rplot.pdf",
+  ...)
 </pre>
 
 
@@ -25,59 +37,138 @@ ggpairs(datFile, xCols = grep("ETA", names(datFile), value = TRUE), xLimit = NUL
 <table summary="R argblock">
 <tr valign="top"><td><code>datFile</code></td>
 <td>
-<p>data.frame output of a NM run containing ER-SSAP standard column names and numeric-only columns</p>
+<p>data.frame, contains the necessary variables to produce the output</p>
 </td></tr>
 <tr valign="top"><td><code>xCols</code></td>
 <td>
-<p>character column names</p>
+<p>character, Column name(s) for x-axis variable(s), Default: grep(&quot;ETA&quot;, names(datFile), value = TRUE)</p>
+</td></tr>
+<tr valign="top"><td><code>xLab</code></td>
+<td>
+<p>character, Label of X-axis, Default: xCols</p>
 </td></tr>
 <tr valign="top"><td><code>xLimit</code></td>
 <td>
-<p>vector input for x-axis limits example: c(0,10) of lower triangle plots</p>
+<p>numeric, Two element vector giving the lower and upper limits of the x-axis, Default: NULL</p>
 </td></tr>
 <tr valign="top"><td><code>yLimit</code></td>
 <td>
-<p>vector input for y-axis limits example: c(.1,100000) of lower triangle plots</p>
+<p>numeric, Two element vector giving the lower and upper limits of the y-axis, Default: NULL</p>
 </td></tr>
 <tr valign="top"><td><code>xForm</code></td>
 <td>
-<p>function format of the x-axis (options: comma, scientific, percent or waiver() for no formatting) of lower triangle plots</p>
+<p>function|character,  Format of the x-axis variable tick label, Default: waiver()</p>
 </td></tr>
 <tr valign="top"><td><code>yForm</code></td>
 <td>
-<p>function format of the y-axis (options: comma, scientific, percent or waiver() for no formatting) of lower triangle plots</p>
+<p>function|character,  Format of the y-axis variable tick label, Default: waiver()</p>
 </td></tr>
 <tr valign="top"><td><code>xScale</code></td>
 <td>
-<p>function format for the x-axis (options, &quot;identity&quot;, log10_trans(), log_trans()) of lower triangle plots</p>
+<p>function|character,  Scale transformtion for the x-axis variable, Default: 'identity'</p>
 </td></tr>
 <tr valign="top"><td><code>yScale</code></td>
 <td>
-<p>function format for the y-axis (options, &quot;identity&quot;, log10_trans(), log_trans()) of lower triangle plots</p>
+<p>function|character,  Scale transformtion for the y-axis variable, Default: 'identity'</p>
 </td></tr>
 <tr valign="top"><td><code>facetBy</code></td>
 <td>
-<p>character column name for optional faceting</p>
+<p>character, column name for figure faceting, Default: &rdquo;</p>
+</td></tr>
+<tr valign="top"><td><code>corstat</code></td>
+<td>
+<p>character, &quot;R2&quot; for adjusted R^2 or &quot;r&quot; for Pearson correlation, Default: 'R2'</p>
 </td></tr>
 <tr valign="top"><td><code>project</code></td>
 <td>
-<p>string indicating home directory of the Nonmem Run defaults to the current working directory</p>
+<p>character, Home directory of the NONMEM Run, Default: getwd()</p>
 </td></tr>
 <tr valign="top"><td><code>runno</code></td>
 <td>
-<p>character vector of run numbers</p>
+<p>character, Vector of run NONMEM numbers, Default: &rdquo;</p>
 </td></tr>
 <tr valign="top"><td><code>minorTicks</code></td>
 <td>
-<p>Logical, include minor ticks?</p>
+<p>character, sides to add minorticks, t,b,l,r; if NULL (default) no minor ticks are created, Default: NULL</p>
 </td></tr>
 <tr valign="top"><td><code>minorTickNum</code></td>
 <td>
-<p>Integer, number of minor ticks between major ticks</p>
+<p>integer, number of minor ticks between major ticks, Default: 10</p>
 </td></tr>
-<tr valign="top"><td><code>theme*</code></td>
+<tr valign="top"><td><code>themeUpdate</code></td>
 <td>
-<p>Various controls for the ggplot2 theme</p>
+<p>list, with theme elements to replace session theme, Default: list()</p>
+</td></tr>
+<tr valign="top"><td><code>themeTextSize</code></td>
+<td>
+<p>numeric, overall plot text size, Default: 14</p>
+</td></tr>
+<tr valign="top"><td><code>themePlotTitleSize</code></td>
+<td>
+<p>numeric, plot title text size relative to themeTextSize, Default: 1.2</p>
+</td></tr>
+<tr valign="top"><td><code>themeAxisTxtSize</code></td>
+<td>
+<p>numeric, plot axis text size relative to themeTextSize, Default: 0.8</p>
+</td></tr>
+<tr valign="top"><td><code>themeAxisTxtColour</code></td>
+<td>
+<p>character, axis text colour, Default: 'black'</p>
+</td></tr>
+<tr valign="top"><td><code>themeAxisTitleTxtSize</code></td>
+<td>
+<p>numeric, plot axis title text size relative to themeTextSize, Default: 0.9</p>
+</td></tr>
+<tr valign="top"><td><code>themeAxisTitleColour</code></td>
+<td>
+<p>character, axis title text colour, Default: 'black'</p>
+</td></tr>
+<tr valign="top"><td><code>themePanelBackgroundFill</code></td>
+<td>
+<p>character, plot background colour, Default: 'white'</p>
+</td></tr>
+<tr valign="top"><td><code>themePanelGridSize</code></td>
+<td>
+<p>numeric, grid line size, Default: NULL</p>
+</td></tr>
+<tr valign="top"><td><code>themePanelGridColour</code></td>
+<td>
+<p>character, grid lines colour, Default: 'white'</p>
+</td></tr>
+<tr valign="top"><td><code>themePanelLineType</code></td>
+<td>
+<p>numeric, grid line type, Default: 1</p>
+</td></tr>
+<tr valign="top"><td><code>themePanelTitleSize</code></td>
+<td>
+<p>numeric, panel title text size relative to themeTextSize, Default: 1.2</p>
+</td></tr>
+<tr valign="top"><td><code>themePlotTitleColour</code></td>
+<td>
+<p>character, panel title text colour, Default: 'black'</p>
+</td></tr>
+<tr valign="top"><td><code>srcAdd</code></td>
+<td>
+<p>boolean, add source caption to output, Default: TRUE</p>
+</td></tr>
+<tr valign="top"><td><code>srcPath</code></td>
+<td>
+<p>character, source script path, Default: '.'</p>
+</td></tr>
+<tr valign="top"><td><code>srcName</code></td>
+<td>
+<p>character, source script name, Default: 'script'</p>
+</td></tr>
+<tr valign="top"><td><code>figPath</code></td>
+<td>
+<p>character, Output figure path, Default: '../deliv/figure'</p>
+</td></tr>
+<tr valign="top"><td><code>figName</code></td>
+<td>
+<p>character, Output figure name, Default: 'Rplot.pdf'</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
 </td></tr>
 </table>
 

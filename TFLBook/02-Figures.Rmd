@@ -20,7 +20,7 @@
 
 data("twoCmt")
 ConcvTime(datFile = twoCmt,ID = '1',ipredVar = 'IPRED')
-ConcvTime(datFile = twoCmt,ID = '1',ipredVar = 'IPRED',minorTicks = T)
+ConcvTime(datFile = twoCmt,ID = '1',ipredVar = 'IPRED',minorTicks = 'b')
 
 
 
@@ -49,7 +49,7 @@ ConcvTime(datFile = twoCmt,ID = '1',ipredVar = 'IPRED',minorTicks = T)
 ### ** Examples
 
 data("twoCmt")
-twoCmt=twoCmt%>%mutate(DOSE=factor(DOSE))
+twoCmt=twoCmt%>%dplyr::mutate(DOSE=factor(DOSE))
 ConcvTimeInd(datFile = twoCmt)
 ConcvTimeInd(datFile = twoCmt,facetByRow = 'SEX')
 
@@ -80,9 +80,9 @@ ConcvTimeInd(datFile = twoCmt,facetByRow = 'SEX')
 ### ** Examples
 
 data("twoCmt")
-twoCmt=twoCmt%>%mutate(DOSE=factor(DOSE))
-ConcvTimeMult(datFile = twoCmt,ipredVar='IPRED',genAll=F,page=1)
-ConcvTimeMult(datFile = twoCmt,ipredVar='IPRED',genAll=F,page=2,nrow =5,ncol=4)
+twoCmt=twoCmt%>%dplyr::mutate(DOSE=factor(DOSE))
+ConcvTimeMult(datFile = twoCmt,ipredVar='IPRED',genAll=FALSE,page=1)
+ConcvTimeMult(datFile = twoCmt,ipredVar='IPRED',genAll=FALSE,page=2,fnrow =5,fncol=4)
 
 rug.data=addlExpand( tab =file.path(find.package('TFL'),'external/mi210/510/510.tab'),
 demog = file.path(find.package('TFL'),'external/mi210/poppk_wcovs.csv'),
@@ -95,69 +95,11 @@ ConcvTimeMult(datFile = rug.data,
               groupBy='ID',
               xBy = 'TIME',
               ipredVar = 'IPRED',
-              genAll = F,
+              genAll = FALSE,
               ID=1:9,
               rugVar = 'EVID',
               rugVals = 1)
 
-
-
-
-        
-
-
-  ```
-  
-## ConcvTimeSum
-        
-
-```{r results='asis',echo=FALSE}
- fn.src('ConcvTimeSum','TFL',hlp.dir)
- ```
-        
-
-```{r ConcvTimeSum, echo=TRUE,fig.show='show',warning=FALSE}
-
-        
-
-### Name: ConcvTimeSum
-### Title: Concentration vs time profiles for groups of patients (summary
-###   plot)
-### Aliases: ConcvTimeSum
-
-### ** Examples
-
-data("twoCmt")
-twoCmt=twoCmt%>%mutate_each(funs(factor),DOSE,SEX)
-ConcvTimeSum(datFile = manipDat(twoCmt,groupBy = 'SEX',sumThis = T))
-
-
-
-        
-
-
-  ```
-  
-## GOF
-        
-
-```{r results='asis',echo=FALSE}
- fn.src('GOF','TFL',hlp.dir)
- ```
-        
-
-```{r GOF, echo=TRUE,fig.show='show',warning=FALSE}
-
-        
-
-### Name: GOF
-### Title: Goodness of fit plots
-### Aliases: GOF
-
-### ** Examples
-
-data("twoCmt")
-GOF(twoCmt,cwresBy = 'IRES')
 
 
 
@@ -186,7 +128,7 @@ GOF(twoCmt,cwresBy = 'IRES')
 ### ** Examples
 
 data("twoCmt")
-OBSvIPRED(twoCmt%>%filter(DV>0),xBy='IPRED')
+OBSvIPRED(twoCmt%>%dplyr::filter(DV>0),xBy='IPRED')
 OBSvIPRED(twoCmt,xBy='IPRED',xScale = 'identity',markBy = 'SEX')
 
 
@@ -247,7 +189,7 @@ QQplot(twoCmt,facetBy = 'DOSE')
 data("twoCmt")
 barchartMult(datFile = twoCmt)
 barchartMult(datFile = twoCmt,catList = list(c('SEX','Gender')))
-barchartMult(datFile = twoCmt,nrow=2)
+barchartMult(datFile = twoCmt,fnrow=2)
 
 
 
@@ -304,7 +246,7 @@ covCat(twoCmt,catList = list(list('SEX','Gender'),list('DOSE')),conList = list(l
 ### ** Examples
 
 data("twoCmt")
-covCon(twoCmt,conList_x = 'IPRED',conList_y = 'ETA1',nCol=1)
+covCon(twoCmt,conList_x = 'IPRED',conList_y = 'ETA1',plotCols=1)
 covCon(twoCmt,
 conList_x = list(
 list('IPRED','Individual Prediction'),
@@ -315,35 +257,6 @@ list('ETA1',expression(eta[1]))
 )
 )
 
-
-
-
-        
-
-
-  ```
-  
-## distMult
-        
-
-```{r results='asis',echo=FALSE}
- fn.src('distMult','TFL',hlp.dir)
- ```
-        
-
-```{r distMult, echo=TRUE,fig.show='show',warning=FALSE}
-
-        
-
-### Name: distMult
-### Title: Multipanel distribution
-### Aliases: distMult
-
-### ** Examples
-
-data("twoCmt")
-distMult(twoCmt)
-distMult(twoCmt,order = c("Boxplot","Density","QQ"))
 
 
 
@@ -374,35 +287,6 @@ data("twoCmt")
 ggpairs(twoCmt,xCols=c('ETA1','ETA2'))
 ggpairs(twoCmt,xCols=c('ETA1','ETA2','ETA5'))
 ggpairs(twoCmt,xCols=c('ETA1','ETA2','ETA5'),runno='0069',project = system.file('external',package = 'TFL'))
-
-
-
-        
-
-
-  ```
-  
-## ggpairs_generator
-        
-
-```{r results='asis',echo=FALSE}
- fn.src('ggpairs_generator','TFL',hlp.dir)
- ```
-        
-
-```{r ggpairs_generator, echo=TRUE,fig.show='show',warning=FALSE}
-
-        
-
-### Name: ggpairs_generator
-### Title: Correlation Comparison plot
-### Aliases: ggpairs_generator
-
-### ** Examples
-
-data("twoCmt")
-ggpairs(twoCmt,xCols=c('ETA1','ETA2'))
-ggpairs(twoCmt,xCols=c('ETA1','ETA2','ETA5'))
 
 
 

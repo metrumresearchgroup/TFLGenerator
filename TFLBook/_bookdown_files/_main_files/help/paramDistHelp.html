@@ -16,7 +16,19 @@
 <h3>Usage</h3>
 
 <pre>
-paramDist(datFile, xBy = "ETA1", binWidth = 0.1, groupBy = NULL, markBy = NULL, xLimit = NULL, yLimit = NULL, xForm = waiver(), yForm = waiver(), xScale = "identity", yScale = "identity", Title = "", xLab = "ETA1", yLab = "Percent", facetBy = "", runno = "", project = getwd(), ...)
+paramDist(datFile, xCols = "ETA1", binWidth = 0.1, groupBy = NULL,
+  xLimit = NULL, yLimit = NULL, xForm = ggplot2::waiver(),
+  yForm = ggplot2::waiver(), xScale = "identity", yScale = "identity",
+  Title = "", xLab = "xCols", yLab = "Percent", facetBy = "", fF = "",
+  fnrow = "", fncol = "", fscales = "fixed", runno = "",
+  project = getwd(), plotCols = 1, plotRows = 1, minorTicks = "bl",
+  minorTickNum = 10, themeUpdate = list(), themeTextSize = 14,
+  themePlotTitleSize = 1.2, themeAxisTxtSize = 0.8,
+  themeAxisTxtColour = "black", themeAxisTitleTxtSize = 0.9,
+  themeAxisTitleColour = "black", themePanelBackgroundFill = "white",
+  themePanelGridSize = NULL, themePanelGridColour = "white",
+  themePanelLineType = 1, themePanelTitleSize = 1.2,
+  themePlotTitleColour = "black", ...)
 </pre>
 
 
@@ -25,71 +37,154 @@ paramDist(datFile, xBy = "ETA1", binWidth = 0.1, groupBy = NULL, markBy = NULL, 
 <table summary="R argblock">
 <tr valign="top"><td><code>datFile</code></td>
 <td>
-<p>data.frame output of a NM run containing ER-SSAP standard column names and numeric-only columns</p>
+<p>data.frame, contains the necessary variables to produce the output</p>
 </td></tr>
 <tr valign="top"><td><code>xCols</code></td>
 <td>
-<p>character column name for x-axis, likely an ETA</p>
+<p>character, Column name(s) for X-axis variable(s), Default: 'ETA1'</p>
 </td></tr>
 <tr valign="top"><td><code>binWidth</code></td>
 <td>
-<p>numeric describing the histogram bin width</p>
+<p>numeric, histogram bin width, Default: 0.1</p>
 </td></tr>
 <tr valign="top"><td><code>groupBy</code></td>
 <td>
-<p>character colum name to group data within the plot (likely not used)</p>
+<p>character, column name for groupings within the output, Default: NULL</p>
 </td></tr>
 <tr valign="top"><td><code>xLimit</code></td>
 <td>
-<p>vector input for x-axis limits example: c(0,10)</p>
+<p>numeric, Two element vector giving the lower and upper limits of the X-axis, Default: NULL</p>
 </td></tr>
 <tr valign="top"><td><code>yLimit</code></td>
 <td>
-<p>vector input for y-axis limits example: c(.1,100000)</p>
+<p>numeric, Two element vector giving the lower and upper limits of the Y-axis, Default: NULL</p>
 </td></tr>
 <tr valign="top"><td><code>xForm</code></td>
 <td>
-<p>function format of the x-axis (options: comma, scientific, percent or waiver() for no formatting)</p>
+<p>function|character,  Format of the X-axis variable tick label, Default: ggplot2::waiver()</p>
 </td></tr>
 <tr valign="top"><td><code>yForm</code></td>
 <td>
-<p>function format of the y-axis (options: comma, scientific, percent or waiver() for no formatting)</p>
+<p>function|character,  Format of the Y-axis variable tick label, Default: ggplot2::waiver()</p>
 </td></tr>
 <tr valign="top"><td><code>xScale</code></td>
 <td>
-<p>function format for the x-axis (options, &quot;identity&quot;, log10_trans(), log_trans())</p>
+<p>function|character,  Scale transformtion for the X-axis variable, Default: 'identity'</p>
 </td></tr>
 <tr valign="top"><td><code>yScale</code></td>
 <td>
-<p>function format for the y-axis (options, &quot;identity&quot;, log10_trans(), log_trans())</p>
+<p>function|character,  Scale transformtion for the Y-axis variable, Default: 'identity'</p>
 </td></tr>
 <tr valign="top"><td><code>Title</code></td>
 <td>
-<p>character figure title</p>
+<p>character, Figure title, Default: &rdquo;</p>
 </td></tr>
 <tr valign="top"><td><code>xLab</code></td>
 <td>
-<p>character x-axis title</p>
+<p>character, Label of X-axis, Default: 'xCols'</p>
 </td></tr>
 <tr valign="top"><td><code>yLab</code></td>
 <td>
-<p>character y-axis title</p>
+<p>character, Label of Y-axis, Default: 'Percent'</p>
 </td></tr>
 <tr valign="top"><td><code>facetBy</code></td>
 <td>
-<p>character column name for optional faceting</p>
+<p>character, column name for figure faceting, Default: &rdquo;</p>
+</td></tr>
+<tr valign="top"><td><code>fF</code></td>
+<td>
+<p>character, Labels for the facet levels in the form &quot;Level1,Label1;Level2,Label2&quot;, Default: &rdquo;</p>
+</td></tr>
+<tr valign="top"><td><code>fnrow</code></td>
+<td>
+<p>integer, Number of rows passed to facet_wrap, Default: &rdquo;</p>
+</td></tr>
+<tr valign="top"><td><code>fncol</code></td>
+<td>
+<p>integer, Number of columns passed to facet_wrap, Default: &rdquo;</p>
+</td></tr>
+<tr valign="top"><td><code>fscales</code></td>
+<td>
+<p>character, Scale type for facet_wrap c(&quot;fixed&quot;,&quot;free&quot;,&quot;free_y&quot;,&quot;free_x&quot;), Default: 'fixed'</p>
 </td></tr>
 <tr valign="top"><td><code>runno</code></td>
 <td>
-<p>character run number (&quot;0068&quot;) to obtain eta shrinkage values</p>
+<p>character, Vector of run NONMEM numbers, Default: &rdquo;</p>
 </td></tr>
 <tr valign="top"><td><code>project</code></td>
 <td>
-<p>character project path to obtain eta shrinkage values from *.xml nonmem output</p>
+<p>character, Home directory of the NONMEM Run, Default: getwd()</p>
 </td></tr>
-<tr valign="top"><td><code>markBy</code></td>
+<tr valign="top"><td><code>plotCols</code></td>
 <td>
-<p>character column name for characteristic groupings within the plot (such as color and shape, likely not used</p>
+<p>integer, Number of columns to arrange plots into grid output, Default: 1</p>
+</td></tr>
+<tr valign="top"><td><code>plotRows</code></td>
+<td>
+<p>integer, Number of rows to arrange plots into grid output, Default: 1</p>
+</td></tr>
+<tr valign="top"><td><code>minorTicks</code></td>
+<td>
+<p>character, sides to add minorticks, t,b,l,r; if NULL (default) no minor ticks are created, Default: 'bl'</p>
+</td></tr>
+<tr valign="top"><td><code>minorTickNum</code></td>
+<td>
+<p>integer, number of minor ticks between major ticks, Default: 10</p>
+</td></tr>
+<tr valign="top"><td><code>themeUpdate</code></td>
+<td>
+<p>list, with theme elements to replace session theme, Default: list()</p>
+</td></tr>
+<tr valign="top"><td><code>themeTextSize</code></td>
+<td>
+<p>numeric, overall plot text size, Default: 14</p>
+</td></tr>
+<tr valign="top"><td><code>themePlotTitleSize</code></td>
+<td>
+<p>numeric, plot title text size relative to themeTextSize, Default: 1.2</p>
+</td></tr>
+<tr valign="top"><td><code>themeAxisTxtSize</code></td>
+<td>
+<p>numeric, plot axis text size relative to themeTextSize, Default: 0.8</p>
+</td></tr>
+<tr valign="top"><td><code>themeAxisTxtColour</code></td>
+<td>
+<p>character, axis text colour, Default: 'black'</p>
+</td></tr>
+<tr valign="top"><td><code>themeAxisTitleTxtSize</code></td>
+<td>
+<p>numeric, plot axis title text size relative to themeTextSize, Default: 0.9</p>
+</td></tr>
+<tr valign="top"><td><code>themeAxisTitleColour</code></td>
+<td>
+<p>character, axis title text colour, Default: 'black'</p>
+</td></tr>
+<tr valign="top"><td><code>themePanelBackgroundFill</code></td>
+<td>
+<p>character, plot background colour, Default: 'white'</p>
+</td></tr>
+<tr valign="top"><td><code>themePanelGridSize</code></td>
+<td>
+<p>numeric, grid line size, Default: NULL</p>
+</td></tr>
+<tr valign="top"><td><code>themePanelGridColour</code></td>
+<td>
+<p>character, grid lines colour, Default: 'white'</p>
+</td></tr>
+<tr valign="top"><td><code>themePanelLineType</code></td>
+<td>
+<p>numeric, grid line type, Default: 1</p>
+</td></tr>
+<tr valign="top"><td><code>themePanelTitleSize</code></td>
+<td>
+<p>numeric, panel title text size relative to themeTextSize, Default: 1.2</p>
+</td></tr>
+<tr valign="top"><td><code>themePlotTitleColour</code></td>
+<td>
+<p>character, panel title text colour, Default: 'black'</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
 </td></tr>
 </table>
 

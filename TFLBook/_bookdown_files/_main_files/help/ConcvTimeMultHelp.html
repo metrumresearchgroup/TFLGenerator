@@ -20,13 +20,13 @@ values of concentration
 <pre>
 ConcvTimeMult(datFile, groupBy = "NMID", xBy = "TAFD", yBy = "DV",
   ipredVar = "IPRE", predVar = "PRED", doseVar = "DOSE",
-  doseLab = "mg/kg", markBy = "DOSE", preserveMarkByLevels = F,
-  Color = T, rugVar = NULL, rugVals = 1, rugCols = "red",
+  doseLab = "mg/kg", markBy = "DOSE", preserveMarkByLevels = FALSE,
+  Color = TRUE, rugVar = NULL, rugVals = 1, rugCols = "red",
   blqVal = NULL, xLimit = NULL, yLimit = NULL, xForm = waiver(),
   yForm = waiver(), xScale = "identity", yScale = "log10",
   Title = "Individuals", xLab = "Time", yLab = "Concentration",
-  ncol = 3, nrow = 3, ID = NULL, minorTicks = FALSE,
-  minorTickNum = 10, genAll = T, page = 1, themeUpdate = list(),
+  fncol = 3, fnrow = 3, ID = NULL, minorTicks = NULL,
+  minorTickNum = 10, genAll = TRUE, page = 1, themeUpdate = list(),
   themeTextSize = 14, themePlotTitleSize = 1.2, themeAxisTxtSize = 0.8,
   themeAxisTxtColour = "black", themeAxisTitleTxtSize = 0.9,
   themeAxisTitleColour = "black", themePanelBackgroundFill = "white",
@@ -43,89 +43,204 @@ ConcvTimeMult(datFile, groupBy = "NMID", xBy = "TAFD", yBy = "DV",
 <table summary="R argblock">
 <tr valign="top"><td><code>datFile</code></td>
 <td>
-<p>A <code>data.frame</code> containing the necessary variables for the
-figure</p>
+<p>data.frame, contains the necessary variables to produce the output</p>
 </td></tr>
 <tr valign="top"><td><code>groupBy</code></td>
 <td>
-<p>Column name that identifies the subset of <code>datFile</code> to be
-used in each of the panels; typically, this is &quot;NMID&quot; or &quot;ID.</p>
+<p>character, column name for groupings within the output, Default: 'NMID'</p>
 </td></tr>
 <tr valign="top"><td><code>xBy</code></td>
 <td>
-<p>Name of the variable denoting the x axis (typically time) in 
-<code>datFile</code></p>
+<p>character, Column name for x-axis, Default: 'TAFD'</p>
 </td></tr>
 <tr valign="top"><td><code>yBy</code></td>
 <td>
-<p>Name of the variable containing the observed concentration values</p>
+<p>character, Column name for Y-axis, Default: 'DV'</p>
 </td></tr>
 <tr valign="top"><td><code>ipredVar</code></td>
 <td>
-<p>Individual prediction column</p>
+<p>character, Column name of the individual prediction variable, Default: 'IPRE'</p>
 </td></tr>
 <tr valign="top"><td><code>predVar</code></td>
 <td>
-<p>Population prediction column</p>
+<p>character, Column name containing the conditional prediction, Default: 'PRED'</p>
 </td></tr>
 <tr valign="top"><td><code>doseVar</code></td>
 <td>
-<p>Column name of <code>datFile</code> in which dosing labels are held.
-If specified, these doses will appear as titles per patient</p>
+<p>character, Column name of dosing variable  , Default: 'DOSE'</p>
 </td></tr>
 <tr valign="top"><td><code>doseLab</code></td>
 <td>
-<p>A label to be appended to the value in doseVar</p>
+<p>character, Column name of labels for the dosing variable, Default: 'mg/kg'</p>
 </td></tr>
 <tr valign="top"><td><code>markBy</code></td>
 <td>
-<p>ignored</p>
+<p>character, column name on which to mark by different colors, Default: 'DOSE'</p>
+</td></tr>
+<tr valign="top"><td><code>preserveMarkByLevels</code></td>
+<td>
+<p>boolean, to preserve the levels of the markBy variable, Default: FALSE</p>
+</td></tr>
+<tr valign="top"><td><code>Color</code></td>
+<td>
+<p>boolean, controls if the plot has color aesthetic, Default: TRUE</p>
 </td></tr>
 <tr valign="top"><td><code>rugVar</code></td>
 <td>
-<p>Column name of variable to create rug layer (default NULL)</p>
+<p>character, Column name of variable to create rug layer (Default NULL), Default: NULL</p>
 </td></tr>
 <tr valign="top"><td><code>rugVals</code></td>
 <td>
-<p>Numeric vector of values rugVar is displayed (default c(1))</p>
+<p>numeric, vector of values rugVar is displayed, Default: 1</p>
 </td></tr>
 <tr valign="top"><td><code>rugCols</code></td>
 <td>
-<p>Character value that defines color of rug ticks (default 'red')</p>
+<p>character, Color of rug ticks, Default: 'red'</p>
 </td></tr>
 <tr valign="top"><td><code>blqVal</code></td>
 <td>
-<p>Numeric value that defines the 'Below Level of Quantification (BLQ)' horizontal reference line (default NULL)</p>
+<p>numeric, defines the 'Below Level of Quantification (BLQ)' horizontal reference line, 
+DEFAULT: NULL, Default: NULL</p>
 </td></tr>
 <tr valign="top"><td><code>xLimit</code></td>
 <td>
-<p>Two element numeric vector giving the lower and upper limits of 
-<code>xBy</code></p>
+<p>numeric, Two element vector giving the lower and upper limits of the x-axis, Default: NULL</p>
 </td></tr>
 <tr valign="top"><td><code>yLimit</code></td>
 <td>
-<p>Two element numeric vector giving the lower and upper limits of
-the concentration axis (y)</p>
+<p>numeric, Two element vector giving the lower and upper limits of the y-axis, Default: NULL</p>
+</td></tr>
+<tr valign="top"><td><code>xForm</code></td>
+<td>
+<p>function|character,  Format of the x-axis variable tick label, Default: waiver()</p>
+</td></tr>
+<tr valign="top"><td><code>yForm</code></td>
+<td>
+<p>function|character,  Format of the y-axis variable tick label, Default: waiver()</p>
+</td></tr>
+<tr valign="top"><td><code>xScale</code></td>
+<td>
+<p>function|character,  Scale transformtion for the x-axis variable, Default: 'identity'</p>
+</td></tr>
+<tr valign="top"><td><code>yScale</code></td>
+<td>
+<p>function|character,  Scale transformtion for the y-axis variable, Default: 'log10'</p>
 </td></tr>
 <tr valign="top"><td><code>Title</code></td>
 <td>
-<p>String, the title for the plot</p>
+<p>character, Figure title, Default: 'Individuals'</p>
+</td></tr>
+<tr valign="top"><td><code>xLab</code></td>
+<td>
+<p>character, Label of X-axis, Default: 'Time'</p>
+</td></tr>
+<tr valign="top"><td><code>yLab</code></td>
+<td>
+<p>character, Label of Y-axis, Default: 'Concentration'</p>
+</td></tr>
+<tr valign="top"><td><code>fncol</code></td>
+<td>
+<p>integer, Number of columns passed to facet_wrap, Default: 3</p>
+</td></tr>
+<tr valign="top"><td><code>fnrow</code></td>
+<td>
+<p>integer, Number of rows passed to facet_wrap, Default: 3</p>
 </td></tr>
 <tr valign="top"><td><code>ID</code></td>
 <td>
-<p>Numeric vector, the ID's in <code>datFile[,idVar]</code> you wish to plot</p>
+<p>numeric, vector of the patient IDs to plot, Default: NULL</p>
 </td></tr>
 <tr valign="top"><td><code>minorTicks</code></td>
 <td>
-<p>Logical, include minor ticks?</p>
+<p>character, sides to add minorticks, t,b,l,r; if NULL (default) no minor ticks are created, 
+Default: NULL</p>
 </td></tr>
 <tr valign="top"><td><code>minorTickNum</code></td>
 <td>
-<p>Integer, number of minor ticks between major ticks</p>
+<p>integer, number of minor ticks between major ticks, Default: 10</p>
 </td></tr>
-<tr valign="top"><td><code>theme*</code></td>
+<tr valign="top"><td><code>genAll</code></td>
 <td>
-<p>Various controls for the ggplot2 theme</p>
+<p>boolean, generate all pages Default: TRUE</p>
+</td></tr>
+<tr valign="top"><td><code>page</code></td>
+<td>
+<p>numeric, vector of pages to output Default: 1</p>
+</td></tr>
+<tr valign="top"><td><code>themeUpdate</code></td>
+<td>
+<p>list, with theme elements to replace session theme, Default: list()</p>
+</td></tr>
+<tr valign="top"><td><code>themeTextSize</code></td>
+<td>
+<p>numeric, overall plot text size, Default: 14</p>
+</td></tr>
+<tr valign="top"><td><code>themePlotTitleSize</code></td>
+<td>
+<p>numeric, plot title text size relative to themeTextSize, Default: 1.2</p>
+</td></tr>
+<tr valign="top"><td><code>themeAxisTxtSize</code></td>
+<td>
+<p>numeric, plot axis text size relative to themeTextSize, Default: 0.8</p>
+</td></tr>
+<tr valign="top"><td><code>themeAxisTxtColour</code></td>
+<td>
+<p>character, axis text colour, Default: 'black'</p>
+</td></tr>
+<tr valign="top"><td><code>themeAxisTitleTxtSize</code></td>
+<td>
+<p>numeric, plot axis title text size relative to themeTextSize, Default: 0.9</p>
+</td></tr>
+<tr valign="top"><td><code>themeAxisTitleColour</code></td>
+<td>
+<p>character, axis title text colour, Default: 'black'</p>
+</td></tr>
+<tr valign="top"><td><code>themePanelBackgroundFill</code></td>
+<td>
+<p>character, plot background colour, Default: 'white'</p>
+</td></tr>
+<tr valign="top"><td><code>themePanelGridSize</code></td>
+<td>
+<p>numeric, grid line size, Default: NULL</p>
+</td></tr>
+<tr valign="top"><td><code>themePanelGridColour</code></td>
+<td>
+<p>character, grid lines colour, Default: 'white'</p>
+</td></tr>
+<tr valign="top"><td><code>themePanelLineType</code></td>
+<td>
+<p>numeric, grid line type, Default: 1</p>
+</td></tr>
+<tr valign="top"><td><code>themePanelTitleSize</code></td>
+<td>
+<p>numeric, panel title text size relative to themeTextSize, Default: 1.2</p>
+</td></tr>
+<tr valign="top"><td><code>themePlotTitleColour</code></td>
+<td>
+<p>character, panel title text colour, Default: 'black'</p>
+</td></tr>
+<tr valign="top"><td><code>srcAdd</code></td>
+<td>
+<p>boolean, add source caption to output, Default: TRUE</p>
+</td></tr>
+<tr valign="top"><td><code>srcPath</code></td>
+<td>
+<p>character, source script path, Default: '.'</p>
+</td></tr>
+<tr valign="top"><td><code>srcName</code></td>
+<td>
+<p>character, source script name, Default: 'script'</p>
+</td></tr>
+<tr valign="top"><td><code>figPath</code></td>
+<td>
+<p>character, Output figure path, Default: '../deliv/figure'</p>
+</td></tr>
+<tr valign="top"><td><code>figName</code></td>
+<td>
+<p>character, Output figure name, Default: 'Rplot.pdf'</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
 </td></tr>
 </table>
 
@@ -147,10 +262,10 @@ can be plotted or printed with the corresponding method.
 
 <pre>
 data("twoCmt")
-twoCmt=twoCmt%&gt;%mutate(DOSE=factor(DOSE))
+twoCmt=twoCmt%&gt;%dplyr::mutate(DOSE=factor(DOSE))
 ## Not run: ConcvTimeMult(datFile = twoCmt,ipredVar='IPRED')
-ConcvTimeMult(datFile = twoCmt,ipredVar='IPRED',genAll=F,page=1)
-ConcvTimeMult(datFile = twoCmt,ipredVar='IPRED',genAll=F,page=2,nrow =5,ncol=4)
+ConcvTimeMult(datFile = twoCmt,ipredVar='IPRED',genAll=FALSE,page=1)
+ConcvTimeMult(datFile = twoCmt,ipredVar='IPRED',genAll=FALSE,page=2,fnrow =5,fncol=4)
 
 rug.data=addlExpand( tab =file.path(find.package('TFL'),'external/mi210/510/510.tab'),
 demog = file.path(find.package('TFL'),'external/mi210/poppk_wcovs.csv'),
@@ -163,7 +278,7 @@ ConcvTimeMult(datFile = rug.data,
               groupBy='ID',
               xBy = 'TIME',
               ipredVar = 'IPRED',
-              genAll = F,
+              genAll = FALSE,
               ID=1:9,
               rugVar = 'EVID',
               rugVals = 1)

@@ -21,7 +21,7 @@ values of concentration
 ConcvTime(datFile, xBy = "TAFD", yBy = "DV", idVar = "NMID",
   ID = unique(datFile[, idVar])[1], predVar = "PRED", ipredVar = "IPRE",
   xLimit = NULL, yLimit = NULL, xForm = waiver(), yForm = waiver(),
-  xScale = "identity", yScale = "log10", minorTicks = FALSE,
+  xScale = "identity", yScale = "log10", minorTicks = NULL,
   minorTickNum = 10, Title = sprintf("Subject %s", ID), xLab = "Time",
   yLab = "Concentration", themeUpdate = list(), themeTextSize = 14,
   themePlotTitleSize = 1.2, themeAxisTxtSize = 0.8,
@@ -40,73 +40,154 @@ ConcvTime(datFile, xBy = "TAFD", yBy = "DV", idVar = "NMID",
 <table summary="R argblock">
 <tr valign="top"><td><code>datFile</code></td>
 <td>
-<p>A <code>data.frame</code> containing the necessary variables for the
-figure</p>
+<p>data.frame, contains the necessary variables to produce the output</p>
 </td></tr>
 <tr valign="top"><td><code>xBy</code></td>
 <td>
-<p>Name of the variable denoting the x axis (typically time) in 
-<code>datFile</code></p>
+<p>character, Column name for x-axis, Default: 'TAFD'</p>
 </td></tr>
 <tr valign="top"><td><code>yBy</code></td>
 <td>
-<p>Name of the variable containing the observed concentration values</p>
+<p>character, Column name for Y-axis, Default: 'DV'</p>
 </td></tr>
 <tr valign="top"><td><code>idVar</code></td>
 <td>
-<p>Name of the variable containing the patient number identifier</p>
+<p>character, Column name for ID, Default: 'NMID'</p>
 </td></tr>
 <tr valign="top"><td><code>ID</code></td>
 <td>
-<p>The ID in <code>datFile[,idVar]</code> you wish to plot</p>
+<p>numeric, vector of the patient IDs to plot, Default: unique(datFile[, idVar])[1]</p>
 </td></tr>
 <tr valign="top"><td><code>predVar</code></td>
 <td>
-<p>Population prediction column</p>
+<p>character, Column name containing the conditional prediction, Default: 'PRED'</p>
 </td></tr>
 <tr valign="top"><td><code>ipredVar</code></td>
 <td>
-<p>Individual prediction column</p>
+<p>character, Column name of the individual prediction variable, Default: 'IPRE'</p>
 </td></tr>
 <tr valign="top"><td><code>xLimit</code></td>
 <td>
-<p>Two element numeric vector giving the lower and upper limits of 
-<code>xBy</code></p>
+<p>numeric, Two element vector giving the lower and upper limits of the x-axis, Default: NULL</p>
 </td></tr>
 <tr valign="top"><td><code>yLimit</code></td>
 <td>
-<p>Two element numeric vector giving the lower and upper limits of
-the concentration axis (y)</p>
+<p>numeric, Two element vector giving the lower and upper limits of the y-axis, Default: NULL</p>
 </td></tr>
 <tr valign="top"><td><code>xForm</code></td>
 <td>
-<p>One of &quot;percent&quot;, &quot;comma&quot;, &quot;none&quot;, or &quot;scientific&quot; denoting the
-labeling to be used for the x-axis</p>
+<p>function|character,  Format of the x-axis variable tick label, Default: waiver()</p>
 </td></tr>
 <tr valign="top"><td><code>yForm</code></td>
 <td>
-<p>One of &quot;percent&quot;, &quot;comma&quot;, &quot;none&quot;, or &quot;scientific&quot; denoting the
-labeling to be used for the y-axis</p>
+<p>function|character,  Format of the y-axis variable tick label, Default: waiver()</p>
+</td></tr>
+<tr valign="top"><td><code>xScale</code></td>
+<td>
+<p>function|character,  Scale transformtion for the x-axis variable, Default: 'identity'</p>
 </td></tr>
 <tr valign="top"><td><code>yScale</code></td>
 <td>
-<p>One of &quot;identity&quot;, &quot;log&quot;, &quot;log10&quot;; passed to scale_[xy]_continuous</p>
+<p>function|character,  Scale transformtion for the y-axis variable, Default: 'log10'</p>
 </td></tr>
 <tr valign="top"><td><code>minorTicks</code></td>
 <td>
-<p>Logical, include minor ticks?</p>
+<p>character, sides to add minorticks, t,b,l,r; if NULL (default) no minor ticks are created, Default: NULL</p>
 </td></tr>
 <tr valign="top"><td><code>minorTickNum</code></td>
 <td>
-<p>Integer, number of minor ticks between major ticks</p>
+<p>integer, number of minor ticks between major ticks, Default: 10</p>
 </td></tr>
 <tr valign="top"><td><code>Title</code></td>
 <td>
-<p>String, the title for the plot</p>
+<p>character, Figure title, Default: sprintf(&quot;Subject %s&quot;, ID)</p>
 </td></tr>
-<tr valign="top"><td><code>theme*</code></td>
+<tr valign="top"><td><code>xLab</code></td>
 <td>
-<p>Various controls for the ggplot2 theme</p>
+<p>character, Label of X-axis, Default: 'Time'</p>
+</td></tr>
+<tr valign="top"><td><code>yLab</code></td>
+<td>
+<p>character, Label of Y-axis, Default: 'Concentration'</p>
+</td></tr>
+<tr valign="top"><td><code>themeUpdate</code></td>
+<td>
+<p>list, with theme elements to replace session theme, Default: list()</p>
+</td></tr>
+<tr valign="top"><td><code>themeTextSize</code></td>
+<td>
+<p>numeric, overall plot text size, Default: 14</p>
+</td></tr>
+<tr valign="top"><td><code>themePlotTitleSize</code></td>
+<td>
+<p>numeric, plot title text size relative to themeTextSize, Default: 1.2</p>
+</td></tr>
+<tr valign="top"><td><code>themeAxisTxtSize</code></td>
+<td>
+<p>numeric, plot axis text size relative to themeTextSize, Default: 0.8</p>
+</td></tr>
+<tr valign="top"><td><code>themeAxisTxtColour</code></td>
+<td>
+<p>character, axis text colour, Default: 'black'</p>
+</td></tr>
+<tr valign="top"><td><code>themeAxisTitleTxtSize</code></td>
+<td>
+<p>numeric, plot axis title text size relative to themeTextSize, Default: 0.9</p>
+</td></tr>
+<tr valign="top"><td><code>themeAxisTitleColour</code></td>
+<td>
+<p>character, axis title text colour, Default: 'black'</p>
+</td></tr>
+<tr valign="top"><td><code>themePanelBackgroundFill</code></td>
+<td>
+<p>character, plot background colour, Default: 'white'</p>
+</td></tr>
+<tr valign="top"><td><code>themePanelGridSize</code></td>
+<td>
+<p>numeric, grid line size, Default: NULL</p>
+</td></tr>
+<tr valign="top"><td><code>themePanelGridColour</code></td>
+<td>
+<p>character, grid lines colour, Default: 'white'</p>
+</td></tr>
+<tr valign="top"><td><code>themePanelLineType</code></td>
+<td>
+<p>numeric, grid line type, Default: 1</p>
+</td></tr>
+<tr valign="top"><td><code>themePanelTitleSize</code></td>
+<td>
+<p>numeric, panel title text size relative to themeTextSize, Default: 1.2</p>
+</td></tr>
+<tr valign="top"><td><code>themePlotTitleColour</code></td>
+<td>
+<p>character, panel title text colour, Default: 'black'</p>
+</td></tr>
+<tr valign="top"><td><code>themePlotLegendPosition</code></td>
+<td>
+<p>character, legend position, Default: 'right'</p>
+</td></tr>
+<tr valign="top"><td><code>srcAdd</code></td>
+<td>
+<p>boolean, add source caption to output, Default: TRUE</p>
+</td></tr>
+<tr valign="top"><td><code>srcPath</code></td>
+<td>
+<p>character, source script path, Default: '.'</p>
+</td></tr>
+<tr valign="top"><td><code>srcName</code></td>
+<td>
+<p>character, source script name, Default: 'script'</p>
+</td></tr>
+<tr valign="top"><td><code>figPath</code></td>
+<td>
+<p>character, Output figure path, Default: '../deliv/figure'</p>
+</td></tr>
+<tr valign="top"><td><code>figName</code></td>
+<td>
+<p>character, Output figure name, Default: 'Rplot.pdf'</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
 </td></tr>
 </table>
 
@@ -114,7 +195,7 @@ labeling to be used for the y-axis</p>
 <h3>Value</h3>
 
 <p>A concentration vs time ggplot2 object of class <code>TFL</code> which
-can be plotted or printed with the corresponding method.
+can be plotted or printed with the corresponding method
 </p>
 
 
@@ -123,7 +204,7 @@ can be plotted or printed with the corresponding method.
 <pre>
 data("twoCmt")
 ConcvTime(datFile = twoCmt,ID = '1',ipredVar = 'IPRED')
-ConcvTime(datFile = twoCmt,ID = '1',ipredVar = 'IPRED',minorTicks = T)
+ConcvTime(datFile = twoCmt,ID = '1',ipredVar = 'IPRED',minorTicks = 'b')
 </pre>
 
 

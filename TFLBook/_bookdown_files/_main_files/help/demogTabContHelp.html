@@ -23,31 +23,48 @@ demogTabCont(datFile, groupBy = list(c("STUDY", "Study")), idVar = "NMID",
 <table summary="R argblock">
 <tr valign="top"><td><code>datFile</code></td>
 <td>
-<p>data.frame</p>
+<p>data.frame, contains the necessary variables to produce the output</p>
 </td></tr>
 <tr valign="top"><td><code>groupBy</code></td>
 <td>
-<p>a list of (multiple) two element vectors; the first element is the column 
-of <code>datFile</code> on which the table is grouped and the second element is the
-&quot;pretty&quot; name for printing</p>
+<p>character, column name for groupings within the output, Default: list(c(&quot;STUDY&quot;, &quot;Study&quot;))</p>
 </td></tr>
 <tr valign="top"><td><code>idVar</code></td>
 <td>
-<p>ID variable in <code>datFile</code></p>
+<p>character, Column name for ID, Default: 'NMID'</p>
 </td></tr>
 <tr valign="top"><td><code>conList</code></td>
 <td>
-<p>a list of (multiple) two element vectors (like <code>groupBy</code>)
-that denote the list of continuous variables you wish to summarize</p>
+<p>list, list of two element vectors giving the column name and rename, Default: list(c(&quot;AGE&quot;, &quot;Age (years)&quot;), c(&quot;HGTB&quot;, &quot;Height (cm)&quot;), c(&quot;WGTB&quot;, 
+&quot;Weight (kg)&quot;))</p>
 </td></tr>
 <tr valign="top"><td><code>catList</code></td>
 <td>
-<p>a list of a single two element vector giving the variable on which
-to stratify by.  Pass an empty string for no stratification</p>
+<p>list, list of two element vectors giving the column name and rename, Default: list(c(&quot;DIS&quot;, &quot;Disease&quot;))</p>
 </td></tr>
 <tr valign="top"><td><code>sigDig</code></td>
 <td>
-<p>number of significant digits</p>
+<p>integer, number of significant digits, Default: 3</p>
+</td></tr>
+<tr valign="top"><td><code>srcAdd</code></td>
+<td>
+<p>boolean, add source caption to output, Default: TRUE</p>
+</td></tr>
+<tr valign="top"><td><code>srcPath</code></td>
+<td>
+<p>character, source script path, Default: '.'</p>
+</td></tr>
+<tr valign="top"><td><code>srcName</code></td>
+<td>
+<p>character, source script name, Default: 'script'</p>
+</td></tr>
+<tr valign="top"><td><code>tblPath</code></td>
+<td>
+<p>character, Output table path, Default: '../deliv/table'</p>
+</td></tr>
+<tr valign="top"><td><code>tblName</code></td>
+<td>
+<p>character, Output table name, Default: 'table.tex'</p>
 </td></tr>
 </table>
 
@@ -77,12 +94,9 @@ if(!Knit)
 demogTabCont(twoCmt)
 
 #Show Table in Viewer
-if(Chk)  texPreview(obj = demogTabCont(twoCmt),
-                    stem = paste0('demogTabContEx1'),
-                    fileDir = fd,
-                    imgFormat = 'svg',
-                    returnType=rt,
-                    ignore.stdout=T)
+Args=list(obj = demogTabCont(twoCmt),stem = paste0('demogTabContEx1'),imgFormat = 'png',ignore.stdout=TRUE)
+if(Knit) Args=list(rt=rt,fd=fd)
+if(Chk) do.call(texPreview,Args)
                     
 </pre>
 
