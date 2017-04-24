@@ -1,10 +1,10 @@
 # Expects to be run from script
-
+rm(list=ls())
 author <- c('yonis','danp')
 pkgs <- c('metrumrg','shinyFiles','animation','gdata','shinydashboard',
           'DT','rtf','lazyeval','dplyr','DBI','ggplot2','gridExtra',
-          'readr','shinyAce','shinyBS','TFL','colourpicker','bookdown',
-          'tufte','tufterhandout','purrr')
+          'readr','shinyAce','shinyBS','TFL','bookdown','texPreview',
+          'shiny','survival')
 
 user <- Sys.info()["user"]
 parentScriptDir <- getwd()  ## You may need to mod this to be in the top level of scriptDir
