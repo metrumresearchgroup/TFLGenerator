@@ -19,7 +19,7 @@ cover-image: images/logo.jpg
 knitr::opts_chunk$set(fig.width=12, fig.height=8,echo=FALSE, warning=FALSE, message=FALSE)
 
 .libPaths("../script/lib")
-pkgs=c('tools', 'TFL', 'texPreview', 'slickR','svglite');
+pkgs=c('tools', 'TFL', 'texPreview');
 suppressMessages({
   
   junk=lapply(pkgs, function(pkg) {

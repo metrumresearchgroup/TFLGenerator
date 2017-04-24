@@ -5,7 +5,7 @@ loadUtils:
 	R --vanilla -e '.libPaths("../script/lib");suppressMessages({library("TFL",character.only = T,warn.conflicts = F,quietly = T,verbose = F)});source("utils.R");source("buildChapters.R");warnings()'
 
 gitbook:
-	Rscript --quiet _render.R "bookdown::gitbook"
+	Rscript --quiet -e '.libPaths("../script/lib")' _render.R "bookdown::gitbook"
 
 openBrowser:
 	R --vanilla -e 'browseURL("_book/index.html")' 
