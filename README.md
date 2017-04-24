@@ -1,6 +1,6 @@
-# TFL package documentation
+# TFL generator documentation
 
-TFL R package documentation can be found [here](https://metrumresearchgroup.github.io/TFL/).
+TFL R package documentation can be found [here](https://metrumresearchgroup.github.io/TFL/).  The GUI is still a work in progress.
 
 # Installation
 
