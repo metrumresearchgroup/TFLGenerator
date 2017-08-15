@@ -1,9 +1,10 @@
-debug <- F
+debug <- T
 
 #rm(list=ls(all=TRUE))
 Sys.setenv(PATH=paste0(Sys.getenv("PATH"),":/usr/bin:/usr/lib/rstudio-server/bin")) # Get pandoc and imagemagick
 srcDir <- "/data/tflgenerator"
 if(!dir.exists(srcDir)) srcDir <- "/data/co/tflgenerator"
+if(!dir.exists(srcDir)) srcDir <- "/data/TFLGenerator"
 root <- ifelse(
   dir.exists("/opt/NMStorage_uslv"),
   "/opt/NMStorage_uslv",
@@ -1285,7 +1286,7 @@ shinyServer(function(input, output, session) {
         
         testList[[i]]=do.call(what=textInput, args=list(inputId=tabList$inputId[which(tabList$tabType==item)][[i]],
                                                         label=tabList$label[which(tabList$tabType==item)][[i]],
-                                                        value=Defaults[[tabList$inputId[which(tabList$tabType==item)][[i]]]])
+                                                        value=isolate(Defaults[[tabList$inputId[which(tabList$tabType==item)][[i]]]]))
         )
       }
       wellList=do.call(what=wellPanel, args=testList)
@@ -1314,7 +1315,7 @@ shinyServer(function(input, output, session) {
       }
     }
     
-    tabList <- do.call(tabsetPanel, PanelSet)
+    return(do.call(tabsetPanel, PanelSet))
     
   })
   
