@@ -1438,7 +1438,7 @@ shinyServer(function(input, output, session) {
             save(Defaults, input_vals, file=file.path(srcDir,"tmp","autosave-debug-a.rda"))
           }
           Defaults.autosave <- get("Defaults",envir = .GlobalEnv)
-          for(item in names(Defaults.autosave)){
+          for(item in unique(names(Defaults.autosave))){
             #take out some of these
             if (item %nin% c(
               "saveAll",
@@ -1451,6 +1451,14 @@ shinyServer(function(input, output, session) {
               "recall"
             ))
             {
+              # First, check if there are duplicates and thin if so
+              index <- which(names(Defaults.autosave)==item)
+              remove <- setdiff(index, index[length(index)])
+              if(length(remove)>0){
+                Defaults.autosave[remove] <- NULL
+                Defaults[remove] <<- NULL
+              }
+              
               input_vals <- reactiveValuesToList(input)
               if(!is.null(input_vals[[item]])){
                 Defaults.autosave[[item]]<-input_vals[[item]]
@@ -1539,11 +1547,11 @@ shinyServer(function(input, output, session) {
                       idn <- idn[!grepl("addl",idn)]
                       if(length(idn)>0){
                         for(IDN in idn){
-                          these <- grep(IDN,names(Defaults),value=T)
+                          these <- which(names(Defaults)==IDN)
                           if(length(these)>1){
-                            for(thesei in these) Defaults[[thesei]] <<- NULL
+                            Defaults[[these[-length(these)]]] <<- NULL
                           } 
-                          Defaults[[IDN]]<<-input[[IDN]]
+                          Defaults[[IDN]]<<-isolate(input[[IDN]])
                     
                         }
                       }
@@ -1583,10 +1591,14 @@ shinyServer(function(input, output, session) {
                       
                       if(length(idn)>0){
                         for(IDN in idn){
-                          these <- grep(IDN,names(Defaults),value=T)
-                          if(length(these)>1) for(thesei in these) Defaults[[thesei]] <<- NULL
-                          Defaults[[IDN]]<<-input[[IDN]]
+                          these <- which(names(Defaults)==IDN)
+                          if(length(these)>1){
+                            Defaults[[these[-length(these)]]] <<- NULL
+                          } 
+                          Defaults[[IDN]]<<-isolate(input[[IDN]])
+                          
                         }
+                        
                       }
                       dat <- isolate(vpcAddlFile(n)) # Populate the vpcDataList
                       output[[paste0("contentsHead_addlVpcdata",n)]] <<-
@@ -1648,8 +1660,8 @@ shinyServer(function(input, output, session) {
                     
                     if(length(idn)>0){
                       for(IDN in idn){
-                        # these <- grep(IDN,names(Defaults))
-                        # if(length(these)>1) for(thesei in these) Defaults[thesei] <<- NULL
+                        these <- which(names(Defaults)==IDN)
+                        if(length(these)>1) Defaults[these[-length(these)]] <<- NULL
                         Defaults[[IDN]]<<-isolate(input[[IDN]])
                       }
                     }
@@ -2140,31 +2152,7 @@ shinyServer(function(input, output, session) {
   observeEvent(input$newTemplateGo,{  
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " newTemplateGo\n"))
     if(input$saveTemplateAs!=""){
-      
-      for(item in names(Defaults)){
-        #take out some of these
-        if (item %nin% c(
-          "saveAll",
-          "saveAs",
-          "saveParm",
-          "saveAsParm",
-          "PNG",
-          "RTF",
-          "dataPath", 
-          "recall"
-        ))
-        {
-          input_vals <- reactiveValuesToList(input)
-          if(!is.null(input_vals[[item]])){
-            Defaults[[item]]<<-input_vals[[item]]
-          }else{
-            # The subset selectize items may be removed to NULL
-            if(grepl("Subset",item)){
-              Defaults[[item]]<-""
-            }
-          }
-        }
-      }
+      isolate(autosave())
       
       if(debug){
         input_nms <- isolate(names(input))
