@@ -213,13 +213,13 @@ shinyServer(function(input, output, session) {
   # input <- input_vals
   # currentWD <- function() input[["manualDataPath"]]
   
-  #read data in a reactive format
+  # read table data in a reactive format ----
   tableFile=reactive({
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " tableFile called\n"))
     
     if("runno" %nin% isolate(names(input))) return()
     
-    if(input$runno=="#"){
+    if(str_trim(input$runno)%in%c("#","")){
       return()
     }
     
@@ -324,13 +324,13 @@ shinyServer(function(input, output, session) {
   
   cat(file=stderr(), paste0("LOG: ", Sys.time(), " End dataFile definition\n"))
   
-  # Read data in a reactive format ----
+  # Read source data in a reactive format ----
   sourceFile=reactive({
     cat(file=stderr(), paste0("LOG: ", Sys.time(), " sourceFile called\n"))
     
     if("srcData" %nin% isolate(names(input))) return()
     
-    if(input$srcData%in%c("sourcedata.csv",""," ","  ","   ")){
+    if(str_trim(input$srcData)%in%c("sourcedata.csv","")){
       return()
     }
     
