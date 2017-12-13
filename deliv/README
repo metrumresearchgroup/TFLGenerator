@@ -6,7 +6,7 @@ Set up instructions for the TFL generator
 3) As you, run pkgSetup.R (e.g., cd script; R CMD BATCH pkgSetup.R)
 4) As root, copy shiny-server.conf to /etc/shiny-server/shiny-server.conf (sudo cp shiny-server.conf /etc/shiny-server/shiny-server.conf)
 5) Update nginx:
-5a) sudo ./nginx_update.sh
+5a) Follow instructions here: https://www.nginx.com/resources/wiki/start/topics/tutorials/install/#official-debian-ubuntu-packages to update nginx (for Ubuntu)
 5b) sudo cp nginx.conf /etc/nginx
 5c) sudo cp metworx /etc/nginx/sites-available
 5d) sudo service nginx restart
