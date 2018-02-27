@@ -40,6 +40,7 @@ library(colourpicker)
 library(plyr)
 library(dplyr)
 library(shinyjs)
+library(data.table)
 # library(shinyBS)
 
 
@@ -247,9 +248,9 @@ shinyServer(function(input, output, session) {
               }			
               #foo=try(read.table(fileName, header=input$header, skip=input$skipLines, stringsAsFactors=F, fill=TRUE, comment.char="",check.names=F))
               
-              foo=try(read.table(fileName, skip=input$skipLines, header=input$header, stringsAsFactors=F))
+              foo=try(data.table::fread(fileName, skip=input$skipLines, header=input$header, stringsAsFactors=F, na.strings=c(".","","NA")))
               
-              if(class(foo)=="try-error") return()
+              if(any(class(foo)=="try-error")) return()
               if(nrow(foo)==0) return()
               foo$Run=irun
               dat=merge(dat, foo, all=TRUE)
@@ -266,7 +267,7 @@ shinyServer(function(input, output, session) {
     })
     
     dat=try(data.frame(get("originalTableData",envir=.GlobalEnv), stringsAsFactors=F))
-    if(class(dat)=="try-error") return()
+    if(any(class(dat)=="try-error")) return()
     
     if("tableSubset" %in% isolate(names(input))){
       if(length(input[["tableSubset"]] > 0)){
@@ -342,7 +343,7 @@ shinyServer(function(input, output, session) {
         return()
       }
       if(!exists("originalSourceData",envir=.GlobalEnv) | input$reloadSource){
-        originalSourceData <<- try(as.best(read_csv(srcDatFile)))
+        originalSourceData <<- try(as.best(data.table::fread(srcDatFile, na.strings=c("","NA","."))))
         if(any(class(originalSourceData)=="try-error")){
           rm("originalSourceData",envir = .GlobalEnv)
           return()
@@ -651,7 +652,8 @@ shinyServer(function(input, output, session) {
       return()
     }
     
-    dat <- try(read_table(file.path(currentWD(),vpcRun,vpcloc),col_names=F))
+    # dat <- try(read_table(file.path(currentWD(),vpcRun,vpcloc),col_names=F))
+    dat <- try(data.table::fread(file.path(currentWD(),vpcRun,vpcloc),header=F,na.strings=c("",".","NA")))
     if(length(vpcColnames)!=ncol(dat)){
       validate(
         need(FALSE, "Number of specified column names is not equal to number of coluns in simulation table")
@@ -660,6 +662,7 @@ shinyServer(function(input, output, session) {
       return()
     }
     
+    dat <- as.data.frame(dat)
     colnames(dat) <- vpcColnames
     # revals[[paste0("nms_tab",item,n)]] <- isolate(colnames(dat))
     # updateSelectizeInput(session,paste0("mergeKey",item,n),
@@ -675,13 +678,15 @@ shinyServer(function(input, output, session) {
     # Tack on the source data
     
     ## Load it first
-    vpcsrc <- try(read_csv(file=file.path(currentWD(),input[[paste0("vpcSource",title)]])))
+    # vpcsrc <- try(read_csv(file=file.path(currentWD(),input[[paste0("vpcSource",title)]])))
+    vpcsrc <- try(fread(file=file.path(currentWD(),input[[paste0("vpcSource",title)]]),na.strings=c("NA",".","")))
     validate(
-      need(class(vpcsrc)!="tryError", "Please select a valid source data location")
+      need(all(class(vpcsrc)!="tryError"), "Please select a valid source data location")
     )
     
     
-    if(class(vpcsrc) != "try-error"){
+    if(all(class(vpcsrc) != "try-error")){
+      vpcsrc <- as.data.frame(vpcsrc)
       # Rename observed DV
       if(!is.null(input[[paste0("vpcSourceDV",title)]])){
         if(input[[paste0("vpcSourceDV",title)]]!=""){
@@ -801,9 +806,10 @@ shinyServer(function(input, output, session) {
     # Tack on the source data
     
     ## Load it first
-    dat <- try(read_csv(file=file.path(currentWD(),input[[paste0("addlVpcSource",title)]])))
+    # dat <- try(read_csv(file=file.path(currentWD(),input[[paste0("addlVpcSource",title)]])))
+    dat <- try(data.table::fread(file=file.path(currentWD(),input[[paste0("addlVpcSource",title)]]), na.strings=c("",".")))
     validate(
-      need(class(dat)!="tryError", "Please select a valid source data location")
+      need(any(class(dat)!="tryError"), "Please select a valid source data location")
     )
     
     if(input[[paste0("addlRenameToDefaults",title)]]){
@@ -2310,6 +2316,11 @@ shinyServer(function(input, output, session) {
 })
   
   # Function to check invalidations ----
+  my_all_equals <- function(x, y){
+    if(any(class(x)=="list")) x <- unlist(x)
+    if(any(class(y)=="list")) y <- unlist(y)
+    all(x == y)
+  }
   checkInvalidate <- function(input,item,n){
     ##Check to see if the input has changed since the last time it was rendered
     idx=grep(paste(item,n,sep=""), names(Defaults), value=TRUE)
@@ -2342,21 +2353,21 @@ shinyServer(function(input, output, session) {
     
     # #because of the reactive nature of 'input' comparisons have to be done one at a time
     if(length(idtest)>0){
-      sameAsDefault=sum(sapply(idtest, function(X){all(input[[X]]==Defaults[X])}))/length(idtest)
+      sameAsDefault=sum(sapply(idtest, function(X){my_all_equals(input[[X]],Defaults[X])}))/length(idtest)
       if(is.na(sameAsDefault)){
         cat(file=stderr(), "LOG: Missing input value present, likely due to outdated autosave\n")
         sameAsDefault <- .1
       }
       if(sameAsDefault!=1 & debug){
         tests <- lapply(idtest, function(X){ 
-          out <- all(input[[X]]==Defaults[X])
+          out <- my_all_equals(input[[X]],Defaults[X])
           out[length(out)==0] <- X
           out
         })
         names(tests) <- idtest
         input_vals <- reactiveValuesToList(input)
         comparators<-list(Defaults=Defaults[idtest], input=input_vals[idtest])
-        save(tests, comparators,file=file.path(srcDir,"tmp","sameAsDefault.rda"))
+        save(tests, comparators,input_vals,Defaults,file=file.path(srcDir,"tmp","sameAsDefault.rda"))
       }
     }else{
       cat(file=stderr(), "LOG: No comparisons to be made between Defaults and input!\n")
