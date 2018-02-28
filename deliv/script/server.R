@@ -2356,7 +2356,10 @@ shinyServer(function(input, output, session) {
       sameAsDefault=sum(sapply(idtest, function(X){my_all_equals(input[[X]],Defaults[X])}))/length(idtest)
       if(is.na(sameAsDefault)){
         cat(file=stderr(), "LOG: Missing input value present, likely due to outdated autosave\n")
-        sameAsDefault <- .1
+        theseNA <- names(which(is.na(Defaults)))
+        cat(file=stderr(), paste0("LOG: Removing missing defaults (",paste(theseNA,collapse=", "),") from checkInvalidate\n"))
+        idtest <- setdiff(idtest,theseNA)
+        sameAsDefault=sum(sapply(idtest, function(X){my_all_equals(input[[X]],Defaults[X])}))/length(idtest)
       }
       if(sameAsDefault!=1 & debug){
         tests <- lapply(idtest, function(X){ 
