@@ -31,6 +31,7 @@ build: script/pkg/$(GUI_NAME)_$(GUI_VERSION).tar.gz script/pkg/$(TFL_NAME)_$(TFL
 	R CMD build $(TFL_NAME)
 	mv $(GUI_NAME)_$(GUI_VERSION).tar.gz script/pkg/$(GUI_NAME)_$(GUI_VERSION).tar.gz
 	mv $(TFL_NAME)_$(TFL_VERSION).tar.gz script/pkg/$(TFL_NAME)_$(TFL_VERSION).tar.gz
+	Rscript -e 'library(tools); write_PACKAGES("script/pkg")'
 
 install: script/pkg/$(GUI_NAME)_$(GUI_VERSION).tar.gz script/pkg/$(TFL_NAME)_$(TFL_VERSION).tar.gz
 	R CMD INSTALL script/pkg/$(GUI_NAME)_$(GUI_VERSION).tar.gz -l script/lib
