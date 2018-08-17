@@ -1,10 +1,10 @@
 # TFL generator documentation
 
-TFL R package documentation can be found [here](https://metrumresearchgroup.github.io/TFL/).  The GUI is still a work in progress.
+TFL R package documentation can be found [here](https://metrumresearchgroup.github.io/TFL/).  
 
 # Installation
 
-The [deliv](https://github.com/metrumresearchgroup/TFLGenerator/tree/master/deliv) folder contains the executable.  Follow the instructions outlined in the README.md there on an Envision workflow to run the GUI.  
+The [deliv](https://github.com/metrumresearchgroup/TFLGenerator/tree/master/deliv) folder contains the executable.  Follow the instructions outlined in the [README.md](https://github.com/metrumresearchgroup/TFLGenerator/blob/master/deliv/README) there on an Envision workflow to run the GUI.  
 
 # Development
 
