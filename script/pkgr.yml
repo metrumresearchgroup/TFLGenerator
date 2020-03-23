@@ -1,0 +1,51 @@
+Version: 1
+
+Packages:
+  - htmlwidgets
+  - shiny
+  - GUI
+  - TFL
+  - shinyjs
+  - shinydashboard
+  - shinyFiles
+  - shinyBS
+  - crosstalk
+  - DT
+  - magick
+  - animation
+  - lazyeval
+  - gtools
+  - readr
+  - shinyAce
+  - Hmisc
+  - ggplot2
+  - gridExtra
+  - colourpicker
+  - dplyr
+  - data.table
+  - plyr
+  - crayon
+  - RCurl
+  - openssl
+  - rstudioapi
+  - packrat
+  - rsconnect
+  - MASS
+  - Matrix
+  - cluster
+  - foreign
+  - lattice
+  - nnet
+  - rpart
+  - survival
+
+Repos:
+  - TFLCRAN: https://metrumresearchgroup.github.io/tflcran/pkgs
+ 
+Customizations:
+  Packages:
+  - metrumrg:
+      Suggests: true
+      
+Lockfile:
+    Type: renv
