@@ -1774,7 +1774,7 @@ shinyServer(function(input, output, session) {
                       jsPrint(paste0('default print,',pSize$height[[1]],",",pSize$width[[1]]))
                       output[[paste("Plot", item,n, sep="")]]<<-renderPlot({
                         print(p1List)
-                      },height=pSize$height[[1]]*72,width=pSize$width[[1]]*72)
+                      },height=min(325, pSize$height[[1]]*72))
                     }else{
                       # Probably one of demogTabCont, demogTabCat, NMTab
                       output[[paste("Plot",item,n,sep="")]]<<-renderImage(
