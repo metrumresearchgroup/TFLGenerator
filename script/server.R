@@ -1,14 +1,15 @@
-debug <- T
+debug <- F
 
 #rm(list=ls(all=TRUE))
 Sys.setenv(PATH=paste0(Sys.getenv("PATH"),":/usr/bin:/usr/lib/rstudio-server/bin")) # Get pandoc and imagemagick
-srcDir <- "/data/tflgenerator"
-if(!dir.exists(srcDir)) srcDir <- "/data/co/tflgenerator"
-if(!dir.exists(srcDir)) srcDir <- "/data/TFLGenerator"
-root <- ifelse(
-  dir.exists("/opt/NMStorage_uslv"),
-  "/opt/NMStorage_uslv",
-  file.path(srcDir,"NMStorage")) # shinyFiles requires starting point for browser, we know this exists.
+srcDir <- "."
+#if(!dir.exists(srcDir)) srcDir <- "/data/co/tflgenerator"
+#if(!dir.exists(srcDir)) srcDir <- "/data/TFLGenerator"
+# root <- ifelse(  # EA CHANGED THIS
+#   dir.exists("/opt/NMStorage_uslv"),
+#   "/opt/NMStorage_uslv",
+#   file.path(srcDir,"NMStorage")) # shinyFiles requires starting point for browser, we know this exists.
+root <- file.path(srcDir,"NMStorage_uslv")
 if(debug){
   debugDir <- file.path(srcDir,"tmp")
   dir.create(debugDir)
@@ -16,7 +17,7 @@ if(debug){
 
 cat(file=stderr(), paste0("LOG: ", Sys.time(), " Start loading packages"))
 
-.libPaths(file.path(srcDir,"script/lib"))
+# .libPaths(file.path(srcDir,"script/lib"))
 
 
 library(grid)

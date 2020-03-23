@@ -1,10 +1,10 @@
 #rm(list=ls(all=TRUE))
 
-if(dir.exists("/data/tflgenerator/script/lib")){ 
-  .libPaths("/data/tflgenerator/script/lib")
-}else if(dir.exists("/data/co/tflgenerator")){
-  .libPaths("/data/co/tflgenerator/script/lib")
-}else .libPaths("/data/TFLGenerator/script/lib")
+# if(dir.exists("/data/tflgenerator/script/lib")){ 
+#   .libPaths("/data/tflgenerator/script/lib")
+# }else if(dir.exists("/data/co/tflgenerator")){
+#   .libPaths("/data/co/tflgenerator/script/lib")
+# }else .libPaths("/data/TFLGenerator/script/lib")
 
 library(GUI)
 library(TFL) # the Amgen Internal TFL package
@@ -57,7 +57,7 @@ library(shinyjs)
       	               a("Link",href="https://docs.google.com/document/d/1sGwrTt_rr2gX0X8Ifgaj1VcFWZkY4-Xo4FF4flzWkt8/edit?usp=sharing")),
       	            h1(""),
       	            tags$iframe(src="https://docs.google.com/document/d/1sGwrTt_rr2gX0X8Ifgaj1VcFWZkY4-Xo4FF4flzWkt8/pub?embedded=true",
-      	                        height="600px", width="100%")
+      	                        height="800px", width="100%")
       	            # ,
       	            # h1(""),
       	            # h2("Source code:"),
