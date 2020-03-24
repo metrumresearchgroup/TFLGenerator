@@ -17,7 +17,6 @@ if(debug){
 
 cat(file=stderr(), paste0("LOG: ", Sys.time(), " Start loading packages"))
 
-# .libPaths(file.path(srcDir,"script/lib"))
 
 
 library(grid)

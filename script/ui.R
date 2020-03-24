@@ -1,10 +1,5 @@
 #rm(list=ls(all=TRUE))
 
-# if(dir.exists("/data/tflgenerator/script/lib")){ 
-#   .libPaths("/data/tflgenerator/script/lib")
-# }else if(dir.exists("/data/co/tflgenerator")){
-#   .libPaths("/data/co/tflgenerator/script/lib")
-# }else .libPaths("/data/TFLGenerator/script/lib")
 
 library(GUI)
 library(TFL) # the Amgen Internal TFL package
