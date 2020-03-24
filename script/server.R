@@ -5,7 +5,7 @@ Sys.setenv(PATH=paste0(Sys.getenv("PATH"),":/usr/bin:/usr/lib/rstudio-server/bin
 srcDir <- "."
 #if(!dir.exists(srcDir)) srcDir <- "/data/co/tflgenerator"
 #if(!dir.exists(srcDir)) srcDir <- "/data/TFLGenerator"
-# root <- ifelse(  # EA CHANGED THIS
+# root <- ifelse(
 #   dir.exists("/opt/NMStorage_uslv"),
 #   "/opt/NMStorage_uslv",
 #   file.path(srcDir,"NMStorage")) # shinyFiles requires starting point for browser, we know this exists.
