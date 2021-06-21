@@ -1,4 +1,5 @@
-options(repos = c(TFLCRAN = "https://metrumresearchgroup.github.io/tflcran/pkgs"))
+options(repos = c(TFLCRAN = "https://metrumresearchgroup.github.io/tflcran/pkgs",
+                  MRAN =  "https://cran.microsoft.com/snapshot/2020-03-18"))
 if(file.exists("renv/activate.R")){
   source("renv/activate.R")
 }

@@ -1,0 +1,7 @@
+# Steps
+
+1) In the terminal, run the command "pkgr install"
+
+2) In R, run the script "global.R"
+
+3) In R, run the script "deploy.R"

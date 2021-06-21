@@ -1,13 +1,15 @@
 #rm(list=ls(all=TRUE))
 
-
+# Sys.setenv(RETICULATE_PYTHON="/usr/bin/python")
 library(GUI)
 library(TFL) # the Amgen Internal TFL package
 library(shiny)
 library(shinydashboard)
 library(shinyFiles)
 library(shinyjs)
-
+library(rtf)
+library(R.oo)
+library(R.methodsS3)
 # Defaults are used to keep the current entries in dynamic memory, 
 #   defaults first are the pre-defined defaults
 

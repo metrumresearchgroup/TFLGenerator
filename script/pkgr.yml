@@ -3,7 +3,6 @@ Version: 1
 Packages:
   - htmlwidgets
   - shiny
-  - TFL
   - shinyjs
   - shinydashboard
   - shinyFiles
@@ -37,9 +36,14 @@ Packages:
   - nnet
   - rpart
   - survival
+  - metrumrg
+  - reticulate
+  - XML
+  - rtf
 
 Repos:
   - TFLCRAN: https://metrumresearchgroup.github.io/tflcran/pkgs
+  - MRAN: https://cran.microsoft.com/snapshot/2020-03-18
  
 Customizations:
   Packages:
@@ -48,3 +52,6 @@ Customizations:
       
 Lockfile:
     Type: renv
+    
+
+    

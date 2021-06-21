@@ -2,12 +2,14 @@ rsconnect::deployApp(
   appName = "TFL",
   appDir = ".",
   contentCategory = "site",
-  
+  forceUpdate = TRUE,
   appFiles = c(
     "server.R",
     "ui.R",
     "global.R",
-    "GUI_1.2.1.tar.gz",
+    # list.files("tarball-pkgs", full.names = TRUE),
+    "tarball-pkgs/TFL_1.2.1.tar.gz",
+    "tarball-pkgs/GUI_1.2.1.tar.gz",
     paste0("NMStorage_uslv/", list.files("NMStorage_uslv", recursive = TRUE)),
     "packrat/packrat.opts"
   )
