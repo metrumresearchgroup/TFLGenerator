@@ -13,7 +13,7 @@ export PYTHON_VERSION=3.7.7
 #install miniconda
 curl --insecure -O https://repo.anaconda.com/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh && \
     bash Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh -bp /opt/python/${PYTHON_VERSION} && \
-    /opt/python/${PYTHON_VERSION}/bin/pip  --trusted-host pypi.python.org  install virtualenv && \
+    /opt/python/${PYTHON_VERSION}/bin/pip  --trusted-host pypi.python.org --trusted-hos files.pythonhosted.org install virtualenv && \
     rm -rf Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh
 
 
