@@ -23,6 +23,7 @@ rs="$?"
 if [ "$rs" -ne 0 ]
 then 
 cat <<EOF >> /etc/rstudio-connect/rstudio-connect.gcfg
+
 [Python]
 Enabled = true
 Executable = /opt/python/${PYTHON_VERSION}/bin/python
