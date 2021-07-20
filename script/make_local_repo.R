@@ -4,7 +4,7 @@
 ## 2. You must create a directory at `/usr/local/repos/tfl` on your workflow and give global read/write permissions.
 ### sudo mkdir /usr/local/repos
 ### sudo mkdir /usr/local/repos/tfl
-### sudo chmod 770 /usr/local/repos/tfl
+### sudo chmod 777 /usr/local/repos/tfl
 ## 3. I think this is optional, but make an "index.html" file in your repo as well.
 ### echo '<!doctype html><title>empty</title>' > /usr/local/repos/tfl/index.html
 
