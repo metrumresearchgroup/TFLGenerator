@@ -9,6 +9,7 @@ load.external.packages.on.startup: TRUE
 ignored.packages: 
     TFL
     GUI
+    reticulate
 ignored.directories:
     data
     inst
