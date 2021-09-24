@@ -55,5 +55,7 @@ Cache: tfl-pkgr-cache
 Lockfile:
     Type: renv
     
+RPath: ${R_EXE_3_5}
+    
 
     
