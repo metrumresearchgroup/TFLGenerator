@@ -37,21 +37,25 @@ Packages:
   - rpart
   - survival
   - metrumrg
-  - reticulate
   - XML
   - rtf
+  # - reticulate
 
 Repos:
   - TFLCRAN: https://metrumresearchgroup.github.io/tflcran/pkgs
   - MRAN: https://cran.microsoft.com/snapshot/2020-03-18
  
-Customizations:
-  Packages:
-  - metrumrg:
-      Suggests: true
+Cache: tfl-pkgr-cache
+
+# Customizations:
+#   Packages:
+#   - metrumrg:
+#       Suggests: true
       
 Lockfile:
     Type: renv
+    
+RPath: ${R_EXE_3_5}
     
 
     
