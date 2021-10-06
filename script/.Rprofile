@@ -8,7 +8,7 @@ if(interactive()){
 options(
   repos = c(
     # TFLCRAN = "https://metrumresearchgroup.github.io/tflcran/pkgs",
-    # MRAN =  "https://cran.microsoft.com/snapshot/2020-03-18"
-    LOCALTFL = "file:///usr/local/repos/tfl"
+    TFL = "file://~/tflpkgrepo",
+    MRAN =  "https://cran.microsoft.com/snapshot/2017-07-11"
   )
 )

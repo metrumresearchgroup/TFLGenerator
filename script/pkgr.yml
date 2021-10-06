@@ -38,6 +38,8 @@ Packages:
   - metrumrg
   - XML
   - rtf
+  - GUI
+  - TFL
   # - reticulate
 
 Repos:
