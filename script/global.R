@@ -1,4 +1,4 @@
-
+animation::ani.options('autobrowse' = FALSE)
 # Order matters
 # tarballs <- c(
 #   # "rappdirs_0.3.1.tar.gz",

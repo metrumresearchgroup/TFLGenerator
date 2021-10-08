@@ -53,6 +53,8 @@ Cache: tfl-pkgr-cache
 #   - metrumrg:
 #       Suggests: true
       
+Rollback: false
+      
 Lockfile:
     Type: renv
     

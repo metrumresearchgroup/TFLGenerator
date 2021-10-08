@@ -939,7 +939,16 @@ shinyServer(function(input, output, session) {
     cat(file=stderr(),paste0("LOG: ", Sys.time(), " contentsHead_subjectExclusions called\n"))
     foo <- isolate(dataFile())
     output$contentsHead_subjectExclusions <- 
-      DT::renderDataTable({DT::datatable(subjectExclusions, filter="top")})
+      DT::renderDataTable({
+        shiny::validate(
+          shiny::need(exists("subjectExclusions",envir=.GlobalEnv), message = "no valid subjectExclusions")
+        )
+        shiny::validate(
+          shiny::need(!is.null(subjectExclusions), message = "no valid subjectExclusions"),
+          shiny::need(nrow(subjectExclusions) > 0, message = "no valid subjectExclusions")
+        )
+        DT::datatable(subjectExclusions, filter="top")
+      })
   })
   
   
