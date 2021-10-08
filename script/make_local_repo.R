@@ -16,7 +16,7 @@ install.packages("drat", repos = "https://mpn.metworx.com/snapshots/stable/2020-
 
 ## Compile a list of all tarballs downloaded during the pkgr install process.
 toAdd1 <- list.files("tfl-pkgr-cache/MRAN-3f9ff60f0b67/src/", full.names = T)
-toAdd2 <- list.files("tfl-pkgr-cache/TFLCRAN-e6449f9a5a44/src/", full.names = T)
+toAdd2 <- list.files("tfl-pkgr-cache/S3TFLCRAN-e6449f9a5a44/src/", full.names = T)
 toAdd3 <- list.files("tfl-pkgr-cache/TFL-c807e427397b/src/", full.names=T)
 toAdd <- c(toAdd1, toAdd2, toAdd3)
 
@@ -31,3 +31,16 @@ for(pkg in toAdd) {
   drat::insertPackage(pkg, repodir=repo_path)
 }
 
+## UGH
+## Add just a few deps that RSConnect forces us to need so that we can get on with our lives.
+## 
+# toAddRscDeps <- list.files("rsconnect-pkgr-cache/MPN-3bd99e356e31/src", full.names=T)
+toAddRscDeps <- c(
+  "rsconnect-pkgr-cache/MPN-3bd99e356e31/src/curl_4.3.2.tar.gz",
+  "rsconnect-pkgr-cache/MPN-3bd99e356e31/src/jsonlite_1.7.2.tar.gz",
+  "rsconnect-pkgr-cache/MPN-3bd99e356e31/src/yaml_2.2.1.tar.gz"
+)
+for(pkg in toAddRscDeps) {
+  print(paste0("adding package ", pkg, " to local repo."))
+  drat::insertPackage(pkg, repodir=repo_path)
+}

@@ -45,13 +45,18 @@ Packages:
 Repos:
   - TFL: ~/tflpkgrepo
   - MRAN: https://cran.microsoft.com/snapshot/2017-07-11
+  - S3TFLCRAN: https://metrumresearchgroup.github.io/tflcran/pkgs
  
 Cache: tfl-pkgr-cache
 
-# Customizations:
-#   Packages:
-#   - metrumrg:
-#       Suggests: true
+Customizations:
+  Packages:
+  - magick:
+      Repo: S3TFLCRAN
+  - Rcpp:
+      Repo: S3TFLCRAN
+  - animation:
+      Repo: S3TFLCRAN
       
 Rollback: false
       
