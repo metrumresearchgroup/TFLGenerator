@@ -1,3 +1,13 @@
+options(
+  repos = c(
+    # TFLCRAN = "https://metrumresearchgroup.github.io/tflcran/pkgs",
+    # TFL = "file://~/tflpkgrepo",
+    # MRAN =  "https://cran.microsoft.com/snapshot/2017-07-11"
+    tflrepo = "file:///usr/local/repos/tfl"
+  )
+)
+
+.libPaths(c("./rsconnect-deps/", .libPaths()))
 rsconnect::deployApp(
   appName = "TFL",
   appDir = ".",

@@ -1,0 +1,23 @@
+Version: 1
+
+Packages:
+  - rsconnect
+
+Repos:
+  - MPN: https://mpn.metworx.com/snapshots/stable/2021-09-11
+  
+Cache: rsconnect-pkgr-cache
+
+# Customizations:
+#   Packages:
+#   - metrumrg:
+#       Suggests: true
+      
+Rollback: false
+      
+Library: rsconnect-deps
+    
+RPath: ${R_EXE_3_3}
+    
+
+    

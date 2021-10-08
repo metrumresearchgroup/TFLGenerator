@@ -17,7 +17,8 @@ install.packages("drat", repos = "https://mpn.metworx.com/snapshots/stable/2020-
 ## Compile a list of all tarballs downloaded during the pkgr install process.
 toAdd1 <- list.files("tfl-pkgr-cache/MRAN-3f9ff60f0b67/src/", full.names = T)
 toAdd2 <- list.files("tfl-pkgr-cache/TFLCRAN-e6449f9a5a44/src/", full.names = T)
-toAdd <- c(toAdd1, toAdd2)
+toAdd3 <- list.files("tfl-pkgr-cache/TFL-c807e427397b/src/", full.names=T)
+toAdd <- c(toAdd1, toAdd2, toAdd3)
 
 # Set the repo path:
 repo_path <- "/usr/local/repos/tfl"
