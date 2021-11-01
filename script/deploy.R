@@ -1,3 +1,4 @@
+## Ignore these notes unless you run into trouble. ------------------------------------------------------------------------------------------------------
 # With the below options set, the strategy seems to be:
 # 1: Restart your R session
 # 2: Use 'shiny::runApp()' in the console. Let the app load, then shut it down.
@@ -7,6 +8,7 @@
 #.   In this case, go into /usr/local/repos/tfl/src/contrib and remove the unneeded packages, then use tools::write_PACKAGES("/usr/local/repos/tfl/src/contrib")
 #.   to regenerate.
 # 5: If you still get errors, particularly if you get errors asking for "digest", you'll have to keep troubleshooting. Sorry )=.
+## ----------------------------------------------------------------------------------------------------------------------------------------------------
 
 options(
   repos = c(
@@ -18,9 +20,17 @@ options(
   )
 )
 
+# We want to make sure digest 0.6.10 is loaded before we muck with .libPaths(), 
+# otherwise RSC/packrat will discover Version 0.6.27 and fail to deploy.
+library(digest) 
+
+# Put RSConnect's deps in the libPaths, and make them first.
 .libPaths(c("./rsconnect-deps/", .libPaths()))
-# .libPaths(c(.libPaths(), "./rsconnect-deps/"))
-library(curl) # Have to refresh this or RSC doesn't work.
+
+# Load the latest version of "curl" to ensure that RSConnect has the one it needs for deployment.
+# (And older version was likely loaded when testing TFL)
+library(curl)
+
 rsconnect::deployApp(
   appName = "TFL",
   appDir = ".",
