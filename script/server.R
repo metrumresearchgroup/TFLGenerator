@@ -1,7 +1,7 @@
 debug <- F
 
 #rm(list=ls(all=TRUE))
-Sys.setenv(PATH=paste0(Sys.getenv("PATH"),":/usr/bin:/usr/lib/rstudio-server/bin")) # Get pandoc and imagemagick
+#Sys.setenv(PATH=paste0(Sys.getenv("PATH"),":/usr/bin:/usr/lib/rstudio-server/bin")) # Get pandoc and imagemagick
 srcDir <- "."
 #if(!dir.exists(srcDir)) srcDir <- "/data/co/tflgenerator"
 #if(!dir.exists(srcDir)) srcDir <- "/data/TFLGenerator"
@@ -778,13 +778,13 @@ shinyServer(function(input, output, session) {
     }
     if(exists("observationExclusions",envir=.GlobalEnv)){
       commoncols <- intersect(names(dat), names(observationExclusions))
-      dat <- dat[paste(dat[,commoncols]) %nin%  paste(observationExclusions[,commoncols]),]
+      new_dat <- dplyr::anti_join(dat, as.data.table(observationExclusions))
     }
     if(debug){
-      save(n,input_vals,dat,vpcRun,file=file.path(srcDir,"tmp","vpcFile.rda"))
+      save(n,input_vals,new_dat,vpcRun,file=file.path(srcDir,"tmp","vpcFile.rda"))
     }
-    vpcDataList[[paste0("VPC",n)]] <<- isolate(dat)
-    return(dat)
+    vpcDataList[[paste0("VPC",n)]] <<- isolate(new_dat)
+    return(new_dat)
     
   }
   
@@ -822,7 +822,6 @@ shinyServer(function(input, output, session) {
     }
     
     
-    
     # Run parser on merged data
     if(paste0("addlDataParse_vpc",title) %in% isolate(names(input))){
       parsecommands <- cleanparse(input[[paste0("addlDataParse_vpc",title)]],"dat")
@@ -835,15 +834,16 @@ shinyServer(function(input, output, session) {
         }
       }
     }
-    
     if(all(class(dat) != "try-error")){
+      original_col <- input[[paste0("vpcSourceDV",title)]]
+      new_col <- paste0(original_col,"obs")
       # Rename observed DV
-      if(!is.null(input[[paste0("vpcSourceDV",title)]])){
-        if(input[[paste0("vpcSourceDV",title)]]!=""){
-          dat[,paste0(input[[paste0("vpcSourceDV",title)]],"obs")] <- 
-            dat[,input[[paste0("vpcSourceDV",title)]]]
-          dat[,input[[paste0("vpcSourceDV",title)]]] <- NULL
-          missing <- is.na(dat[,paste0(input[[paste0("vpcSourceDV",title)]],"obs")])
+      if(!is.null(original_col)){
+        if(original_col!=""){
+          dat[[new_col]] <- 
+            dat[[original_col]]
+          dat[[original_col]] <- NULL
+          missing <- is.na(dat[[new_col]])
           validate(
             need(sum(missing)==0,
                  paste0(missing," observed values dropped for missingness"))
@@ -852,7 +852,6 @@ shinyServer(function(input, output, session) {
         }
       }
     }
-    
     if(exists("subjectExclusions",envir=.GlobalEnv)){
       if(("NMID" %in% names(dat)) & ("NMID" %in% names(subjectExclusions))){
         if("STUDY" %in% names(dat) & ("STUDY" %in% names(subjectExclusions))){
@@ -864,13 +863,15 @@ shinyServer(function(input, output, session) {
     }
     if(exists("observationExclusions",envir=.GlobalEnv)){
       commoncols <- intersect(names(dat), names(observationExclusions))
-      dat <- dat[paste(dat[,commoncols]) %nin%  paste(observationExclusions[,commoncols]),]
+      dat$DV <- dat$DVobs
+      new_dat <- dplyr::anti_join(dat, as.data.table(observationExclusions))
+      
     }
     if(debug){
-      save(n,input_vals,dat,vpcRun,file=file.path(srcDir,"tmp","addlVpcFile.rda"))
+      save(n,input_vals,new_dat,vpcRun,file=file.path(srcDir,"tmp","addlVpcFile.rda"))
     }
-    vpcDataList[[paste0("addl","VPC",n)]] <<- isolate(dat)
-    return(dat)
+    vpcDataList[[paste0("addl","VPC",n)]] <<- isolate(new_dat)
+    return(new_dat)
     
   }
   
@@ -938,7 +939,16 @@ shinyServer(function(input, output, session) {
     cat(file=stderr(),paste0("LOG: ", Sys.time(), " contentsHead_subjectExclusions called\n"))
     foo <- isolate(dataFile())
     output$contentsHead_subjectExclusions <- 
-      DT::renderDataTable({DT::datatable(subjectExclusions, filter="top")})
+      DT::renderDataTable({
+        shiny::validate(
+          shiny::need(exists("subjectExclusions",envir=.GlobalEnv), message = "no valid subjectExclusions")
+        )
+        shiny::validate(
+          shiny::need(!is.null(subjectExclusions), message = "no valid subjectExclusions"),
+          shiny::need(nrow(subjectExclusions) > 0, message = "no valid subjectExclusions")
+        )
+        DT::datatable(subjectExclusions, filter="top")
+      })
   })
   
   

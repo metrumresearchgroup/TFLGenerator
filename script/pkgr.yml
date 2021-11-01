@@ -27,7 +27,6 @@ Packages:
   - openssl
   - rstudioapi
   - packrat
-  - rsconnect
   - MASS
   - Matrix
   - cluster
@@ -39,23 +38,32 @@ Packages:
   - metrumrg
   - XML
   - rtf
+  - GUI
+  - TFL
   # - reticulate
 
 Repos:
-  - TFLCRAN: https://metrumresearchgroup.github.io/tflcran/pkgs
-  - MRAN: https://cran.microsoft.com/snapshot/2020-03-18
+  - TFL: ~/tflpkgrepo
+  - MRAN: https://cran.microsoft.com/snapshot/2017-07-11
+  - S3TFLCRAN: https://metrumresearchgroup.github.io/tflcran/pkgs
  
 Cache: tfl-pkgr-cache
 
-# Customizations:
-#   Packages:
-#   - metrumrg:
-#       Suggests: true
+Customizations:
+  Packages:
+  - magick:
+      Repo: S3TFLCRAN
+  - Rcpp:
+      Repo: S3TFLCRAN
+  - animation:
+      Repo: S3TFLCRAN
+      
+Rollback: false
       
 Lockfile:
     Type: renv
     
-RPath: ${R_EXE_3_5}
+RPath: ${R_EXE_3_3}
     
 
     
