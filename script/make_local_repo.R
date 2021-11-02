@@ -15,10 +15,14 @@
 install.packages("drat", repos = "https://mpn.metworx.com/snapshots/stable/2020-03-24")
 
 ## Compile a list of all tarballs downloaded during the pkgr install process.
-toAdd1 <- list.files("tfl-pkgr-cache/MRAN-3f9ff60f0b67/src/", full.names = T)
-toAdd2 <- list.files("tfl-pkgr-cache/S3TFLCRAN-e6449f9a5a44/src/", full.names = T)
-toAdd3 <- list.files("tfl-pkgr-cache/TFL-c807e427397b/src/", full.names=T)
-toAdd <- c(toAdd1, toAdd2, toAdd3)
+# toAdd1 <- list.files("tfl-pkgr-cache/MRAN-2b18c2b27f97/src/", full.names = T)
+# toAdd2 <- list.files("tfl-pkgr-cache/S3TFLCRAN-e6449f9a5a44/src/", full.names = T)
+# toAdd3 <- list.files("tfl-pkgr-cache/TFL-c807e427397b/src/", full.names=T)
+caches <- list.files(path = "tfl-pkgr-cache", full.names = T)
+toAddAll <- list.files(file.path(caches, "src"), full.names = T)
+
+
+# toAdd <- c(toAdd1, toAdd2, toAdd3)
 
 # Set the repo path:
 repo_path <- "/usr/local/repos/tfl"
@@ -26,7 +30,7 @@ repo_path <- "/usr/local/repos/tfl"
 ## Add the packages from pkgr's cache to the local repository.
 ## This repository will be accessible by RSConnect.
 # drat::insertPackages(toAdd, repodir=repo_path) # Not compatible with drat versions that are compatible with R3.5.3
-for(pkg in toAdd) {
+for(pkg in toAddAll) {
   print(paste0("adding package ", pkg, " to local repo."))
   drat::insertPackage(pkg, repodir=repo_path)
 }
@@ -35,10 +39,21 @@ for(pkg in toAdd) {
 ## Add just a few deps that RSConnect forces us to need so that we can get on with our lives.
 ## 
 # toAddRscDeps <- list.files("rsconnect-pkgr-cache/MPN-3bd99e356e31/src", full.names=T)
+rscCaches <- list.files("rsconnect-pkgr-cache", full.names = T)
+if(length(rscCaches) != 1) {
+  stop(paste0("Could not automatically create the repository with this script. ",
+              "If this happens, try to use drat from the R console to add the ", 
+              "three packages below to the local repository. Use the code as a guide, ",
+              "but replace the hashed MPN cache with whatever's in your directory.")
+  )
+}
+rscCache <- rscCaches[[1]]
+
+
 toAddRscDeps <- c(
-  "rsconnect-pkgr-cache/MPN-3bd99e356e31/src/curl_4.3.2.tar.gz",
-  "rsconnect-pkgr-cache/MPN-3bd99e356e31/src/jsonlite_1.7.2.tar.gz",
-  "rsconnect-pkgr-cache/MPN-3bd99e356e31/src/yaml_2.2.1.tar.gz"
+  file.path(rscCache, "src", "curl_4.3.2.tar.gz"),
+  file.path(rscCache, "src", "jsonlite_1.7.2.tar.gz"),
+  file.path(rscCache, "src", "yaml_2.2.1.tar.gz")
 )
 for(pkg in toAddRscDeps) {
   print(paste0("adding package ", pkg, " to local repo."))
